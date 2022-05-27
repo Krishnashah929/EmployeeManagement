@@ -9,21 +9,21 @@ namespace EM.Models
 {
     public class LoginModel
     {
-        /// <summary>
-        /// FirstName input feild.
-        /// </summary>
-        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        [StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
-        [DisplayName("First Name")]
-        public string FirstName { get; set; }
+        ///// <summary>
+        ///// FirstName input feild.
+        ///// </summary>
+        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
+        //[DisplayName("First Name")]
+        //public string FirstName { get; set; }
 
-        /// <summary>
-        /// LastName input feild.
-        /// </summary>
-        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        [StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
-        [DisplayName("Last Name")]
-        public string Lastname { get; set; }
+        ///// <summary>
+        ///// LastName input feild.
+        ///// </summary>
+        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
+        //[DisplayName("Last Name")]
+        //public string Lastname { get; set; }
 
         /// <summary>
         /// Email Address input feild.
@@ -42,10 +42,10 @@ namespace EM.Models
         [DisplayName("Password")]
         public string Password { get; set; }
 
-        /// <summary>
-        /// UserRole input feild.
-        /// </summary>
-        public string Role { get; set; }
+        ///// <summary>
+        ///// UserRole input feild.
+        ///// </summary>
+        //public string Role { get; set; }
 
     }
 }

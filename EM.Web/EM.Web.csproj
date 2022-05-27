@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.13">
       <PrivateAssets>all</PrivateAssets>
@@ -16,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CustomAuthorizationHandlers\CustomAuthorizationHandlers.csproj" />
+    <ProjectReference Include="..\EM.API\EM.API.csproj" />
     <ProjectReference Include="..\EM.Common\EM.Common.csproj" />
     <ProjectReference Include="..\EM.Entity\EM.Entity.csproj" />
     <ProjectReference Include="..\EM.GenericUnitOfWork\EM.GenericUnitOfWork.csproj" />

@@ -12,12 +12,12 @@ namespace EM.Models
 {
     public class SetPassword
     {
-        /// <summary>
-        /// Email Address input feild.
-        /// </summary>
-        [Required(ErrorMessage = CommonValidations.PleaseEnterValidEmail)]
-        [DisplayName("Email")]
-        public string EmailAddress { get; set; }
+        ///// <summary>
+        ///// Email Address input feild.
+        ///// </summary>
+        //[Required(ErrorMessage = CommonValidations.PleaseEnterValidEmail)]
+        //[DisplayName("Email")]
+        //public string EmailAddress { get; set; }
 
         /// <summary>
         /// Password input feild.

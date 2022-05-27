@@ -25,7 +25,7 @@ namespace EM.Entity
         /// <summary>
         /// FirstName input feild.
         /// </summary>
-        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         [StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName ("First Name")]
         public string FirstName { get; set; }
@@ -33,7 +33,7 @@ namespace EM.Entity
         /// <summary>
         /// LastName input feild.
         /// </summary>
-        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         [StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName("Last Name")]
         public string Lastname { get; set; }
@@ -41,7 +41,7 @@ namespace EM.Entity
         /// <summary>
         /// Email Address input feild.
         /// </summary>
-        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthMailErrorMsg)]
         //[MinLength(5, ErrorMessage = CommonValidations.RequiredLengthMailErrorMsg)]
         [DisplayName("Email")]
@@ -50,7 +50,7 @@ namespace EM.Entity
         /// <summary>
         /// Password input feild.
         /// </summary>
-        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         [DataType(DataType.Password)]
         [StringLength(10, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 8)]
         [DisplayName("Password")]
@@ -103,11 +103,12 @@ namespace EM.Entity
         /// This value is not stored into the database.
         /// </summary>
         [NotMapped]
-        [Required(ErrorMessage = CommonValidations.RetypePasswordMesg)]
+        //[Required(ErrorMessage = CommonValidations.RetypePasswordMesg)]
         [Compare("Password", ErrorMessage = CommonValidations.ComparePasswordMsg)]
         [DataType(DataType.Password)]
         [DisplayName("Reenter Password")]
         public string RetypePassword { get; set; }
+
         public virtual ICollection<UserRole> UserRoles { get; set; }
 
         public string Role { get; set; }
