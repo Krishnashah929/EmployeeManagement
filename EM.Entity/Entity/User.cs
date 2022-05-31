@@ -26,7 +26,7 @@ namespace EM.Entity
         /// FirstName input feild.
         /// </summary>
         //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        [StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
+        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName ("First Name")]
         public string FirstName { get; set; }
 
@@ -34,7 +34,7 @@ namespace EM.Entity
         /// LastName input feild.
         /// </summary>
         //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        [StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
+        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName("Last Name")]
         public string Lastname { get; set; }
 

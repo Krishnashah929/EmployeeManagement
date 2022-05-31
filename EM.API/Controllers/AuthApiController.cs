@@ -1,10 +1,15 @@
-﻿using EM.Entity;
+﻿using EM.API.Helpers;
+using EM.Common;
+using EM.Entity;
 using EM.Models;
 using EM.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Mail;
+
 
 namespace EM.API.Controllers
 {
@@ -15,12 +20,12 @@ namespace EM.API.Controllers
     [ApiController]
     public class AuthApiController : ControllerBase
     {
-         
+
         private IUsersService _userService;
 
         public object HttpCacheability { get; private set; }
 
-        
+
         public AuthApiController(IUsersService userService)
         {
             _userService = userService;
@@ -32,17 +37,24 @@ namespace EM.API.Controllers
         /// </summary>
         #region Login(POST)
         [HttpPost("Login")]
-        public IActionResult Login(LoginModel objloginModel)
+        public ApiResponseModel Login(LoginModel objloginModel)
         {
             try
             {
-                //Check the user email and password
-                var loggedinUser = _userService.GetByEmail(objloginModel.EmailAddress);
-                return Ok(loggedinUser);
+                if (objloginModel != null)
+                {
+                    var loggedinUser = _userService.GetByEmail(objloginModel.EmailAddress);
+                    if (loggedinUser != null)
+                    {
+                        //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser);
+                    }
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
             catch
             {
-                return StatusCode(500);
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion
@@ -55,16 +67,24 @@ namespace EM.API.Controllers
         #region Register(POST)
         [HttpPost("Register")]
         [Obsolete]
-        public IActionResult Register(User objUser)
+        public ApiResponseModel Register(User objUser)
         {
             try
             {
-                var registerUsers = _userService.Register(objUser);
-                return Ok(registerUsers);
+                if (objUser != null)
+                {
+                    var registerUsers = _userService.Register(objUser);
+                    if (registerUsers != null)
+                    {
+                        //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", registerUsers);
+                    }
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
             catch
             {
-                return StatusCode(500);
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion
@@ -74,16 +94,21 @@ namespace EM.API.Controllers
         ///// </summary>
         #region SetPassword(GET)
         [HttpGet("SetPassword/{id}")]
-        public IActionResult SetPassword(int id)
+        public ApiResponseModel SetPassword(int id)
         {
             try
             {
                 var userDetails = _userService.GetById(id);
-                return Ok(userDetails);
+                if (userDetails != null)
+                {
+                    //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, "", userDetails);
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
             catch
             {
-                return StatusCode(500);
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion
@@ -93,16 +118,24 @@ namespace EM.API.Controllers
         ///// </summary>
         #region SetPassword(POST)
         [HttpPost("SetPassword")]
-        public IActionResult SetPassword(User user)
+        public ApiResponseModel SetPassword(User user)
         {
             try
             {
-                var setUserPassword = _userService.SetUserPassword(user);
-                return Ok(setUserPassword);
+                if (user != null)
+                {
+                    var setUserPassword = _userService.SetUserPassword(user);
+                    if (setUserPassword != null)
+                    {
+                        //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", setUserPassword);
+                    }
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
-            catch (Exception)
+            catch
             {
-                return StatusCode(500);
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion
@@ -112,16 +145,21 @@ namespace EM.API.Controllers
         /// </summary>
         #region ForgotPassword(GET)
         [HttpGet("ForgotPassword/{id}")]
-        public IActionResult ForgotPasswordAsync(int id)
+        public ApiResponseModel ForgotPasswordAsync(int id)
         {
             try
             {
                 var userDetails = _userService.GetById(id);
-                return Ok(userDetails);
+                if (userDetails != null)
+                {
+                    //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, "", userDetails);
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
             catch
             {
-                return StatusCode(500);
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion
@@ -131,16 +169,24 @@ namespace EM.API.Controllers
         /// </summary>
         #region ForgotPassword(POST)
         [HttpPost("ForgotPassword")]
-        public IActionResult ForgotPasswordAsync(User user)
+        public ApiResponseModel ForgotPasswordAsync(User user)
         {
             try
             {
-                var setUserPassword = _userService.SetUserPassword(user);
-                return Ok(setUserPassword);
+                if (user != null)
+                {
+                    var setUserPassword = _userService.SetUserPassword(user);
+                    if (setUserPassword != null)
+                    {
+                        //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", setUserPassword);
+                    }
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
-            catch (Exception)
+            catch
             {
-                return StatusCode(500);
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion

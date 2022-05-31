@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,13 +24,14 @@ namespace EM.Web.Controllers
     /// <summary>
     /// Controller for all login and registration activites.
     /// </summary>
-    public class AuthController : Controller
+    public class AuthController : BaseController
     {
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IConfiguration _configuration;
         private IUsersService _userService;
         private bool errorflag;
-        public static string baseUrl = "https://localhost:44375/api/AuthApi/";
+        public string baseUrl = "";
 
         public object HttpCacheability { get; private set; }
 
@@ -38,11 +40,15 @@ namespace EM.Web.Controllers
         /// </summary>
         /// <param name="hostingEnvironment"></param>
         /// <param name="userService"></param>
+        /// <param name="configuration"></param>
         [Obsolete]
-        public AuthController(IHostingEnvironment hostingEnvironment, IUsersService userService)
+        public AuthController(IHostingEnvironment hostingEnvironment, IUsersService userService, IConfiguration configuration): base(configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _userService = userService;
+            _configuration = configuration;
+            //Getting value from appsetting.json file
+            baseUrl = _configuration.GetValue<string>("ApiUrls:Url");
         }
 
         /// <summary>
@@ -85,31 +91,41 @@ namespace EM.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     var userPassword = EncryptionDecryption.Encrypt(objloginModel.Password.ToString());
-                    var url = baseUrl + "Login";
+                    User objUser = new User();
+                    objUser.EmailAddress = objloginModel.EmailAddress;
+                    objUser.Password = objloginModel.Password;
 
-                    HttpClient client = new HttpClient();
+                    var url = "api/AuthApi/Login";
+                    //Call post method from generic CallApi class.
+                    //var user =  await HTTPClientWrapper<User>.PostRequest(url, objUser);
 
-                    var response = client.PostAsJsonAsync<LoginModel>(url, objloginModel).Result;
 
-                    if (response.IsSuccessStatusCode)
+                    var result = new ApiGenericModel<User>();
+                    result = ApiRequest<User>(RequestTypes.Post, url, null, objUser).Result;
+
+                    if(result != null)
                     {
-                        var user = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-                        if (user != null)
+                        objUser = result.GenericModel;
+                    }
+
+                    if (true)
+                    {                        
+                        if (objUser != null)
                         {
-                            var Name = user.FirstName + " " + user.Lastname;
-                            if (user.Role == "1")
+                            var Name = objUser.FirstName + " " + objUser.Lastname;
+                            if (objUser.Role == "1")
                             {
-                                user.Role = "Admin";
+                                objUser.Role = "Admin";
                             }
                             HttpContext.Session.SetString("Userlogeddin", "true");
                             HttpContext.Session.SetString("Name", Name);
 
                             var userClaims = new List<Claim>()
-                        {
+                            {
                              new Claim("UserEmail", objloginModel.EmailAddress),
                              new Claim(ClaimTypes.Email, objloginModel.EmailAddress),
-                             new Claim(ClaimTypes.Role, user.Role)
-                        };
+                             new Claim(ClaimTypes.Role, objUser.Role)
+                            };
 
                             var userIdentity = new ClaimsIdentity(userClaims, "User Identity");
 
@@ -118,16 +134,13 @@ namespace EM.Web.Controllers
 
                             return RedirectToAction("Dashboard","Home");
                         }
+                        else
+                        {
+                            TempData["Error"] = CommonValidations.RecordNotExistsMsg;
+                            return View("Login");
+                        }
                     }
-                    else
-                    {
-                        TempData["Error"] = CommonValidations.RecordNotExistsMsg;
-                        return View("Login");
-                    }
-                    //Here can be implemented checking logic from the database
-                  
                 }
-
             }
             catch (Exception)
             {
@@ -176,24 +189,28 @@ namespace EM.Web.Controllers
             { 
                 if (ModelState.IsValid)
                 {
-                    var url = baseUrl + "Register";
-                    HttpClient client = new HttpClient();
-
                     User objUser = new User();
                     objUser.FirstName = objRegisterModel.FirstName;
                     objUser.Lastname = objRegisterModel.Lastname;
                     objUser.EmailAddress = objRegisterModel.EmailAddress;
 
-                    var response = client.PostAsJsonAsync<User>(url, objUser).Result;
+                    var url = "api/AuthApi/Register";
+                    //Call post method from generic CallApi class.
+                    //var user =  await HTTPClientWrapper<User>.PostRequest(url, objUser);
 
-                    //var test = response.Result;
-                    if (response.IsSuccessStatusCode)
+                    var result = new ApiGenericModel<User>();
+                    result = ApiRequest<User>(RequestTypes.Post, url, null, objUser).Result;
+
+                    if (result != null)
                     {
-                        var user = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-                        if (user != null)
+                        objUser = result.GenericModel;
+                    }
+                    if (true)
+                    {
+                        if (objUser != null)
                         {
                             //encrypt the userid for link in url.
-                            var userId = EncryptionDecryption.Encrypt(user.UserId.ToString());
+                            var userId = EncryptionDecryption.Encrypt(objUser.UserId.ToString());
 
                             //link generation with userid.
                             var linkPath = "http://localhost:7399/Auth/SetPassword?link=" + userId;
@@ -214,12 +231,12 @@ namespace EM.Web.Controllers
                             SendEmail(objUser.EmailAddress, body, subject);
 
                         }
+                        else
+                        {
+                            TempData["Error"] = CommonValidations.RecordExistsMsg;
+                            return View();
+                        }
                         return RedirectToAction("Login", "Auth");
-                    }
-                    else
-                    {
-                        TempData["Error"] = CommonValidations.RecordExistsMsg;
-                        return View();
                     }
                 }
             }
@@ -278,22 +295,22 @@ namespace EM.Web.Controllers
                 HttpContext.Session.SetInt32("links", id);
                 user.UserId = id;
 
-                var url = baseUrl + "SetPassword/" + id ;
-                HttpClient client = new HttpClient();
-                var response = client.GetAsync(url).Result;
+                //var url = baseUrl + "SetPassword/" + id ;
+                ////Call post method from generic CallApi class.
+                //var users = await HTTPClientWrapper<User>.GetRequest(url);
 
-                //var test = response.Result;
-                if (response.IsSuccessStatusCode)
+                var url = "api/AuthApi/SetPassword/" + id;
+                var result = new ApiGenericModel<User>();
+                result = ApiRequest<User>(RequestTypes.Get, url).Result;
+                if (true)
                 {
-                    var users = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-                    return View(users);
+                    return View(result.GenericModel);
                 }
             }
             catch (Exception)
             {
                 return View("Error");
             }
-            return View();
         }
         #endregion
 
@@ -309,30 +326,32 @@ namespace EM.Web.Controllers
                 string message = string.Empty;
                 if (ModelState.IsValid)
                 {
-                    var url = baseUrl + "SetPassword";
-                    HttpClient client = new HttpClient();
-
                     User user = new User();
                     user.Password = objSetPassword.Password;
                     user.RetypePassword = objSetPassword.RetypePassword;
-                   
+
                     int id = (int)HttpContext.Session.GetInt32("links");
                     user.UserId = id;
 
-                    var response = client.PostAsJsonAsync<User>(url, user).Result;
+                    var url = "api/AuthApi/SetPassword";
+                    var result = new ApiGenericModel<User>();
+                    result = ApiRequest<User>(RequestTypes.Post, url, null, user).Result;
 
-                    if (response.IsSuccessStatusCode)
+                    if (result != null)
                     {
-                        var users = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-                        if (users != null)
+                        user = result.GenericModel;
+                    }
+                    if (true)
+                    {
+                        if (user != null)
                         {
                             return RedirectToAction("Login", "Auth");
                         }
-                    }
-                    else
-                    {
-                        message = CommonValidations.RecordExistsMsg;
-                        return Content(message);
+                        else
+                        {
+                            message = CommonValidations.RecordExistsMsg;
+                            return Content(message);
+                        }
                     }
                 }
             }
@@ -409,22 +428,18 @@ namespace EM.Web.Controllers
                 HttpContext.Session.SetInt32("links", id);
                 user.UserId = id;
 
-                var url = baseUrl + "ForgotPassword/" + id;
-                HttpClient client = new HttpClient();
-                var response = client.GetAsync(url).Result;
-
-                //var test = response.Result;
-                if (response.IsSuccessStatusCode)
+                var url = "api/AuthApi/ForgotPassword/" + id;
+                var result = new ApiGenericModel<User>();
+                result = ApiRequest<User>(RequestTypes.Get, url).Result;
+                if (true)
                 {
-                    var users = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-                    return View(users);
+                    return View(result.GenericModel);
                 }
             }
             catch (Exception)
             {
                 return View("Error");
             }
-            return View();
         }
         #endregion
 
@@ -443,14 +458,17 @@ namespace EM.Web.Controllers
                     int id = (int)HttpContext.Session.GetInt32("links");
                     user.UserId = id;
 
-                    var url = baseUrl + "ForgotPassword";
-                    HttpClient client = new HttpClient();
-                    var response = client.PostAsJsonAsync<User>(url, user).Result;
+                    var url = "api/AuthApi/SetPassword";
+                    var result = new ApiGenericModel<User>();
+                    result = ApiRequest<User>(RequestTypes.Post, url, null, user).Result;
 
-                    if (response.IsSuccessStatusCode)
+                    if (result != null)
                     {
-                        var users = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-                        if (users != null)
+                        user = result.GenericModel;
+                    }
+                    if (true)
+                    {
+                        if (user != null)
                         {
                             TempData["successMsg"] = CommonValidations.PasswordUpdateMsg;
                         }
@@ -458,10 +476,6 @@ namespace EM.Web.Controllers
                         {
                             TempData["failureMsg"] = CommonValidations.PasswordNotUpdateMsg;
                         }
-                    }
-                    else
-                    {
-                        TempData["failureMsg"] = CommonValidations.PasswordNotUpdateMsg;
                     }
                 }
                 return View();
@@ -499,9 +513,9 @@ namespace EM.Web.Controllers
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return RedirectToAction("Login", "Auth");
             }
-            catch (Exception ex)
+            catch
             {
-                return View(ex);
+                return View("Error");
             }
         }
         #endregion

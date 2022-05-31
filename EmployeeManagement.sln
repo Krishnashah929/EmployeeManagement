@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EM.Services", "EM.Services\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomAuthorizationHandlers", "CustomAuthorizationHandlers\CustomAuthorizationHandlers.csproj", "{E76BABE5-539C-40D7-9E8D-C58E62F51AE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EM.API", "EM.API\EM.API.csproj", "{EAF0F94A-3F52-477E-8A56-E5323E2FB27D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EM.API", "EM.API\EM.API.csproj", "{EAF0F94A-3F52-477E-8A56-E5323E2FB27D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
