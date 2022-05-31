@@ -47,8 +47,6 @@ namespace EM.Web.Controllers
             _hostingEnvironment = hostingEnvironment;
             _userService = userService;
             _configuration = configuration;
-            //Getting value from appsetting.json file
-            baseUrl = _configuration.GetValue<string>("ApiUrls:Url");
         }
 
         /// <summary>
@@ -95,13 +93,10 @@ namespace EM.Web.Controllers
                     objUser.EmailAddress = objloginModel.EmailAddress;
                     objUser.Password = objloginModel.Password;
 
-                    var url = "api/AuthApi/Login";
-                    //Call post method from generic CallApi class.
-                    //var user =  await HTTPClientWrapper<User>.PostRequest(url, objUser);
-
-
+                    //var url = "api/AuthApi/Login";
+                    //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, url, null, objUser).Result;
+                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/Login", null, objUser).Result;
 
                     if(result != null)
                     {
@@ -193,13 +188,9 @@ namespace EM.Web.Controllers
                     objUser.FirstName = objRegisterModel.FirstName;
                     objUser.Lastname = objRegisterModel.Lastname;
                     objUser.EmailAddress = objRegisterModel.EmailAddress;
-
-                    var url = "api/AuthApi/Register";
-                    //Call post method from generic CallApi class.
-                    //var user =  await HTTPClientWrapper<User>.PostRequest(url, objUser);
-
+                    //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, url, null, objUser).Result;
+                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/Register", null, objUser).Result;
 
                     if (result != null)
                     {
@@ -295,13 +286,10 @@ namespace EM.Web.Controllers
                 HttpContext.Session.SetInt32("links", id);
                 user.UserId = id;
 
-                //var url = baseUrl + "SetPassword/" + id ;
-                ////Call post method from generic CallApi class.
-                //var users = await HTTPClientWrapper<User>.GetRequest(url);
-
-                var url = "api/AuthApi/SetPassword/" + id;
+                //var url = "api/AuthApi/SetPassword/" + id;
+                //Calling BaseController.
                 var result = new ApiGenericModel<User>();
-                result = ApiRequest<User>(RequestTypes.Get, url).Result;
+                result = ApiRequest<User>(RequestTypes.Get, "api/AuthApi/SetPassword/" + id).Result;
                 if (true)
                 {
                     return View(result.GenericModel);
@@ -332,10 +320,9 @@ namespace EM.Web.Controllers
 
                     int id = (int)HttpContext.Session.GetInt32("links");
                     user.UserId = id;
-
-                    var url = "api/AuthApi/SetPassword";
+                    //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, url, null, user).Result;
+                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/SetPassword", null, user).Result;
 
                     if (result != null)
                     {
@@ -427,10 +414,9 @@ namespace EM.Web.Controllers
                 int id = Convert.ToInt32(link);
                 HttpContext.Session.SetInt32("links", id);
                 user.UserId = id;
-
-                var url = "api/AuthApi/ForgotPassword/" + id;
+                //Calling BaseController.
                 var result = new ApiGenericModel<User>();
-                result = ApiRequest<User>(RequestTypes.Get, url).Result;
+                result = ApiRequest<User>(RequestTypes.Get, "api/AuthApi/ForgotPassword/" + id).Result;
                 if (true)
                 {
                     return View(result.GenericModel);
@@ -457,10 +443,9 @@ namespace EM.Web.Controllers
                 {
                     int id = (int)HttpContext.Session.GetInt32("links");
                     user.UserId = id;
-
-                    var url = "api/AuthApi/SetPassword";
+                    //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, url, null, user).Result;
+                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/SetPassword", null, user).Result;
 
                     if (result != null)
                     {
