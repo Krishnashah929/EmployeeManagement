@@ -13,6 +13,7 @@ using System;
 using System.Security.Claims;
 using EM.GenericUnitOfWork.Base;
 using EM.Services;
+using System.Text.Json.Serialization;
 
 namespace EM.Web
 {
@@ -28,15 +29,13 @@ namespace EM.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             //services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc(options =>
             {
                 // This pushes users to login if not authenticated
-                //options.Filters.Add(new AuthorizeFilter());
-
                 options.CacheProfiles.Add("Default0",
                     new CacheProfile()
                     {
@@ -44,15 +43,7 @@ namespace EM.Web
                         NoStore = true
                     });
             });
-
-            //services.AddScoped<IDatabaseContext, DbContext>();
-            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IDatabaseContext, ApplicationDbContext>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddServices();
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+             
 
             services.AddAuthentication("Cookies")
                  .AddCookie("Cookies", config =>
@@ -70,11 +61,8 @@ namespace EM.Web
                 });
             });
 
-            //services.AddScoped<IAuthorizationHandler, PoliciesAuthorizationHandler>();
-            //services.AddScoped<IAuthorizationHandler, RolesAuthorizationHandler>();
-
             services.AddSession();
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddControllersWithViews();
 
             services.AddDistributedMemoryCache();
@@ -82,14 +70,14 @@ namespace EM.Web
             //services.AddRazorPages().AddRazorRuntimeCompilation();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var cookiePolicyOptions = new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
             };
 
-            dbContext.Database.Migrate();
+            //dbContext.Database.Migrate();
 
             if (env.IsDevelopment())
             {
@@ -105,8 +93,6 @@ namespace EM.Web
             app.UseSession();
 
             app.UseRouting();
-
-            //app.UseResponseCaching();
 
             app.UseCookiePolicy(cookiePolicyOptions);
 
@@ -125,5 +111,5 @@ namespace EM.Web
             AppDomain.CurrentDomain.SetData("ContentRootPath", env.ContentRootPath);
             AppDomain.CurrentDomain.SetData("WebRootPath", env.WebRootPath);
         }
-    }
+    }   
 }

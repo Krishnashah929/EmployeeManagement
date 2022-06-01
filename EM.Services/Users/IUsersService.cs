@@ -13,5 +13,6 @@ namespace EM.Services
         IEnumerable<User> GetAllUser();
         User Register(User user);
         User SetUserPassword(User user);
+        User VerifyLogin(User user);
     }
 }

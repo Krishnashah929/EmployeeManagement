@@ -1,7 +1,14 @@
-﻿using EM.Services;
+﻿using EM.Common;
+using EM.Entity;
+using EM.Models;
+using EM.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 
 /// <summary>
 ///Controller for all User related activites
@@ -12,17 +19,15 @@ namespace EM.Web.Controllers
     /// Calling cache from startup.cs
     /// </summary>
     [ResponseCache(CacheProfileName = "Default0")]
-    public class UsersController : Controller
-    {
-        private readonly IUsersService _userServices;
+    public class UsersController : BaseController
+    { 
 
         /// <summary>
         /// Constructor of an object 
         /// </summary>
-        public UsersController( IUsersService userServices)
+        public UsersController(IConfiguration configuration) : base(configuration)
         {
-            
-            _userServices = userServices;
+             
         }
 
         /// <summary>
@@ -54,70 +59,43 @@ namespace EM.Web.Controllers
         }
         #endregion
 
-        //public JsonResult GetFilteredItems()
-        //{
-        //    int draw = Convert.ToInt32(Request.Query["draw"]);
+        [HttpPost]
+        public IActionResult GetUserList()
+        {
+            try
+            {
+                JqueryDatatableParam objJqueryDatatableParam = new JqueryDatatableParam();
+                int totalRecord = 0;
+                int filterRecord = 0;
 
-        //    // if 0 first "length" records will be fetched
-        //    // if 1 second "length" of records will be fethced ...
-        //    int start = Convert.ToInt32(Request.Query["start"]);
+                var draw = Request.Form["draw"].FirstOrDefault();
 
-        //    // Records count to be fetched after skip
-        //    int length = Convert.ToInt32(Request.Query["length"]);
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
 
-        //    // Getting Sort Column Name
-        //    int sortColumnIdx = Convert.ToInt32(Request.Query["order[0][column]"]);
-        //    string sortColumnName = Request.Query["columns[" + sortColumnIdx + "][name]"];
+                var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
 
-        //    // Sort Column Direction  
-        //    string sortColumnDirection = Request.Query["order[0][dir]"];
+                var searchValue = Request.Form["search[value]"].FirstOrDefault();
 
-        //    // Search Value
-        //    string searchValue = Request.Query["search[value]"].FirstOrDefault()?.Trim();
+                int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
 
-        //    // Total count matching search criteria 
-        //    int recordsFilteredCount =
-        //            _schoolManagementContext.Users
-        //            .Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue))
-        //            .Count();
+                int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
 
-        //    // Total Records Count
-        //    int recordsTotalCount = _schoolManagementContext.Users.Count();
 
-        //    // Filtered & Sorted & Paged data to be sent from server to view
-        //    List<User> filteredData = null;
-        //    if (sortColumnDirection == "asc")
-        //    {
-
-        //        filteredData =
-        //           _schoolManagementContext.Users
-        //            .Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue))
-        //            .OrderBy(x => x.GetType().GetProperty(sortColumnName).GetValue(x))//Sort by sortColumn
-        //            .Skip(start)
-        //            .Take(length)
-        //            .ToList<User>();
-        //    }
-        //    else
-        //    {
-        //        filteredData =
-        //        _schoolManagementContext.Users
-        //           .Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue))
-        //           .OrderByDescending(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
-        //           .Skip(start)
-        //           .Take(length)
-        //           .ToList<User>();
-        //    }
-
-        //    return Json(
-        //                new
-        //                {
-        //                    data = filteredData,
-        //                    draw = Request.Query["draw"],
-        //                    recordsFiltered = recordsFilteredCount,
-        //                    recordsTotal = recordsTotalCount
-        //                }
-        //            );
-        //}
+                ////Calling BaseController.
+                var result = new ApiGenericModel<User>();
+                result = ApiRequest<User>(RequestTypes.Post, "UserApi/GetUserList", null , objJqueryDatatableParam).Result;
+               
+                if (true)
+                {
+                    return RedirectToAction("Index", "Users");
+                }
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+            
+        }
 
         /// <summary>
         /// UpdateUserDetails is modal for get the details of particular user.
@@ -282,3 +260,66 @@ namespace EM.Web.Controllers
 //    //return Index();
 //}
 //#endregion
+
+
+
+//[HttpGet]
+//public JsonResult GetFilteredItems()
+//{
+//    var getAllUsers = _userServices.GetAllUser();
+//    int draw = Convert.ToInt32(Request.Query["draw"]);
+
+//    // if 0 first "length" records will be fetched
+//    // if 1 second "length" of records will be fethced ...
+//    int start = Convert.ToInt32(Request.Query["start"]);
+
+//    // Records count to be fetched after skip
+//    int length = Convert.ToInt32(Request.Query["length"]);
+
+//    // Getting Sort Column Name
+//    int sortColumnIdx = Convert.ToInt32(Request.Query["order[0][column]"]);
+//    string sortColumnName = Request.Query["columns[" + sortColumnIdx + "][name]"];
+
+//    // Sort Column Direction  
+//    string sortColumnDirection = Request.Query["order[0][dir]"];
+
+//    // Search Value
+//    string searchValue = Request.Query["search[value]"].FirstOrDefault()?.Trim();
+
+//    // Total count matching search criteria 
+//    int recordsFilteredCount = getAllUsers.Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue)).Count();
+
+//    // Total Records Count
+//    int recordsTotalCount = getAllUsers.Count();
+
+//    // Filtered & Sorted & Paged data to be sent from server to view
+//    List<User> filteredData = null;
+//    if (sortColumnDirection == "asc")
+//    {
+//        filteredData =
+//           getAllUsers.Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue))
+//            .OrderBy(x => x.GetType().GetProperty(sortColumnName).GetValue(x))//Sort by sortColumn
+//            .Skip(start)
+//            .Take(length)
+//            .ToList<User>();
+//    }
+//    else
+//    {
+//        filteredData =
+//            getAllUsers.Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue))
+//           .OrderByDescending(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
+//           .Skip(start)
+//           .Take(length)
+//           .ToList<User>();
+//    }
+
+//    return Json(
+//                new
+//                {
+//                    data = filteredData,
+//                    draw = Request.Query["draw"],
+//                    recordsFiltered = recordsFilteredCount,
+//                    recordsTotal = recordsTotalCount
+//                }
+//            );
+//}

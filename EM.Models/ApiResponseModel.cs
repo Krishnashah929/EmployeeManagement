@@ -1,4 +1,4 @@
-﻿namespace EM.Web.Helpers
+﻿namespace EM.Models
 {
     public class ApiResponseModel
     {

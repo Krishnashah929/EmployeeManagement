@@ -63,7 +63,7 @@ namespace EM.Services
         public User GetByEmail(string email)
         {
             try
-            {
+            { 
                 return this.GetAll().FirstOrDefault(x => x.EmailAddress.ToLower() == email.ToLower());
             }
             catch (Exception ex)
@@ -112,6 +112,25 @@ namespace EM.Services
                 _unitOfWork.Commit();
                
                 return setUserPassword;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public User VerifyLogin(User user)
+        {
+            try
+            {
+                var userRepository = _unitOfWork.GetRepository<User>();
+                User verifyLogin = new User();
+                var password = EncryptionDecryption.Encrypt(user.Password.ToString());
+                verifyLogin = this.GetAll().FirstOrDefault(x => x.Password == password && x.EmailAddress == user.EmailAddress && x.IsActive == true && x.IsDelete == false);
+                 
+                //_unitOfWork.Commit();
+
+                return verifyLogin;
             }
             catch (Exception ex)
             {

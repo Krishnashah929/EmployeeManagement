@@ -43,8 +43,6 @@ namespace EM.API
             });
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            //services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
-
             services.AddMvc(options =>
             {
                 options.CacheProfiles.Add("Default0",
@@ -55,9 +53,6 @@ namespace EM.API
                     });
             });
 
-            //services.AddScoped<IDatabaseContext, DbContext>();
-            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IDatabaseContext, ApplicationDbContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -79,10 +74,7 @@ namespace EM.API
                     policyBuilder.UserRequireCustomClaim(ClaimTypes.Email);
                 });
             });
-
-            //services.AddScoped<IAuthorizationHandler, PoliciesAuthorizationHandler>();
-            //services.AddScoped<IAuthorizationHandler, RolesAuthorizationHandler>();
-
+            
             services.AddSession();
             services.AddControllers();
             services.AddControllersWithViews();
@@ -93,6 +85,11 @@ namespace EM.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
         {
+            var cookiePolicyOptions = new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+            };
+            dbContext.Database.Migrate();
 
             if (env.IsDevelopment())
             {
@@ -102,11 +99,11 @@ namespace EM.API
             }
             app.UseStaticFiles();
 
+            dbContext.Database.Migrate();
+
             app.UseSession();
 
             app.UseRouting();
-
-            //app.UseResponseCaching();
 
             //app.UseCookiePolicy(CookiePolicyOptions);
 
@@ -120,11 +117,17 @@ namespace EM.API
 
             app.UseHttpsRedirection();
 
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //        //name: "default",
+            //        //pattern: "{controller=Auth}/{action=Login}/{id?}");
+            //});
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-                    //name: "default",
-                    //pattern: "{controller=Auth}/{action=Login}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Auth}/{action=Login}/{id?}");
             });
             AppDomain.CurrentDomain.SetData("ContentRootPath", env.ContentRootPath);
             AppDomain.CurrentDomain.SetData("WebRootPath", env.WebRootPath);

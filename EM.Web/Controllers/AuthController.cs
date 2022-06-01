@@ -29,7 +29,6 @@ namespace EM.Web.Controllers
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IConfiguration _configuration;
-        private IUsersService _userService;
         private bool errorflag;
         public string baseUrl = "";
 
@@ -42,10 +41,9 @@ namespace EM.Web.Controllers
         /// <param name="userService"></param>
         /// <param name="configuration"></param>
         [Obsolete]
-        public AuthController(IHostingEnvironment hostingEnvironment, IUsersService userService, IConfiguration configuration): base(configuration)
+        public AuthController(IHostingEnvironment hostingEnvironment , IConfiguration configuration): base(configuration)
         {
             _hostingEnvironment = hostingEnvironment;
-            _userService = userService;
             _configuration = configuration;
         }
 
@@ -88,31 +86,24 @@ namespace EM.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var userPassword = EncryptionDecryption.Encrypt(objloginModel.Password.ToString());
                     User objUser = new User();
                     objUser.EmailAddress = objloginModel.EmailAddress;
                     objUser.Password = objloginModel.Password;
+                    objUser.Role = objloginModel.Role;
 
-                    //var url = "api/AuthApi/Login";
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/Login", null, objUser).Result;
+                    result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Login", null, objUser).Result;
 
                     if(result != null)
                     {
                         objUser = result.GenericModel;
                     }
-
                     if (true)
                     {                        
                         if (objUser != null)
                         {
                             var Name = objUser.FirstName + " " + objUser.Lastname;
-                            if (objUser.Role == "1")
-                            {
-                                objUser.Role = "Admin";
-                            }
-                            HttpContext.Session.SetString("Userlogeddin", "true");
                             HttpContext.Session.SetString("Name", Name);
 
                             var userClaims = new List<Claim>()
@@ -123,11 +114,10 @@ namespace EM.Web.Controllers
                             };
 
                             var userIdentity = new ClaimsIdentity(userClaims, "User Identity");
-
                             var userPrincipal = new ClaimsPrincipal(new[] { userIdentity });
                             HttpContext.SignInAsync(userPrincipal);
 
-                            return RedirectToAction("Dashboard","Home");
+                            return RedirectToAction("Index","Users");
                         }
                         else
                         {
@@ -177,7 +167,6 @@ namespace EM.Web.Controllers
         /// </summary>
         #region Register(POST)
         [HttpPost]
-        [Obsolete]
         public async Task<IActionResult> Register(RegisterModel objRegisterModel)
         {
             try
@@ -190,39 +179,14 @@ namespace EM.Web.Controllers
                     objUser.EmailAddress = objRegisterModel.EmailAddress;
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/Register", null, objUser).Result;
-
+                    result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Register", null, objUser).Result;
                     if (result != null)
                     {
                         objUser = result.GenericModel;
                     }
                     if (true)
                     {
-                        if (objUser != null)
-                        {
-                            //encrypt the userid for link in url.
-                            var userId = EncryptionDecryption.Encrypt(objUser.UserId.ToString());
-
-                            //link generation with userid.
-                            var linkPath = "http://localhost:7399/Auth/SetPassword?link=" + userId;
-
-                            string webRootPath = _hostingEnvironment.WebRootPath + "/MalTemplates/SetPasswordTemplate.html";
-                            StreamReader reader = new StreamReader(webRootPath);
-                            string readFile = reader.ReadToEnd();
-                            string myString = string.Empty;
-                            myString = readFile;
-                            var subject = "Set Password";
-                            //when you have to replace the content of html page
-                            myString = myString.Replace("@@Name@@", objUser.FirstName);
-                            myString = myString.Replace("@@FullName@@", objUser.FirstName + " " + objUser.Lastname);
-                            myString = myString.Replace("@@Email@@", objUser.EmailAddress);
-                            myString = myString.Replace("@@Link@@", linkPath);
-                            var body = myString.ToString();
-
-                            SendEmail(objUser.EmailAddress, body, subject);
-
-                        }
-                        else
+                        if (objUser == null)
                         {
                             TempData["Error"] = CommonValidations.RecordExistsMsg;
                             return View();
@@ -236,39 +200,6 @@ namespace EM.Web.Controllers
                 return View("Error");
             }
             return Ok();
-        }
-        #endregion
-
-        /// <summary>
-        ///  In this method we are sending main set password template to user. where they can set their new password.
-        /// </summary>
-        #region SendEmail
-        private void SendEmail(string email, string body, string subject)
-        {
-            try
-            {
-                using (MailMessage mm = new MailMessage("krishnaa9121@gmail.com", email))
-                {
-                    mm.Subject = subject;
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
-
-                    using (SmtpClient smtp = new SmtpClient())
-                    {
-                        smtp.Host = "smtp.gmail.com";
-                        smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "Kri$hn@91");
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = NetworkCred;
-                        smtp.Port = 587;
-                        smtp.Send(mm);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                errorflag = true;
-            }
         }
         #endregion
 
@@ -289,7 +220,7 @@ namespace EM.Web.Controllers
                 //var url = "api/AuthApi/SetPassword/" + id;
                 //Calling BaseController.
                 var result = new ApiGenericModel<User>();
-                result = ApiRequest<User>(RequestTypes.Get, "api/AuthApi/SetPassword/" + id).Result;
+                result = ApiRequest<User>(RequestTypes.Get, "AuthApi/SetPassword/" + id).Result;
                 if (true)
                 {
                     return View(result.GenericModel);
@@ -322,7 +253,7 @@ namespace EM.Web.Controllers
                     user.UserId = id;
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/SetPassword", null, user).Result;
+                    result = ApiRequest<User>(RequestTypes.Post, "AuthApi/SetPassword", null, user).Result;
 
                     if (result != null)
                     {
@@ -376,28 +307,23 @@ namespace EM.Web.Controllers
         [HttpPost]
         public IActionResult Sendlink(User objUser)
         {
-            var loggedinUser = _userService.GetByEmail(objUser.EmailAddress);
 
-            var userId = EncryptionDecryption.Encrypt(loggedinUser.UserId.ToString());
-            //link generation with userid.
-            var linkPath = "http://localhost:7399/Auth/ForgotPassword?link=" + userId;
-
-            if (loggedinUser != null)
+            //Calling BaseController.
+            var result = new ApiGenericModel<User>();
+            result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Sendlink", null, objUser).Result;
+            if (result != null)
             {
-                var subject = "Password Reset Request";
-                var body = "Hi " + objUser.FirstName + ", <br/> You recently requested to reset the password for your account. " +
-                           "Click the link below to reset ." + "<br/> <br/><a href='" + linkPath + "'>" + linkPath + "</a> <br/> <br/>" +
-                           "If you did not request for reset password please ignore this mail.";
-                SendEmail(objUser.EmailAddress, body, subject);
-
-                TempData["linkSendMsg"] = CommonValidations.LinkSendMsg;
-                return RedirectToAction("ForgotPasswordModel", "Auth");
+                objUser = result.GenericModel;
             }
-            else
+            if (true)
             {
-                TempData["WrongMailMsg"] = CommonValidations.WrongMailMsg;
-                return RedirectToAction("ForgotPasswordModel", "Auth");
+                if (objUser != null)
+                {
+                    TempData["linkSendMsg"] = CommonValidations.LinkSendMsg;
+                    return RedirectToAction("ForgotPasswordModel", "Auth");
+                }
             }
+            return RedirectToAction("ForgotPasswordModel", "Auth");
         }
         #endregion
 
@@ -416,7 +342,7 @@ namespace EM.Web.Controllers
                 user.UserId = id;
                 //Calling BaseController.
                 var result = new ApiGenericModel<User>();
-                result = ApiRequest<User>(RequestTypes.Get, "api/AuthApi/ForgotPassword/" + id).Result;
+                result = ApiRequest<User>(RequestTypes.Get, "AuthApi/ForgotPassword/" + id).Result;
                 if (true)
                 {
                     return View(result.GenericModel);
@@ -445,7 +371,7 @@ namespace EM.Web.Controllers
                     user.UserId = id;
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, "api/AuthApi/SetPassword", null, user).Result;
+                    result = ApiRequest<User>(RequestTypes.Post, "AuthApi/SetPassword", null, user).Result;
 
                     if (result != null)
                     {

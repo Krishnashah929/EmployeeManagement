@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EM.Models;
+using Newtonsoft.Json;
 using System.Net;
  
 namespace EM.API.Helpers

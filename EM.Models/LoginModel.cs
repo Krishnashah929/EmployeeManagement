@@ -45,7 +45,7 @@ namespace EM.Models
         ///// <summary>
         ///// UserRole input feild.
         ///// </summary>
-        //public string Role { get; set; }
+        public string Role { get; set; }
 
     }
 }
