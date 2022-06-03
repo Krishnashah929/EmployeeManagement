@@ -32,29 +32,20 @@ namespace EM.API.Controllers
           
             int totalRecord = 0;
             int filterRecord = 0;
-
-            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
-
-            var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
-
-            var searchValue = Request.Form["search[value]"].FirstOrDefault();
-
-            int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
-
-            int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
-
+             
             var data = _userService.GetAllUser();
             if (data != null)
             {
+                // get total count of records 
                 totalRecord = data.Count();
 
                 // search data when search value found
-                if (!string.IsNullOrEmpty(searchValue))
+                if (!string.IsNullOrEmpty(jqueryDatatableParam.searchValue))
                 {
                     data = data.Where(x =>
-                      x.FirstName.ToLower().Contains(searchValue.ToLower())
-                      || x.Lastname.ToLower().Contains(searchValue.ToLower())
-                      || x.EmailAddress.ToLower().Contains(searchValue.ToLower())
+                      x.FirstName.ToLower().Contains(jqueryDatatableParam.searchValue.ToLower())
+                      || x.Lastname.ToLower().Contains(jqueryDatatableParam.searchValue.ToLower())
+                      || x.EmailAddress.ToLower().Contains(jqueryDatatableParam.searchValue.ToLower())
                     );
                 }
 
@@ -62,18 +53,17 @@ namespace EM.API.Controllers
                 filterRecord = data.Count();
 
                 //sort data
-                if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDirection))
-                data = data.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                if (!string.IsNullOrEmpty(jqueryDatatableParam.sortColumn) && !string.IsNullOrEmpty(jqueryDatatableParam.sortColumnDirection))
+                data = data.AsQueryable().OrderBy(jqueryDatatableParam.sortColumn + " " + jqueryDatatableParam.sortColumnDirection);
 
                 //pagination
-                var empList = data.Skip(skip).Take(pageSize).ToList();
-
-                var returnObj = new { draw = draw, recordsTotal = totalRecord, recordsFiltered = filterRecord, data = empList };
-                return CommonHelper.GetResponse(HttpStatusCode.OK, "", returnObj);
+                var empList = data.Skip(jqueryDatatableParam.skip).Take(jqueryDatatableParam.pageSize).ToList();
+                
+                return CommonHelper.GetResponseDataTable(jqueryDatatableParam.draw, totalRecord, filterRecord, empList);                
                 //return Json(returnObj);
             }
             //getting value from common helper.
-            return CommonHelper.GetResponse(HttpStatusCode.OK, "", data);
+            return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
             
         }

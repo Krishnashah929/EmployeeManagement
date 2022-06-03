@@ -14,5 +14,7 @@ namespace EM.Services
         User Register(User user);
         User SetUserPassword(User user);
         User VerifyLogin(User user);
+        User UpdateDetails(User user);
+        User DeleteDetails(User user);
     }
 }

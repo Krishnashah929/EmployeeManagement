@@ -58,7 +58,10 @@ namespace EM.Web.Controllers
             }
         }
         #endregion
-
+        /// <summary>
+        /// Getting all users list from this method.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult GetUserList()
         {
@@ -68,26 +71,29 @@ namespace EM.Web.Controllers
                 int totalRecord = 0;
                 int filterRecord = 0;
 
-                var draw = Request.Form["draw"].FirstOrDefault();
+                objJqueryDatatableParam.draw = Request.Form["draw"].FirstOrDefault();
 
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+                objJqueryDatatableParam.sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
 
-                var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+                objJqueryDatatableParam.sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
 
-                var searchValue = Request.Form["search[value]"].FirstOrDefault();
+                objJqueryDatatableParam.searchValue = Request.Form["search[value]"].FirstOrDefault();
 
-                int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
+                objJqueryDatatableParam.pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
 
-                int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
+                objJqueryDatatableParam.skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
 
 
                 ////Calling BaseController.
                 var result = new ApiGenericModel<User>();
                 result = ApiRequest<User>(RequestTypes.Post, "UserApi/GetUserList", null , objJqueryDatatableParam).Result;
-               
+
+                var returnObj = new { draw = result.Draw, recordsTotal = result.RecordsTotal, recordsFiltered = result.RecordsFiltered, data = result.GenericList };
+
                 if (true)
                 {
-                    return RedirectToAction("Index", "Users");
+                    return Json(returnObj);
+                    //return RedirectToAction("Index", "Users");
                 }
             }
             catch (Exception)
@@ -113,37 +119,43 @@ namespace EM.Web.Controllers
         /// UpdateUserDetails is modal for updating the details of particular user.
         /// update details of users with user repository.
         /// </summary>
-        //#region UpdateUserDetailsPost 
-        //[HttpPost]
-        //public IActionResult UpdateUserDetailsPost(User updateUser)
-        //{
-        //    try
-        //    {
-        //        ModelState.Remove("Password");
-        //        ModelState.Remove("RetypePassword");
-        //        if (ModelState.IsValid)
-        //        {
-        //            if (updateUser != null)
-        //            {
-        //                var User = _userServices.Update(updateUser);
-        //                if (User != null)
-        //                {
-        //                    return Ok(Json("true"));
-        //                }
-        //                else
-        //                {
-        //                    return Ok(Json("false"));
-        //                }
-        //            }
-        //        }
-        //        return NoContent();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return View("Error");
-        //    }
-        //}
-        //#endregion
+        #region UpdateUserDetailsPost 
+        [HttpPost]
+        public IActionResult UpdateUserDetailsPost(User objUpdateUser)
+        {
+            try
+            {
+                ModelState.Remove("Password");
+                ModelState.Remove("RetypePassword");
+                if (ModelState.IsValid)
+                {
+                    if (objUpdateUser != null)
+                    {
+                        ////Calling BaseController.
+                        var result = new ApiGenericModel<User>();
+                        result = ApiRequest<User>(RequestTypes.Post, "UserApi/UpdateUserDetails", null, objUpdateUser).Result;
+                        if (result != null)
+                        {
+                            objUpdateUser = result.GenericModel;
+                        }
+                        if (User != null)
+                        {
+                            return RedirectToAction("Index", "Users");
+                        }
+                        else
+                        {
+                            
+                        }
+                    }
+                }
+                return RedirectToAction("Index", "Users");
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+        }
+        #endregion
 
         /// <summary>
         /// DeleteUserDetails is modal for get the details of particular user for delete them.
@@ -191,20 +203,7 @@ namespace EM.Web.Controllers
 }
 
 
-//All Previous code without repository pattern.
-/// <summary>
-/// After successfull login of user they will redirect on Index Page.
-/// </summary>
-//#region Index(GET)
-//[AllowAnonymous]
-//[HttpGet]
-//public IActionResult Index()
-//{
-//    //int id = (int)HttpContext.Session.GetInt32("userID");
-//    //List<User> users = _schoolManagementContext.Users.Where(x => x.UserId == id).ToList();
-//    //List<User> users = _schoolManagementContext.Users.Where(x => x.IsActive == true).ToList();
-//}
-//#endregion
+ 
 /// <summary>
 /// UpdateUserDetails is modal for updating the details of particular user.
 /// </summary>
@@ -260,66 +259,3 @@ namespace EM.Web.Controllers
 //    //return Index();
 //}
 //#endregion
-
-
-
-//[HttpGet]
-//public JsonResult GetFilteredItems()
-//{
-//    var getAllUsers = _userServices.GetAllUser();
-//    int draw = Convert.ToInt32(Request.Query["draw"]);
-
-//    // if 0 first "length" records will be fetched
-//    // if 1 second "length" of records will be fethced ...
-//    int start = Convert.ToInt32(Request.Query["start"]);
-
-//    // Records count to be fetched after skip
-//    int length = Convert.ToInt32(Request.Query["length"]);
-
-//    // Getting Sort Column Name
-//    int sortColumnIdx = Convert.ToInt32(Request.Query["order[0][column]"]);
-//    string sortColumnName = Request.Query["columns[" + sortColumnIdx + "][name]"];
-
-//    // Sort Column Direction  
-//    string sortColumnDirection = Request.Query["order[0][dir]"];
-
-//    // Search Value
-//    string searchValue = Request.Query["search[value]"].FirstOrDefault()?.Trim();
-
-//    // Total count matching search criteria 
-//    int recordsFilteredCount = getAllUsers.Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue)).Count();
-
-//    // Total Records Count
-//    int recordsTotalCount = getAllUsers.Count();
-
-//    // Filtered & Sorted & Paged data to be sent from server to view
-//    List<User> filteredData = null;
-//    if (sortColumnDirection == "asc")
-//    {
-//        filteredData =
-//           getAllUsers.Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue))
-//            .OrderBy(x => x.GetType().GetProperty(sortColumnName).GetValue(x))//Sort by sortColumn
-//            .Skip(start)
-//            .Take(length)
-//            .ToList<User>();
-//    }
-//    else
-//    {
-//        filteredData =
-//            getAllUsers.Where(a => a.Lastname.Contains(searchValue) || a.FirstName.Contains(searchValue))
-//           .OrderByDescending(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
-//           .Skip(start)
-//           .Take(length)
-//           .ToList<User>();
-//    }
-
-//    return Json(
-//                new
-//                {
-//                    data = filteredData,
-//                    draw = Request.Query["draw"],
-//                    recordsFiltered = recordsFilteredCount,
-//                    recordsTotal = recordsTotalCount
-//                }
-//            );
-//}

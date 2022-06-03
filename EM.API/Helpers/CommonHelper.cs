@@ -27,5 +27,26 @@ namespace EM.API.Helpers
                 DataList = objDataList != null ? JsonConvert.SerializeObject(objDataList) : string.Empty
             };
         }
+
+
+
+        /// <summary>
+        /// For getting responses for jqueryDatatable
+        /// </summary>
+        /// <param name="draw"></param>
+        /// <param name="recordsTotal"></param>
+        /// <param name="recordsFiltered"></param>
+        /// <param name="Data"></param>
+        /// <returns></returns>
+        public static ApiResponseModel GetResponseDataTable(string draw, int recordsTotal, int recordsFiltered , object Data = null)
+        {
+            return new ApiResponseModel()
+            {
+                Draw = draw,
+                RecordsTotal = recordsTotal,
+                RecordsFiltered = recordsFiltered,
+                DataList = Data != null ? JsonConvert.SerializeObject(Data) : string.Empty
+            };
+        }
     }
 }

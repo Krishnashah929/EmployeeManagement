@@ -26,6 +26,21 @@ namespace EM.Models
         /// Gets the list 
         /// </summary>
         public List<T> GenericList { get; set; }
-        
+
+        /// <summary>
+        /// jqueryDatatable RecordsTotal parameter for getting total record
+        /// </summary>
+        public int RecordsTotal { get; set; }
+
+        /// <summary>
+        /// jqueryDatatable draw parameter
+        /// </summary>
+        public string Draw { get; set; }
+
+        /// <summary>
+        /// jqueryDatatable RecordsTotal parameter for getting total record after dearch
+        /// </summary>
+        public int RecordsFiltered { get; set; }
+
     }
 }

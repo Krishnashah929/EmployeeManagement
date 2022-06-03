@@ -87,7 +87,10 @@ namespace EM.Web.Controllers
                 await httpResponseMessage.Content.ReadAsStringAsync().ContinueWith(x => objApiResponseModel = JsonConvert.DeserializeObject<ApiResponseModel>(x?.Result)).ConfigureAwait(false);
  
                 objApiGenericModel.StatusCode = objApiResponseModel.StatusCode;
-                objApiResponseModel.Message = objApiResponseModel.Message;
+                objApiGenericModel.Message = objApiResponseModel.Message;
+                objApiGenericModel.Draw = objApiResponseModel.Draw;
+                objApiGenericModel.RecordsTotal = objApiResponseModel.RecordsTotal;
+                objApiGenericModel.RecordsFiltered = objApiResponseModel.RecordsFiltered;
 
                 //if the data is passing in object form.
                 if (!string.IsNullOrEmpty(objApiResponseModel.DataObj))
