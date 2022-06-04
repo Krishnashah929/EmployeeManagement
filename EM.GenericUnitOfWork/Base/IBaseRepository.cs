@@ -46,6 +46,7 @@ namespace EM.GenericUnitOfWork.Base
 
         /// <returns>List of entities</returns>
         IQueryable<T> GetAll(string include, string include2);
+        
 
         /// <summary>
         /// Soft delete with using IsActive flag for entity

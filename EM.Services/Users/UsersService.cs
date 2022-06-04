@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace EM.Services
 {
@@ -31,16 +32,17 @@ namespace EM.Services
         }
         #endregion
 
+        /// <summary>
+        /// Method for get all users
+        /// </summary>
+        /// <returns></returns>
+        #region GetAllUser
         public IEnumerable<User> GetAllUser()
-        {
-            return this.GetAll();
-        }
-        private List<User> GetAll()
         {
             try
             {
                 var repoList = this._unitOfWork.GetRepository<User>();
-                List<User> lstUsers = repoList.GetAll().AsNoTracking().ToList();
+                List<User> lstUsers = repoList.GetAll().Where(x => x.IsDelete == false).AsNoTracking().ToList();
 
                 return lstUsers;
             }
@@ -49,28 +51,55 @@ namespace EM.Services
                 throw ex;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Method for get user by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        #region GetById
         public User GetById(int id)
         {
             try
             {
-                return this.GetAll().FirstOrDefault(x => x.UserId == id);
+                var repoList = this._unitOfWork.GetRepository<User>();
+                return repoList.GetByID(id);
+                //return this.GetAllUser().FirstOrDefault(x => x.UserId == id);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Method for get user by email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        #region GetByEmail
         public User GetByEmail(string email)
         {
             try
             {
-                return this.GetAll().FirstOrDefault(x => x.EmailAddress.ToLower() == email.ToLower());
+                var repoList = this._unitOfWork.GetRepository<User>();
+                return this.GetAllUser().FirstOrDefault(x => x.EmailAddress.ToLower() == email.ToLower());
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Method for register new user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        #region Register
         public User Register(User user)
         {
             try
@@ -96,13 +125,21 @@ namespace EM.Services
                 throw ex;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Method for set user password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        #region SetUserPassword
         public User SetUserPassword(User user)
         {
             try
             {
                 var userRepository = _unitOfWork.GetRepository<User>();
                 User setUserPassword = new User();
-                setUserPassword = this.GetAll().FirstOrDefault(x => x.UserId == user.UserId);
+                setUserPassword = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
 
                 setUserPassword.Password = EncryptionDecryption.Encrypt(user.Password.ToString());
                 setUserPassword.IsActive = true;
@@ -119,6 +156,14 @@ namespace EM.Services
             }
         }
 
+        #endregion
+
+        /// <summary>
+        ///  Method for verify logged in user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        #region VerifyLogin
         public User VerifyLogin(User user)
         {
             try
@@ -126,7 +171,7 @@ namespace EM.Services
                 var userRepository = _unitOfWork.GetRepository<User>();
                 User verifyLogin = new User();
                 var password = EncryptionDecryption.Encrypt(user.Password.ToString());
-                verifyLogin = this.GetAll().FirstOrDefault(x => x.Password == password && x.EmailAddress == user.EmailAddress && x.IsActive == true && x.IsDelete == false);
+                verifyLogin = this.GetAllUser().FirstOrDefault(x => x.Password == password && x.EmailAddress == user.EmailAddress && x.IsActive == true && x.IsDelete == false);
                 //_unitOfWork.Commit();
 
                 return verifyLogin;
@@ -136,6 +181,54 @@ namespace EM.Services
                 throw ex;
             }
         }
+        #endregion
+
+        /// <summary>
+        ///  Method for add new user from admin side
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        #region AddNewUser
+        public User AddNewUser(User user)
+        {
+            try
+            {
+                if (user != null)
+                {
+                    var userRepository = _unitOfWork.GetRepository<User>();
+                    if (userRepository != null)
+                    {
+                        user.Password = string.Empty;
+                        user.CreatedDate = DateTime.Now;
+                        user.IsActive = false;
+                        if (user.Role == "Admin")
+                        {
+                            user.Role = "1";
+                        }
+                        else if (user.Role == "User")
+                        {
+                            user.Role = "2";
+                        }
+                    }
+
+                    userRepository.Add(user);
+                    _unitOfWork.Commit();
+                }
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for update existing user 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        #region UpdateDetails
         public User UpdateDetails(User user)
         {
             try
@@ -144,14 +237,23 @@ namespace EM.Services
                 {
                     var userRepository = _unitOfWork.GetRepository<User>();
                     User UpdateDetails = new User();
-                    UpdateDetails = this.GetAll().FirstOrDefault(x => x.UserId == user.UserId);
-                    
+                    UpdateDetails = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
+
                     if (userRepository != null)
                     {
                         UpdateDetails.FirstName = user.FirstName;
                         UpdateDetails.Lastname = user.Lastname;
                         UpdateDetails.EmailAddress = user.EmailAddress;
-
+                        UpdateDetails.Role = user.Role;
+                        UpdateDetails.ModifiedDate = DateTime.Now;
+                        if (UpdateDetails.Role == "Admin")
+                        {
+                            user.Role = "1";
+                        }
+                        else if (UpdateDetails.Role == "User")
+                        {
+                            user.Role = "2";
+                        }
                         _unitOfWork.GetRepository<User>().Update(UpdateDetails);
                         _unitOfWork.Commit();
                     }
@@ -163,12 +265,20 @@ namespace EM.Services
                 throw ex;
             }
         }
-        public User DeleteDetails(User user)
+        #endregion
+
+        /// <summary>
+        /// Method for delete user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        #region DeleteDetails
+        public User DeleteDetails(int id)
         {
             try
             {
                 var userRepository = _unitOfWork.GetRepository<User>();
-                user = this.GetAll().FirstOrDefault(x => x.UserId == user.UserId);
+                var user = this.GetAllUser().FirstOrDefault(x => x.UserId == id);
 
                 user.IsDelete = true;
 
@@ -182,6 +292,7 @@ namespace EM.Services
                 throw ex;
             }
         }
+        #endregion
     }
 }
 

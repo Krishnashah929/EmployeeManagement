@@ -41,5 +41,10 @@ namespace EM.Models
         //[MinLength(5, ErrorMessage = CommonValidations.RequiredLengthMailErrorMsg)]
         [DisplayName("Email")]
         public string EmailAddress { get; set; }
+
+        /// <summary>
+        /// Defien user role
+        /// </summary>
+        public string Role { get; set; }
     }
 }

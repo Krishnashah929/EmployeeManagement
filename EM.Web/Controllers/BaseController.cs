@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace EM.Web.Controllers
 {
+    /// <summary>
+    /// Base Controller
+    /// </summary>
     public class BaseController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -20,6 +23,16 @@ namespace EM.Web.Controllers
         {
             _configuration = configuration;
         }
+
+        /// <summary>
+        /// Method for generic api request
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="requestType"></param>
+        /// <param name="sUrl"></param>
+        /// <param name="httpClient"></param>
+        /// <param name="objModel"></param>
+        /// <returns></returns>
         public async Task<ApiGenericModel<T>> ApiRequest<T>(RequestTypes requestType, string sUrl, HttpClient httpClient = null, object objModel = null)
         {
             HttpClient client = new HttpClient();
@@ -50,34 +63,54 @@ namespace EM.Web.Controllers
                 }
                 return objApiGenericModel;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
         }
 
+        /// <summary>
+        /// Method for getting response
+        /// </summary>
+        /// <param name="requestType"></param>
+        /// <param name="sUrl"></param>
+        /// <param name="client"></param>
+        /// <param name="objModel"></param>
+        /// <returns></returns>
         private static async Task<HttpResponseMessage> GetResponseAsync(RequestTypes requestType, string sUrl, HttpClient client, object objModel = null)
         {
             HttpResponseMessage httpResponseMessage = null;
-            
-                switch (requestType)
-                {
-                    case RequestTypes.Get:
-                        httpResponseMessage =  await client.GetAsync(sUrl).ConfigureAwait(false);
-                        break;
-                    case RequestTypes.Post:
-                        httpResponseMessage =  await client.PostAsJsonAsync(sUrl, objModel).ConfigureAwait(false);
-                        break;
-                    default:
-                        break;
-                }
-            if(httpResponseMessage ==  null)
+
+            switch (requestType)
             {
-                 
+                case RequestTypes.Get:
+                    httpResponseMessage = await client.GetAsync(sUrl).ConfigureAwait(false);
+                    break;
+                case RequestTypes.Post:
+                    httpResponseMessage = await client.PostAsJsonAsync(sUrl, objModel).ConfigureAwait(false);
+                    break;
+                case RequestTypes.Put:
+                    httpResponseMessage = await client.PutAsJsonAsync(sUrl, objModel).ConfigureAwait(false);
+                    break;
+                case RequestTypes.Delete:
+                    httpResponseMessage = await client.DeleteAsync(sUrl).ConfigureAwait(false);
+                    break;
+                default:
+                    break;
+            }
+            if (httpResponseMessage == null)
+            {
+
             }
             return httpResponseMessage;
         }
-       
+
+        /// <summary>
+        /// Method for Deserialize data
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="httpResponseMessage"></param>
+        /// <returns></returns>
         private async Task<ApiGenericModel<T>> DeserializeResponse<T>(HttpResponseMessage httpResponseMessage)
         {
             ApiResponseModel objApiResponseModel = new ApiResponseModel();
@@ -85,7 +118,7 @@ namespace EM.Web.Controllers
             try
             {
                 await httpResponseMessage.Content.ReadAsStringAsync().ContinueWith(x => objApiResponseModel = JsonConvert.DeserializeObject<ApiResponseModel>(x?.Result)).ConfigureAwait(false);
- 
+
                 objApiGenericModel.StatusCode = objApiResponseModel.StatusCode;
                 objApiGenericModel.Message = objApiResponseModel.Message;
                 objApiGenericModel.Draw = objApiResponseModel.Draw;
@@ -103,7 +136,7 @@ namespace EM.Web.Controllers
                     objApiGenericModel.GenericList = JsonConvert.DeserializeObject<List<T>>(objApiResponseModel.DataList);
                 }
             }
-             catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }

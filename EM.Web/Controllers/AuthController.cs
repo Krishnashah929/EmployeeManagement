@@ -117,7 +117,14 @@ namespace EM.Web.Controllers
                             var userPrincipal = new ClaimsPrincipal(new[] { userIdentity });
                             HttpContext.SignInAsync(userPrincipal);
 
-                            return RedirectToAction("Index","Users");
+                            if(objUser.Role == "Admin")
+                            {
+                                return RedirectToAction("Index", "Users");
+                            }
+                           else
+                            {
+                                return RedirectToAction("Dashboard", "Home");
+                            }
                         }
                         else
                         {

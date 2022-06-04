@@ -60,6 +60,10 @@ namespace EM.API.Controllers
                         {
                             loggedinUser.Role = "Admin";
                         }
+                        else if(loggedinUser.Role == "2")
+                        {
+                            loggedinUser.Role = "User";
+                        }
                         //getting value from common helper.
                         return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser);
                     }
@@ -72,7 +76,6 @@ namespace EM.API.Controllers
             }
         }
         #endregion
-
 
         ///// <summary>
         ///// Register for user from this post Register method.

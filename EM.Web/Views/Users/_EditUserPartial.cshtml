@@ -1,0 +1,70 @@
+﻿@model EM.Entity.User
+
+<div class="modal model-for-completion-order" id="idEditUser">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <p class="modal-title">
+                    <b> Update User Details </b>
+                </p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <!-- New user registration form -->
+                <form id="idSigninForm" method="post" asp-controller="Users" asp-action="EditUserDetailsPost">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="card-body">
+                        <input type="hidden" asp-for="UserId" class="form-control" id="id" value="@Model.UserId" />
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" asp-for="FirstName" class="form-control" placeholder="First Name" onkeydown="return /[a-z]/i.test(event.key)">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-user"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" asp-for="Lastname" class="form-control" placeholder="Last Name" onkeydown="return /[a-z]/i.test(event.key)">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-user"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Lastname" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="email" asp-for="EmailAddress" class="form-control" placeholder="Enter email">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-envelope"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <select id="idUserRole" class="form-select" asp-for="Role">
+                                <option> Choose UserRole</option>
+                                <option value="Admin"> Admin</option>
+                                <option value="User"> User</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row m-auto">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary btn-block" data-bs-dismiss="modal">  Update User </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

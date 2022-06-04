@@ -1,0 +1,39 @@
+﻿@model EM.Entity.User
+
+<div class="modal" id="idDeleteUser">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <p class="modal-title">
+                    <b>
+                        Delete User
+                    </b>
+                </p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form method="post" asp-action="DeletUserDetails" asp-controller="Users">
+                    <div class="row">
+                        <div class="col">
+                            <input type="hidden" asp-for="UserId" class="form-control" id="id" value="@Model.UserId" />
+                            <p class="text-center">
+                                Are you sure you want to delete this user?
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-danger text-center m-auto" data-bs-dismiss="modal">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <br>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

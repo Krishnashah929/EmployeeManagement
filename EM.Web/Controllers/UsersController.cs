@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 
 /// <summary>
 ///Controller for all User related activites
@@ -20,14 +20,14 @@ namespace EM.Web.Controllers
     /// </summary>
     [ResponseCache(CacheProfileName = "Default0")]
     public class UsersController : BaseController
-    { 
+    {
 
         /// <summary>
         /// Constructor of an object 
         /// </summary>
         public UsersController(IConfiguration configuration) : base(configuration)
         {
-             
+
         }
 
         /// <summary>
@@ -58,10 +58,12 @@ namespace EM.Web.Controllers
             }
         }
         #endregion
+
         /// <summary>
         /// Getting all users list from this method.
         /// </summary>
         /// <returns></returns>
+        #region GetUserList
         [HttpPost]
         public IActionResult GetUserList()
         {
@@ -86,7 +88,7 @@ namespace EM.Web.Controllers
 
                 ////Calling BaseController.
                 var result = new ApiGenericModel<User>();
-                result = ApiRequest<User>(RequestTypes.Post, "UserApi/GetUserList", null , objJqueryDatatableParam).Result;
+                result = ApiRequest<User>(RequestTypes.Post, "UserApi/GetUserList", null, objJqueryDatatableParam).Result;
 
                 var returnObj = new { draw = result.Draw, recordsTotal = result.RecordsTotal, recordsFiltered = result.RecordsFiltered, data = result.GenericList };
 
@@ -100,43 +102,129 @@ namespace EM.Web.Controllers
             {
                 return View("Error");
             }
-            
         }
+        #endregion
 
         /// <summary>
-        /// UpdateUserDetails is modal for get the details of particular user.
+        /// Method for getting add user model
         /// </summary>
-        //#region UpdateUserDetailsGet
-        //[HttpGet]
-        //public IActionResult UpdateUserDetailsGet(int id)
-        //{
-        //    var userDetails = _schoolManagementContext.Users.Where(x => x.UserId == id).FirstOrDefault();
-        //    return PartialView("_UserDetailsPartial", userDetails);
-        //}
-        //#endregion
-
-        /// <summary>
-        /// UpdateUserDetails is modal for updating the details of particular user.
-        /// update details of users with user repository.
-        /// </summary>
-        #region UpdateUserDetailsPost 
-        [HttpPost]
-        public IActionResult UpdateUserDetailsPost(User objUpdateUser)
+        /// <returns></returns>
+        #region AddUserModelGet
+        [HttpGet]
+        public IActionResult AddUserModel()
         {
             try
             {
-                ModelState.Remove("Password");
-                ModelState.Remove("RetypePassword");
+                return PartialView("_AddUserPartial");
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Register for user from this post Register method.
+        /// object of User is objUser.
+        /// </summary>
+        #region AddNewUserPost
+        [HttpPost]
+        public IActionResult Register(UpdateDetails objUpdateDetails)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    User objUser = new User();
+                    objUser.FirstName = objUpdateDetails.FirstName;
+                    objUser.Lastname = objUpdateDetails.Lastname;
+                    objUser.EmailAddress = objUpdateDetails.EmailAddress;
+                    objUser.Role = objUpdateDetails.Role;
+                    //Calling BaseController.
+                    var result = new ApiGenericModel<User>();
+                    result = ApiRequest<User>(RequestTypes.Post, "UserApi/Register", null, objUser).Result;
+                    if (result != null)
+                    {
+                        objUser = result.GenericModel;
+                    }
+                    if (true)
+                    {
+                        if (objUser == null)
+                        {
+                            TempData["Error"] = CommonValidations.RecordExistsMsg;
+                            return PartialView("_AddUserPartial");
+                        }
+                        return RedirectToAction("Index", "Users");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+            return Ok();
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for getting edit user model
+        /// </summary>
+        /// <returns></returns>
+        #region EditUserModelGet
+        [HttpGet]
+        public IActionResult EditUserModel(int id)
+        {
+            try
+            {
+                //Calling BaseController.
+                var result = new ApiGenericModel<User>();
+                result = ApiRequest<User>(RequestTypes.Get, "UserApi/EditDetailsModel/" + id).Result;
+
+                UpdateDetails User = new UpdateDetails();
+                User.FirstName = result.GenericModel.FirstName;
+                User.Lastname = result.GenericModel.Lastname;
+                User.EmailAddress = result.GenericModel.EmailAddress;
+                User.Role = result.GenericModel.Role;
+
+                if (result != null)
+                {
+                    return PartialView("_EditUserPartial", result.GenericModel);
+                }
+            }
+             catch (Exception)
+            {
+                return View("Error");
+            }
+            return PartialView("_EditUserPartial");
+        }
+        #endregion
+
+        /// <summary>
+        /// UpdateUserDetails is modal for updating the details of particular user.
+        /// </summary>
+        #region EditUserDetailsPost 
+        [HttpPost]
+        public IActionResult EditUserDetailsPost(UpdateDetails objUpdateUser, int id)
+        {
+            try
+            {
                 if (ModelState.IsValid)
                 {
                     if (objUpdateUser != null)
                     {
+                        User objUser = new User();
+                        objUser.UserId = objUpdateUser.UserId;
+                        objUser.FirstName = objUpdateUser.FirstName;
+                        objUser.Lastname = objUpdateUser.Lastname;
+                        objUser.EmailAddress = objUpdateUser.EmailAddress;
+                        objUser.Role = objUpdateUser.Role;
                         ////Calling BaseController.
                         var result = new ApiGenericModel<User>();
-                        result = ApiRequest<User>(RequestTypes.Post, "UserApi/UpdateUserDetails", null, objUpdateUser).Result;
+                        result = ApiRequest<User>(RequestTypes.Put, "UserApi/EditUser", null, objUser).Result;
                         if (result != null)
                         {
-                            objUpdateUser = result.GenericModel;
+                            objUser = result.GenericModel;
                         }
                         if (User != null)
                         {
@@ -144,7 +232,7 @@ namespace EM.Web.Controllers
                         }
                         else
                         {
-                            
+
                         }
                     }
                 }
@@ -158,104 +246,50 @@ namespace EM.Web.Controllers
         #endregion
 
         /// <summary>
-        /// DeleteUserDetails is modal for get the details of particular user for delete them.
+        /// Method for getting delete user model
         /// </summary>
-        //#region DeleteUserDetailsGet
-        //[HttpGet]
-        //public IActionResult DeleteUserDetailsGet(int id)
-        //{
-        //    var deleteDetails = _schoolManagementContext.Users.Where(x => x.UserId == id).FirstOrDefault();
-        //    return PartialView("_UserDeletePartial", deleteDetails);
-        //}
-        //#endregion
+        /// <returns></returns>
+        #region DeleteUserModelGet
+        [HttpGet]
+        public IActionResult DeleteUserModel(int id)
+        {
+            try
+            {
+                //Calling BaseController.
+                var result = new ApiGenericModel<User>();
+                result = ApiRequest<User>(RequestTypes.Get, "UserApi/DeleteDetailsModel/" + id).Result;
+                if (result != null)
+                {
+                    return PartialView("_DeleteUserPartial", result.GenericModel);
+                }
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+            return PartialView("_DeleteUserPartial");
+        }
+        #endregion
 
         /// <summary>
-        /// DeleteUserDetailsPost is modal for deleting the particular user.
-        /// Delete users with user repository.
+        /// Post method for delete user 
         /// </summary>
-        //#region DeleteUserDetailsPost
-        //[HttpPost]
-        //public IActionResult DeleteUserDetailsPost(User deleteUser)
-        //{
-        //    try
-        //    {
-        //        if (deleteUser != null)
-        //        {
-        //            var User = _userRepository.Delete(deleteUser);
-        //            if (User != null)
-        //            {
-        //                return Ok(Json("true"));
-        //            }
-        //            else
-        //            {
-        //                return Ok(Json("false"));
-        //            }
-        //        }
-        //        return NoContent();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return View("Error");
-        //    }
-        //}
-        //#endregion
+        #region DeletUserDetailsPost
+        [HttpPost]
+        public IActionResult DeletUserDetails(User model)
+        {
+            try
+            {
+                ////Calling BaseController.
+                var result = new ApiGenericModel<User>();
+                result = ApiRequest<User>(RequestTypes.Delete, "UserApi/DeleteUser/" + model.UserId).Result;
+                return RedirectToAction("Index", "Users");
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+        }
+        #endregion
     }
 }
-
-
- 
-/// <summary>
-/// UpdateUserDetails is modal for updating the details of particular user.
-/// </summary>
-//#region UpdateUserDetailsPost 
-//[HttpPost]
-//public IActionResult UpdateUserDetailsPost(User updateUser)
-//{
-//Session is set into Authcontroller for userId in Set password method.
-//int id = (int)HttpContext.Session.GetInt32("links");
-//if (id != null)
-//{
-//    User updateDetails = _schoolManagementContext.Users.FirstOrDefault(x => x.UserId == objUserDetail.UserId);
-//    updateDetails.FirstName = objUserDetail.FirstName;
-//    updateDetails.Lastname = objUserDetail.Lastname;
-//    updateDetails.EmailAddress = objUserDetail.EmailAddress;
-//    updateDetails.ModifiedDate = DateTime.Now;
-//    var result = _schoolManagementContext.Users.Update(updateDetails);
-//    _schoolManagementContext.SaveChanges();
-
-//    if (result != null)
-//    {
-//        return Ok(Json("true"));
-//    }
-//    return Ok(Json("false"));
-//}
-//return Index();
-
-//update details of users with user repository.
-//}
-//#endregion
-
-/// <summary>
-/// DeleteUserDetailsPost is modal for deleting the particular user.
-/// </summary>
-//#region DeleteUserDetailsPost
-//[HttpPost]
-//public IActionResult DeleteUserDetailsPost(User deleteUser)
-//{
-//    //int id = (int)HttpContext.Session.GetInt32("links");
-//    //if (id != null)
-//    //{
-//    //    User deleteDetails = _schoolManagementContext.Users.FirstOrDefault(x => x.UserId == objDeleteDetails.UserId);
-//    //    deleteDetails.IsDelete = true;
-//    //    deleteDetails.IsActive = false;
-//    //    var result = _schoolManagementContext.Users.Update(deleteDetails);
-//    //    _schoolManagementContext.SaveChanges();
-//    //    if (result != null)
-//    //    {
-//    //        return Ok(Json("true"));
-//    //    }
-//    //    return Ok(Json("false"));
-//    //}
-//    //return Index();
-//}
-//#endregion
