@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace EM.Models
 {
+    /// <summary>
+    /// Forgot model class
+    /// </summary>
     public class ForgotPassword
     {
         /// <summary>

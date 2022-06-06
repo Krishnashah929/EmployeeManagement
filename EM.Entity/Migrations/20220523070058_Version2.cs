@@ -3,8 +3,15 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EM.Entity.Migrations
 {
+    /// <summary>
+    /// second  migration
+    /// </summary>
     public partial class Version2 : Migration
     {
+        /// <summary>
+        /// override up method
+        /// </summary>
+        /// <param name="migrationBuilder"></param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -58,6 +65,10 @@ namespace EM.Entity.Migrations
                 column: "UserId");
         }
 
+        /// <summary>
+        /// override down method
+        /// </summary>
+        /// <param name="migrationBuilder"></param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

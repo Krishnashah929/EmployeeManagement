@@ -29,10 +29,7 @@ namespace EM.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            //services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
-
+            
             services.AddMvc(options =>
             {
                 // This pushes users to login if not authenticated
@@ -66,8 +63,6 @@ namespace EM.Web
             services.AddControllersWithViews();
 
             services.AddDistributedMemoryCache();
-
-            //services.AddRazorPages().AddRazorRuntimeCompilation();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -76,8 +71,6 @@ namespace EM.Web
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
             };
-
-            //dbContext.Database.Migrate();
 
             if (env.IsDevelopment())
             {

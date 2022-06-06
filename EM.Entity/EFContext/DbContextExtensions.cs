@@ -7,8 +7,19 @@
     using System.Data.Common;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// dbcontext extension class
+    /// </summary>
     public static class DbContextExtensions
     {
+        /// <summary>
+        /// Static class of sql query
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="db"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static async Task<T[]> SqlQuery<T>(this DbContext db, string sql, params object[] parameters) where T : class
         {
             using (var db2 = new ContextForQueryType<T>(db.Database.GetDbConnection(), db.Database.CurrentTransaction))
@@ -17,6 +28,10 @@
             }
         }
 
+        /// <summary>
+        /// private class for context for query
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         private class ContextForQueryType<T> : DbContext where T : class
         {
             private readonly DbConnection connection;
@@ -32,7 +47,11 @@
                     this.Database.UseTransaction((tran as IInfrastructure<DbTransaction>).Instance);
                 }
             }
-
+            
+            /// <summary>
+            /// override method of on config
+            /// </summary>
+            /// <param name="optionsBuilder"></param>
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
                 if (transaction != null)
@@ -45,6 +64,10 @@
                 }
             }
 
+            /// <summary>
+            /// override method of model creating.
+            /// </summary>
+            /// <param name="modelBuilder"></param>
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 modelBuilder.Entity<T>().HasNoKey().ToView(null);
@@ -52,6 +75,10 @@
         }
     }
 
+    /// <summary>
+    /// public class of output parameter
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
     public class OutputParameter<TValue>
     {
         private bool _hasOperationFinished = false;
@@ -68,6 +95,10 @@
             }
         }
 
+        /// <summary>
+        /// internal method for set value
+        /// </summary>
+        /// <param name="value"></param>
         internal void SetValueInternal(object value)
         {
             _hasOperationFinished = true;

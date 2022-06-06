@@ -25,32 +25,24 @@ namespace EM.Entity
         /// <summary>
         /// FirstName input feild.
         /// </summary>
-        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName ("First Name")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// LastName input feild.
         /// </summary>
-        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName("Last Name")]
         public string Lastname { get; set; }
 
         /// <summary>
         /// Email Address input feild.
         /// </summary>
-        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthMailErrorMsg)]
-        //[MinLength(5, ErrorMessage = CommonValidations.RequiredLengthMailErrorMsg)]
         [DisplayName("Email")]
         public string EmailAddress { get; set; }
 
         /// <summary>
         /// Password input feild.
         /// </summary>
-        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         [DataType(DataType.Password)]
         [StringLength(10, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 8)]
         [DisplayName("Password")]
@@ -103,23 +95,23 @@ namespace EM.Entity
         /// This value is not stored into the database.
         /// </summary>
         [NotMapped]
-        //[Required(ErrorMessage = CommonValidations.RetypePasswordMesg)]
         [Compare("Password", ErrorMessage = CommonValidations.ComparePasswordMsg)]
         [DataType(DataType.Password)]
         [DisplayName("Reenter Password")]
         public string RetypePassword { get; set; }
 
+        /// <summary>
+        /// Get or set userrole table
+        /// </summary>
         public virtual ICollection<UserRole> UserRoles { get; set; }
 
+        /// <summary>
+        /// Get or set user role
+        /// </summary>
         public string Role { get; set; }
 
         //this line for the mailing services//
         public string ResetPasswordCode { get; set; }
-
-        //public IEnumerable<User> GetUsers()
-        //{
-        //    return new List<User>() { new User { UserId = 101, FirstName = "Krishna", Lastname = "Shahhh", EmailAddress = "kdshah929@gmail.com", Password = "12345678", Role = "Admin" };
-        //}
     }
 }
 

@@ -7,13 +7,15 @@ using EM.Common;
 
 namespace EM.Models
 {
+    /// <summary>
+    /// Register model class
+    /// </summary>
     public class RegisterModel
     {
         /// <summary>
         /// firstname input feild.
         /// </summary>
         [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName("first name")]
         public string FirstName { get; set; }
 
@@ -21,7 +23,6 @@ namespace EM.Models
         /// lastname input feild.
         /// </summary>
         [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName("last name")]
         public string Lastname { get; set; }
 
@@ -32,12 +33,5 @@ namespace EM.Models
         [MaxLength(50)]
         [DisplayName ("Email")]
         public string EmailAddress { get; set; }
-
-       
-        ///// <summary>
-        ///// UserRole input feild.
-        ///// </summary>
-        //public string Role { get; set; }
-
     }
 }

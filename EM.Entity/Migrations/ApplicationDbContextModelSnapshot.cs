@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EM.Entity.Migrations
 {
+    /// <summary>
+    /// snapshot of migration
+    /// </summary>
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {

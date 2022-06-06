@@ -31,7 +31,13 @@
         /// </summary>
         public virtual DbSet<Setting> Setting { get; set; }
 
+        /// <summary>
+        /// Get or set the user.
+        /// </summary>
         public virtual DbSet<User> User { get; set; }
+        /// <summary>
+        /// Get or set the user role.
+        /// </summary>
         public virtual DbSet<UserRole> UserRole { get; set; }
     }
 }
