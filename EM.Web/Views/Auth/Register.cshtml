@@ -1,7 +1,7 @@
 ﻿@model EM.Models.RegisterModel
 @{ Layout = "_Layout"; }
 @{ ViewData["Title"] = "Registration Page";
-    var error = TempData["Error"] as string; }
+    }
 
 <div class="register-box m-auto">
     <div class="register-logo mt-5">
@@ -14,9 +14,11 @@
                 <div class="col-md-12">
                     <div class="card shadow mt-3">
                         <p class="login-box-msg mt-3">Register a new membership</p>
-                        @if (!string.IsNullOrEmpty(error))
+                        @if (TempData["Error"] != null)
                         {
-                            <span class="text-danger m-auto">@error </span>
+                            <div class="alert alert-danger">
+                                @TempData["Error"]
+                            </div>
                         }
                         <!-- New user registration form -->
                         <form id="idSigninForm" method="post" asp-controller="Auth" asp-action="Register">
@@ -64,8 +66,8 @@
                         </form>
                         <!--/. New user registration form -->
                         @*@Html.ActionLink("I already have a membership", // <-- Link text
-                            "Login" // <-- Action Method Name
-                            )*@
+        "Login" // <-- Action Method Name
+        )*@
                         <a asp-controller="Auth" asp-action="Login" class="text-center mt-3 mb-3">I already have a membership</a>
                     </div>
                 </div>

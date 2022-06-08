@@ -19,7 +19,7 @@ namespace EM.Web.Controllers
         /// <summary>
         /// Main Dashboard when user is not logged in.
         /// </summary>
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Admin")]
         #region Dashboard
         public IActionResult Dashboard()
         {

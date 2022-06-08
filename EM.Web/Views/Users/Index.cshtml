@@ -7,7 +7,7 @@
     ViewData["Title"] = "Index";
 }
 
-<link href="//cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
 
 
 @{ if (!User.Identity.IsAuthenticated)
@@ -16,56 +16,78 @@
     }
 }
 @if (User.Identity.IsAuthenticated)
-{ 
+{
     @*<style>
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0px;
-            margin-left: 0px;
-            margin-right: 0px;
-            display: inline;
-            border: 3px;
-        }
-
-            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-                border: 0px;
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                padding: 0px;
+                margin-left: 0px;
+                margin-right: 0px;
+                display: inline;
+                border: 3px;
             }
-    </style>*@
+
+                .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                    border: 0px;
+                }
+        </style>*@
 
 
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
+            <br />
             <div class="row">
-                <div class="col-12">
-                    <div class="card">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["Error"]
+                    </div>
+                }
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["Success"]
+                    </div>
+                }
+                @if (TempData["Update"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["Update"]
+                    </div>
+                }
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <div class="card mt-3 mb-3">
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <h3 class="card-title">  Welcome, List of users</h3>
+                                    <h3 class="card-title mt-1">  Welcome, List of users</h3>
+
                                 </div>
                                 <div class="col text-right">
                                     <button type="button" class="btn btn-danger" onclick="addUser(this)">+ Add New User</button>
                                 </div>
                             </div>
                         </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="idUserTable" class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>UserId</th>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Email</th>
-                                            <th>Edit</th>
-                                            <th>Delete</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col border p-3">
+                    <table id="idUserTable" class="table table-bordered  mb-3 " cellspacing="0" width="90%">
+                        <thead>
+                            <tr>
+                                <th>UserId</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -76,7 +98,7 @@
 
 }
 
-<script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 
 <script>
     $(document).ready(function () {

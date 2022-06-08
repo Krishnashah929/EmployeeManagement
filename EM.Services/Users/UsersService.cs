@@ -277,13 +277,13 @@ namespace EM.Services
                                 UpdateDetails.EmailAddress = user.EmailAddress;
                                 UpdateDetails.Role = user.Role;
                                 UpdateDetails.ModifiedDate = DateTime.Now;
-                                if (UpdateDetails.Role == "Admin")
+                                if (user.Role == "Admin")
                                 {
-                                    user.Role = "1";
+                                    UpdateDetails.Role = "1";
                                 }
-                                else if (UpdateDetails.Role == "User")
+                                else if (user.Role == "User")
                                 {
-                                    user.Role = "2";
+                                    UpdateDetails.Role = "2";
                                 }
                                 _unitOfWork.GetRepository<User>().Update(UpdateDetails);
                                 _unitOfWork.Commit();

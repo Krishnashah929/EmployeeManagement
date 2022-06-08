@@ -128,7 +128,7 @@ namespace EM.Web.Controllers
                         }
                         else
                         {
-                            TempData["Error"] = CommonValidations.RecordNotExistsMsg;
+                            TempData["Error"] = CommonValidations.InvalidUserMsg;
                             return View("Login");
                         }
                     }
@@ -252,7 +252,6 @@ namespace EM.Web.Controllers
                 ModelState.Remove("FirstName");
                 ModelState.Remove("Lastname");
                 ModelState.Remove("EmailAddress");
-                string message = string.Empty;
                 if (ModelState.IsValid)
                 {
                     User user = new User();
@@ -277,8 +276,8 @@ namespace EM.Web.Controllers
                         }
                         else
                         {
-                            message = CommonValidations.RecordExistsMsg;
-                            return Content(message);
+                            TempData["Error"] = CommonValidations.RecordExistsMsg;
+                            return View();
                         }
                     }
                 }
@@ -333,6 +332,7 @@ namespace EM.Web.Controllers
                     return RedirectToAction("ForgotPasswordModel", "Auth");
                 }
             }
+            TempData["RecordNotExistsMsg"] = CommonValidations.InvalidUserMsg;
             return RedirectToAction("ForgotPasswordModel", "Auth");
         }
         #endregion

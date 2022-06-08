@@ -1,7 +1,5 @@
 ﻿@model EM.Models.RegisterModel
-@{
-    var error = TempData["Error"] as string;
-}
+ 
 <div class="modal model-for-completion-order" id="idAddUser">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -15,10 +13,7 @@
             <!-- Modal body -->
             <div class="modal-body">
                 <!-- New user registration form -->
-                @if (!string.IsNullOrEmpty(error))
-                {
-                    <span class="text-danger d-flex justify-content-center">@error </span>
-                }
+ 
                 <form id="idSigninForm" method="post" asp-controller="Users" asp-action="Register">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="card-body">

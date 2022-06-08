@@ -4,7 +4,6 @@
 }
 @{
    ViewData["Title"] = "Login Page";
-   var error = TempData["Error"] as string;
 }
 <div class="login-box m-auto">
    <div class="login-logo mt-5">
@@ -13,10 +12,13 @@
    <div class="card mt-5 shadow">
       <div class="card-body login-card-body">
          <p class="login-box-msg">Sign in to start your session</p>
-         @if (!string.IsNullOrEmpty(error))
-         {
-            <span class="text-danger d-flex justify-content-center">@error </span>
-         }
+          @if(TempData["Error"] != null)
+            {
+                <div class="alert alert-danger" >
+                 @TempData["Error"]
+                </div>
+            }
+         
          <!-- Signin form -->
          <form id="idSigninForm" method="post" asp-action="Login" asp-controller="Auth">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>

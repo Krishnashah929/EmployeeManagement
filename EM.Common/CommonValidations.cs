@@ -28,6 +28,11 @@ namespace EM.Common
         public const string RecordNotExistsMsg = "The record is not exist.";
 
         /// <summary>
+        /// Defines the InvalidUserMsg.
+        /// </summary>
+        public const string InvalidUserMsg = "Invalid login credential.";
+
+        /// <summary>
         /// Defines the ValidData.
         /// </summary>
         public const string ValidData = "Please enter valid data.";
@@ -91,6 +96,17 @@ namespace EM.Common
         /// The sending link for reset password message...
         /// </summary>
         public const string WrongMailMsg = "You entered wrong e-mail address";
+
+         /// <summary>
+        /// New user registered successfully message...
+        /// </summary>
+        public const string NewUserRegisterd = "New user is registered successfully.";
+
+         /// <summary>
+        /// User details updated successfully message...
+        /// </summary>
+        public const string UpdateUserDetails = "User details are updated successfully.";
+
 
     }
 }

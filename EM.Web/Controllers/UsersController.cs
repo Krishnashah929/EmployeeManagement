@@ -155,7 +155,9 @@ namespace EM.Web.Controllers
                         if (objUser == null)
                         {
                             TempData["Error"] = CommonValidations.RecordExistsMsg;
+                            return RedirectToAction("Index", "Users");
                         }
+                        TempData["Success"] = CommonValidations.NewUserRegisterd;
                         return RedirectToAction("Index", "Users");
                     }
                 }
@@ -224,7 +226,7 @@ namespace EM.Web.Controllers
                         objUser.Role = objRegisterModel.Role;
                         ////Calling BaseController.
                         var result = new ApiGenericModel<User>();
-                        result = ApiRequest<User>(RequestTypes.Put, "UserApi/EditUser", null, objUser).Result;
+                        result = ApiRequest<User>(RequestTypes.Put, "UserApi/EditUser", null, objRegisterModel).Result;
                         if (result != null)
                         {
                             objUser = result.GenericModel;
@@ -232,9 +234,11 @@ namespace EM.Web.Controllers
                         if (objUser == null)
                         {
                             TempData["Error"] = CommonValidations.RecordExistsMsg;
+                            return RedirectToAction("Index", "Users");
                         }
                         else
                         {
+                            TempData["Update"] = CommonValidations.UpdateUserDetails;
                             return RedirectToAction("Index", "Users");
                         }
                     }
