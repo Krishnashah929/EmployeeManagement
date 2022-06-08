@@ -1,5 +1,7 @@
-﻿@model EM.Models.UpdateDetails
-
+﻿@model EM.Models.RegisterModel
+@{
+    var error = TempData["Error"] as string;
+}
 <div class="modal model-for-completion-order" id="idAddUser">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -13,7 +15,11 @@
             <!-- Modal body -->
             <div class="modal-body">
                 <!-- New user registration form -->
-                <form id="idSigninForm" method="post" asp-controller="Users"  asp-action="Register">
+                @if (!string.IsNullOrEmpty(error))
+                {
+                    <span class="text-danger d-flex justify-content-center">@error </span>
+                }
+                <form id="idSigninForm" method="post" asp-controller="Users" asp-action="Register">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="card-body">
                         <div class="form-group">
@@ -59,8 +65,7 @@
                     </div>
                     <div class="row m-auto">
                         <div class="col">
-                            <button type="submit" class="btn btn-primary btn-block" data-bs-dismiss="modal">  Add User </button>
-
+                            <button type="submit" class="btn btn-primary btn-block">  Add User </button>
                         </div>
                     </div>
                 </form>
@@ -68,3 +73,7 @@
         </div>
     </div>
 </div>
+
+
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>

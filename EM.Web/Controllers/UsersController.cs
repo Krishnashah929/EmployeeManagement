@@ -19,6 +19,7 @@ namespace EM.Web.Controllers
     /// Calling cache from startup.cs
     /// </summary>
     [ResponseCache(CacheProfileName = "Default0")]
+    [Authorize(Roles = "Admin")]
     public class UsersController : BaseController
     {
 
@@ -64,6 +65,7 @@ namespace EM.Web.Controllers
         /// </summary>
         /// <returns></returns>
         #region GetUserList
+
         [HttpPost]
         public IActionResult GetUserList()
         {
@@ -153,7 +155,6 @@ namespace EM.Web.Controllers
                         if (objUser == null)
                         {
                             TempData["Error"] = CommonValidations.RecordExistsMsg;
-                            return PartialView("_AddUserPartial");
                         }
                         return RedirectToAction("Index", "Users");
                     }
@@ -163,7 +164,7 @@ namespace EM.Web.Controllers
             {
                 return View("Error");
             }
-            return Ok();
+            return RedirectToAction("Index", "Users");
         }
         #endregion
 
@@ -177,11 +178,13 @@ namespace EM.Web.Controllers
         {
             try
             {
+              
                 //Calling BaseController.
                 var result = new ApiGenericModel<User>();
                 result = ApiRequest<User>(RequestTypes.Get, "UserApi/EditDetailsModel/" + id).Result;
 
-                UpdateDetails User = new UpdateDetails();
+                RegisterModel User = new RegisterModel();
+                User.UserId = result.GenericModel.UserId;
                 User.FirstName = result.GenericModel.FirstName;
                 User.Lastname = result.GenericModel.Lastname;
                 User.EmailAddress = result.GenericModel.EmailAddress;
@@ -189,7 +192,7 @@ namespace EM.Web.Controllers
 
                 if (result != null)
                 {
-                    return PartialView("_EditUserPartial", result.GenericModel);
+                    return PartialView("_EditUserPartial", User);
                 }
             }
              catch (Exception)
@@ -205,20 +208,20 @@ namespace EM.Web.Controllers
         /// </summary>
         #region EditUserDetailsPost 
         [HttpPost]
-        public IActionResult EditUserDetailsPost(UpdateDetails objUpdateUser, int id)
+        public IActionResult EditUserDetailsPost(RegisterModel objRegisterModel, int id)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (objUpdateUser != null)
+                    if (objRegisterModel != null)
                     {
                         User objUser = new User();
-                        objUser.UserId = objUpdateUser.UserId;
-                        objUser.FirstName = objUpdateUser.FirstName;
-                        objUser.Lastname = objUpdateUser.Lastname;
-                        objUser.EmailAddress = objUpdateUser.EmailAddress;
-                        objUser.Role = objUpdateUser.Role;
+                        objUser.UserId = objRegisterModel.UserId;
+                        objUser.FirstName = objRegisterModel.FirstName;
+                        objUser.Lastname = objRegisterModel.Lastname;
+                        objUser.EmailAddress = objRegisterModel.EmailAddress;
+                        objUser.Role = objRegisterModel.Role;
                         ////Calling BaseController.
                         var result = new ApiGenericModel<User>();
                         result = ApiRequest<User>(RequestTypes.Put, "UserApi/EditUser", null, objUser).Result;
@@ -226,13 +229,13 @@ namespace EM.Web.Controllers
                         {
                             objUser = result.GenericModel;
                         }
-                        if (User != null)
+                        if (objUser == null)
                         {
-                            return RedirectToAction("Index", "Users");
+                            TempData["Error"] = CommonValidations.RecordExistsMsg;
                         }
                         else
                         {
-
+                            return RedirectToAction("Index", "Users");
                         }
                     }
                 }

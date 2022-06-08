@@ -27,6 +27,13 @@ namespace EM.Services
         /// </summary>
         /// <returns></returns>
         IEnumerable<User> GetAllUser();
+
+        /// <summary>
+        /// Get users list for admin page
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<User> GetUserList();
+
         /// <summary>
         /// Method for register user
         /// </summary>

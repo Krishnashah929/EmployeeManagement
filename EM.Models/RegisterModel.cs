@@ -13,6 +13,11 @@ namespace EM.Models
     public class RegisterModel
     {
         /// <summary>
+        /// UserId field.
+        /// </summary>
+        public int UserId { get; set; }
+
+        /// <summary>
         /// firstname input feild.
         /// </summary>
         [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
@@ -33,5 +38,10 @@ namespace EM.Models
         [MaxLength(50)]
         [DisplayName ("Email")]
         public string EmailAddress { get; set; }
+
+        /// <summary>
+        /// Defien user role
+        /// </summary>
+        public string Role { get; set; }
     }
 }

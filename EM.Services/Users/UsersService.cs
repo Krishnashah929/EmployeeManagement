@@ -54,6 +54,27 @@ namespace EM.Services
         #endregion
 
         /// <summary>
+        /// Get users list for admin page
+        /// </summary>
+        /// <returns></returns>
+        #region GetUserList
+        public IEnumerable<User> GetUserList()
+        {
+            try
+            {
+                var repoList = this._unitOfWork.GetRepository<User>();
+                List<User> lstUsers = repoList.GetAll().Where(x => x.IsDelete == false && x.Role == "1").AsNoTracking().ToList();
+
+                return lstUsers;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        /// <summary>
         /// Method for get user by id
         /// </summary>
         /// <param name="id"></param>
@@ -104,15 +125,18 @@ namespace EM.Services
         {
             try
             {
-                if (user != null)
+                var userRepository = _unitOfWork.GetRepository<User>();
+                User verifyUser = new User();
+                //check that new email is already registered or not 
+                verifyUser = this.GetAllUser().FirstOrDefault(x => x.EmailAddress == user.EmailAddress);
+                if (verifyUser == null)
                 {
-                    var userRepository = _unitOfWork.GetRepository<User>();
                     if (userRepository != null)
                     {
                         user.Password = string.Empty;
                         user.CreatedDate = DateTime.Now;
                         user.IsActive = false;
-                        user.Role = "1";
+                        user.Role = "2";
 
                         userRepository.Add(user);
                         _unitOfWork.Commit();
@@ -193,9 +217,12 @@ namespace EM.Services
         {
             try
             {
-                if (user != null)
+                var userRepository = _unitOfWork.GetRepository<User>();
+                User verifyUser = new User();
+                //check that new email is already registered or not 
+                verifyUser = this.GetAllUser().FirstOrDefault(x => x.EmailAddress == user.EmailAddress);
+                if (verifyUser == null)
                 {
-                    var userRepository = _unitOfWork.GetRepository<User>();
                     if (userRepository != null)
                     {
                         user.Password = string.Empty;
@@ -238,27 +265,34 @@ namespace EM.Services
                     var userRepository = _unitOfWork.GetRepository<User>();
                     User UpdateDetails = new User();
                     UpdateDetails = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
-
-                    if (userRepository != null)
                     {
-                        UpdateDetails.FirstName = user.FirstName;
-                        UpdateDetails.Lastname = user.Lastname;
-                        UpdateDetails.EmailAddress = user.EmailAddress;
-                        UpdateDetails.Role = user.Role;
-                        UpdateDetails.ModifiedDate = DateTime.Now;
-                        if (UpdateDetails.Role == "Admin")
+                        var userEmail = this.GetAllUser().FirstOrDefault(x => x.EmailAddress == user.EmailAddress);
+                        if (userEmail == null)
                         {
-                            user.Role = "1";
+                            if (userRepository != null)
+                            {
+
+                                UpdateDetails.FirstName = user.FirstName;
+                                UpdateDetails.Lastname = user.Lastname;
+                                UpdateDetails.EmailAddress = user.EmailAddress;
+                                UpdateDetails.Role = user.Role;
+                                UpdateDetails.ModifiedDate = DateTime.Now;
+                                if (UpdateDetails.Role == "Admin")
+                                {
+                                    user.Role = "1";
+                                }
+                                else if (UpdateDetails.Role == "User")
+                                {
+                                    user.Role = "2";
+                                }
+                                _unitOfWork.GetRepository<User>().Update(UpdateDetails);
+                                _unitOfWork.Commit();
+                            }
+                            return user;
                         }
-                        else if (UpdateDetails.Role == "User")
-                        {
-                            user.Role = "2";
-                        }
-                        _unitOfWork.GetRepository<User>().Update(UpdateDetails);
-                        _unitOfWork.Commit();
                     }
                 }
-                return user;
+                return null;
             }
             catch (Exception ex)
             {

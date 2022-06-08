@@ -1,7 +1,9 @@
 ﻿namespace EM.EFContext
 {
+    using EM.Common;
     using EM.Entity;
     using Microsoft.EntityFrameworkCore;
+    using System;
 
     /// <summary>
     /// Defines the <see cref="ApplicationDbContext" />.
@@ -24,6 +26,20 @@
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<User>()
+               .HasData(
+               new User
+               {
+                   UserId = 1,
+                   FirstName = "Admin",
+                   Lastname = "Admin",
+                   EmailAddress = "Admin@gmail.com",
+                   Password = EncryptionDecryption.Encrypt("Admin@123").ToString(),
+                   Role = "1",
+                   IsActive = true
+               }
+               );
         }
 
         /// <summary>

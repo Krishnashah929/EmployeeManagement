@@ -80,7 +80,7 @@ namespace EM.Web.Controllers
         /// </summary>
         #region Login(Post)
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(LoginModel objloginModel)
+        public IActionResult Login(LoginModel objloginModel)
         {
             try
             {
@@ -95,12 +95,12 @@ namespace EM.Web.Controllers
                     var result = new ApiGenericModel<User>();
                     result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Login", null, objUser).Result;
 
-                    if(result != null)
+                    if (result != null)
                     {
                         objUser = result.GenericModel;
                     }
                     if (true)
-                    {                        
+                    {
                         if (objUser != null)
                         {
                             var Name = objUser.FirstName + " " + objUser.Lastname;
@@ -117,11 +117,11 @@ namespace EM.Web.Controllers
                             var userPrincipal = new ClaimsPrincipal(new[] { userIdentity });
                             HttpContext.SignInAsync(userPrincipal);
 
-                            if(objUser.Role == "Admin")
+                            if (objUser.Role == "Admin")
                             {
                                 return RedirectToAction("Index", "Users");
                             }
-                           else
+                            else
                             {
                                 return RedirectToAction("Dashboard", "Home");
                             }
@@ -174,10 +174,10 @@ namespace EM.Web.Controllers
         /// </summary>
         #region Register(POST)
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterModel objRegisterModel)
+        public IActionResult Register(RegisterModel objRegisterModel)
         {
             try
-            { 
+            {
                 if (ModelState.IsValid)
                 {
                     User objUser = new User();
@@ -215,7 +215,7 @@ namespace EM.Web.Controllers
         /// </summary>
         #region SetPassword(GET)
         [HttpGet]
-        public async Task<IActionResult> SetPasswordAsync(string link , User user)
+        public IActionResult SetPassword(string link, User user)
         {
             try
             {
@@ -245,10 +245,13 @@ namespace EM.Web.Controllers
         /// </summary>
         #region SetPassword(POST)
         [HttpPost]
-        public async Task<IActionResult> SetPasswordAsync(SetPassword objSetPassword)
+        public IActionResult SetPassword(SetPassword objSetPassword)
         {
             try
             {
+                ModelState.Remove("FirstName");
+                ModelState.Remove("Lastname");
+                ModelState.Remove("EmailAddress");
                 string message = string.Empty;
                 if (ModelState.IsValid)
                 {
@@ -339,7 +342,7 @@ namespace EM.Web.Controllers
         /// </summary>
         #region ForgotPassword(GET)
         [HttpGet]
-        public async Task<IActionResult> ForgotPasswordAsync(User user, string link)
+        public IActionResult ForgotPassword(User user, string link)
         {
             try
             {
@@ -367,10 +370,13 @@ namespace EM.Web.Controllers
         /// </summary>
         #region ForgotPassword(POST)
         [HttpPost]
-        public async Task<ActionResult> ForgotPasswordAsync(User user)
+        public ActionResult ForgotPassword(User user)
         {
             try
             {
+                ModelState.Remove("FirstName");
+                ModelState.Remove("Lastname");
+                ModelState.Remove("EmailAddress");
                 string message = string.Empty;
                 if (ModelState.IsValid)
                 {

@@ -13,12 +13,25 @@
 @{ if (!User.Identity.IsAuthenticated)
     {
         Context.Response.Redirect(Url.Action("Login", "Auth"));
-    } }
+    }
+}
 @if (User.Identity.IsAuthenticated)
-{
-    <div class="text-center pt-5 mb-5">
-        <h1> Index Page </h1>
-    </div>
+{ 
+    @*<style>
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0px;
+            margin-left: 0px;
+            margin-right: 0px;
+            display: inline;
+            border: 3px;
+        }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                border: 0px;
+            }
+    </style>*@
+
+
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -62,7 +75,7 @@
     <section id="Model3"></section>
 
 }
- 
+
 <script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
 <script>
@@ -76,13 +89,15 @@
                 processing: true,
                 serverSide: true,
                 filter: true,
+                responsive: true,
                 columns: [
                     { data: "userId", name: "UserId" },
                     { data: "firstName", name: "FirstName" },
                     { data: "lastname", name: "Lastname" },
                     { data: "emailAddress", name: "EmailAddress" },
                     {
-                        "render": function (data, type, full, meta) {  return  "<a href='#' class='btn btn-info m-auto' onclick=editUser('" + full.userId + "'); >Edit</a>";
+                        "render": function (data, type, full, meta) {
+                            return "<a href='#' class='btn btn-info m-auto' onclick=editUser('" + full.userId + "'); >Edit</a>";
                         }
                     },
                     {
@@ -112,19 +127,19 @@
         $.ajax({
             url: '/Users/DeleteUserModel',
             type: 'GET',
-            data: {"id" : id},
+            data: { "id": id },
             success: function (response) {
                 $('#Model2').html(response);
                 $('#idDeleteUser').modal("show");
             }
         });
     }
-    function editUser(userId) {        
+    function editUser(userId) {
         var id = userId;
         $.ajax({
             url: '/Users/EditUserModel',
             type: 'GET',
-            data: {"id" : id },
+            data: { "id": id },
             success: function (response) {
                 debugger;
                 $('#Model3').html(response);

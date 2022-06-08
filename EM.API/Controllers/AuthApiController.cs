@@ -22,7 +22,6 @@ namespace EM.API.Controllers
     [ApiController]
     public class AuthApiController : ControllerBase
     {
-        
         private IUsersService _userService;
         private bool errorflag;
         [Obsolete]
@@ -91,7 +90,7 @@ namespace EM.API.Controllers
                 if (objUser != null)
                 {
                     var registerUsers = _userService.Register(objUser);
-                    if (registerUsers != null)
+                    if (registerUsers != null && objUser.UserId != 0)
                     {
                         //encrypt the userid for link in url.
                         var userId = EncryptionDecryption.Encrypt(objUser.UserId.ToString());
@@ -144,7 +143,7 @@ namespace EM.API.Controllers
                     {
                         smtp.Host = "smtp.gmail.com";
                         smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "Kri$hn@91");
+                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "krishn@@91");
                         smtp.UseDefaultCredentials = false;
                         smtp.Credentials = NetworkCred;
                         smtp.Port = 587;
@@ -152,9 +151,10 @@ namespace EM.API.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 errorflag = true;
+                throw ex;
             }
         }
         #endregion

@@ -52,7 +52,7 @@ namespace EM.API.Controllers
                 int totalRecord = 0;
                 int filterRecord = 0;
 
-                var data = _userService.GetAllUser();
+                var data = _userService.GetUserList();
                 if (data != null)
                 {
                     // get total count of records 
@@ -105,7 +105,7 @@ namespace EM.API.Controllers
                 if (objUser != null)
                 {
                     var registerUsers = _userService.AddNewUser(objUser);
-                    if (registerUsers != null)
+                    if (registerUsers != null && objUser.UserId != 0)
                     {
                         //encrypt the userid for link in url.
                         var userId = EncryptionDecryption.Encrypt(objUser.UserId.ToString());
@@ -175,8 +175,15 @@ namespace EM.API.Controllers
         {
             try
             {
-                var editUser = _userService.UpdateDetails(user);
-                return CommonHelper.GetResponse(HttpStatusCode.OK, "", editUser);
+                if(user != null)
+                {
+                    var editUser = _userService.UpdateDetails(user);
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, "", editUser);
+                }
+                else
+                {
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
+                }
             }
             catch
             {
@@ -248,7 +255,7 @@ namespace EM.API.Controllers
                     {
                         smtp.Host = "smtp.gmail.com";
                         smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "Kri$hn@91");
+                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "kriShn@@91");
                         smtp.UseDefaultCredentials = false;
                         smtp.Credentials = NetworkCred;
                         smtp.Port = 587;
