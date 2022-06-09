@@ -5,8 +5,6 @@ using EM.Models;
 using EM.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net;
@@ -23,7 +21,6 @@ namespace EM.API.Controllers
     public class AuthApiController : ControllerBase
     {
         private IUsersService _userService;
-        private bool errorflag;
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
         public object HttpCacheability { get; private set; }
@@ -111,7 +108,7 @@ namespace EM.API.Controllers
                         myString = myString.Replace("@@Link@@", linkPath);
                         var body = myString.ToString();
 
-                        SendEmail(objUser.EmailAddress, body, subject);
+                        //SendEmail(objUser.EmailAddress, body, subject);
                         //getting value from common helper.
                         return CommonHelper.GetResponse(HttpStatusCode.OK, "", registerUsers);
                     }
@@ -143,7 +140,7 @@ namespace EM.API.Controllers
                     {
                         smtp.Host = "smtp.gmail.com";
                         smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "krishn@@91");
+                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "Kri$hn@@91");
                         smtp.UseDefaultCredentials = false;
                         smtp.Credentials = NetworkCred;
                         smtp.Port = 587;
@@ -151,10 +148,9 @@ namespace EM.API.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                errorflag = true;
-                throw ex;
+                throw;
             }
         }
         #endregion

@@ -1,7 +1,5 @@
 ﻿using EM.Common;
 using EM.Models;
-using EM.Services;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;

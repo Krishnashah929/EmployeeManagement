@@ -14,7 +14,7 @@
             </div>
             <!-- Modal body -->
             <div class="modal-body">
-                <form method="post" asp-action="DeletUserDetails" asp-controller="Users">
+                <form id="idDeletDetails">
                     <div class="row">
                         <div class="col">
                             <input type="hidden" asp-for="UserId" class="form-control" id="id" value="@Model.UserId" />
@@ -25,7 +25,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-center">
-                            <button type="submit" class="btn btn-danger text-center m-auto" data-bs-dismiss="modal">
+                            <button type="button" class="btn btn-danger text-center m-auto" onclick="DeleteUser()">
                                 Delete
                             </button>
                         </div>

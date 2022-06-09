@@ -1,13 +1,10 @@
 ﻿using EM.API.Helpers;
 using EM.Models;
 using EM.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using EM.Entity;
 using EM.Common;
@@ -25,7 +22,6 @@ namespace EM.API.Controllers
     public class UserApiController : ControllerBase
     {
         private IUsersService _userService;
-        private bool errorflag;
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
 
@@ -126,12 +122,12 @@ namespace EM.API.Controllers
                         myString = myString.Replace("@@Link@@", linkPath);
                         var body = myString.ToString();
 
-                        SendEmail(objUser.EmailAddress, body, subject);
+                        //SendEmail(objUser.EmailAddress, body, subject);
                         //getting value from common helper.
-                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", registerUsers);
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.NewUserRegisterd , registerUsers);
                     }
                 }
-                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg, "");
             }
             catch
             {
@@ -178,16 +174,16 @@ namespace EM.API.Controllers
                 if(user != null)
                 {
                     var editUser = _userService.UpdateDetails(user);
-                    return CommonHelper.GetResponse(HttpStatusCode.OK, "", editUser);
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateUserDetails, editUser);
                 }
                 else
                 {
-                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest,CommonValidations.RecordExistsMsg);
                 }
             }
             catch
             {
-                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
             }
         }
         #endregion
@@ -228,11 +224,11 @@ namespace EM.API.Controllers
             try
             {
                 var deleteUser = _userService.DeleteDetails(id);
-                return CommonHelper.GetResponse(HttpStatusCode.OK, "", deleteUser);
+                return CommonHelper.GetResponse(HttpStatusCode.OK,CommonValidations.DeleteUserDetails, deleteUser);
             }
              catch
             {
-                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, CommonValidations.RecordNotExistsMsg, "");
             }
         }
         #endregion
@@ -255,7 +251,7 @@ namespace EM.API.Controllers
                     {
                         smtp.Host = "smtp.gmail.com";
                         smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "kriShn@@91");
+                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "KriShn@@91");
                         smtp.UseDefaultCredentials = false;
                         smtp.Credentials = NetworkCred;
                         smtp.Port = 587;
@@ -265,7 +261,7 @@ namespace EM.API.Controllers
             }
             catch (Exception)
             {
-                errorflag = true;
+                throw;
             }
         }
         #endregion

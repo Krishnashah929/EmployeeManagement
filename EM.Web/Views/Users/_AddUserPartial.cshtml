@@ -1,5 +1,5 @@
 ﻿@model EM.Models.RegisterModel
- 
+
 <div class="modal model-for-completion-order" id="idAddUser">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -13,8 +13,14 @@
             <!-- Modal body -->
             <div class="modal-body">
                 <!-- New user registration form -->
- 
-                <form id="idSigninForm" method="post" asp-controller="Users" asp-action="Register">
+              
+                <form id="idSigninForm">
+                    @{
+                        if (Model != null && Model.UserId != null)
+                        {
+                            <input type="hidden" asp-for="UserId" class="form-control" id="id" value="@Model.UserId" />
+                        }
+                    }
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="card-body">
                         <div class="form-group">
@@ -60,7 +66,7 @@
                     </div>
                     <div class="row m-auto">
                         <div class="col">
-                            <button type="submit" class="btn btn-primary btn-block">  Add User </button>
+                            <button type="button" class="btn btn-primary btn-block" onclick="addUserDetails()">  Add User </button>
                         </div>
                     </div>
                 </form>
@@ -72,3 +78,4 @@
 
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+ 

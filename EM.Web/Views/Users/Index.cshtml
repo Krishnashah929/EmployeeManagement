@@ -7,9 +7,12 @@
     ViewData["Title"] = "Index";
 }
 
-<link href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
-
-
+@*<link href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />*@
+<link href="~/plugins/toastr/toastr.css" rel="stylesheet" />
+<!-- DataTables -->
+<link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 @{ if (!User.Identity.IsAuthenticated)
     {
         Context.Response.Redirect(Url.Action("Login", "Auth"));
@@ -17,122 +20,104 @@
 }
 @if (User.Identity.IsAuthenticated)
 {
-    @*<style>
-            .dataTables_wrapper .dataTables_paginate .paginate_button {
-                padding: 0px;
-                margin-left: 0px;
-                margin-right: 0px;
-                display: inline;
-                border: 3px;
-            }
-
-                .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-                    border: 0px;
-                }
-        </style>*@
-
-
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <br />
-            <div class="row">
-                @if (TempData["Error"] != null)
-                {
-                    <div class="alert alert-danger">
-                        @TempData["Error"]
-                    </div>
-                }
-                @if (TempData["Success"] != null)
-                {
-                    <div class="alert alert-success">
-                        @TempData["Success"]
-                    </div>
-                }
-                @if (TempData["Update"] != null)
-                {
-                    <div class="alert alert-success">
-                        @TempData["Update"]
-                    </div>
-                }
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <div class="card mt-3 mb-3">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col">
-                                    <h3 class="card-title mt-1">  Welcome, List of users</h3>
-
-                                </div>
-                                <div class="col text-right">
-                                    <button type="button" class="btn btn-danger" onclick="addUser(this)">+ Add New User</button>
-                                </div>
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="card-title mt-1">  Welcome, List of users</h3>
+                            </div>
+                            <div class="col text-right">
+                                <button type="button" class="btn btn-danger" onclick="addUser(this)">+ Add New User</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col border p-3">
-                    <table id="idUserTable" class="table table-bordered  mb-3 " cellspacing="0" width="90%">
-                        <thead>
-                            <tr>
-                                <th>UserId</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="card-body">
+                        <table id="idUserTable" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>UserId</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
     <section id="Model1"></section>
     <section id="Model2"></section>
     <section id="Model3"></section>
 
 }
 
-<script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="../../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="../../plugins/jszip/jszip.min.js"></script>
+<script src="../../plugins/pdfmake/pdfmake.min.js"></script>
+<script src="../../plugins/pdfmake/vfs_fonts.js"></script>
+<script src="../../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="../../plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="../../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- toaster -->
+<script src="~/plugins/toastr/toastr.min.js"></script>
 
 <script>
     $(document).ready(function () {
+        GetUserList();
+    });
+    //for getting userlist.
+    function GetUserList() {
         $('#idUserTable').DataTable(
             {
                 ajax: {
                     url: "GetUserList",
                     type: "POST",
                 },
-                processing: true,
-                serverSide: true,
-                filter: true,
-                responsive: true,
+                destroy: true,
+                "paging": true,
+                "searching": true,
+                "info": true,
+                "lengthChange": false,
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+
                 columns: [
                     { data: "userId", name: "UserId" },
                     { data: "firstName", name: "FirstName" },
                     { data: "lastname", name: "Lastname" },
                     { data: "emailAddress", name: "EmailAddress" },
                     {
-                        "render": function (data, type, full, meta) {
-                            return "<a href='#' class='btn btn-info m-auto' onclick=editUser('" + full.userId + "'); >Edit</a>";
+                        //adds td row for button
+                        data: null,
+                        render: function (data) {
+                            return "<a href='#' class='btn btn-info m-auto' onclick=editUser('" + data.userId + "'); >Edit</a>";
                         }
                     },
                     {
                         data: null,
-                        render: function (data, type, row) {
+                        render: function (row) {
                             return "<a href='#' class='btn btn-danger m-auto' onclick=deleteUser('" + row.userId + "'); >Delete</a>";
                         }
                     },
                 ],
-
             }
         );
-    });
+    }
+    //For open add user model
     function addUser() {
         $.ajax({
             url: '/Users/AddUserModel',
@@ -143,6 +128,25 @@
             }
         });
     }
+    //For open edit user model
+    function editUser(userId) {
+        debugger;
+        var id = userId;
+        $.ajax({
+            url: '/Users/EditUserModel',
+            type: 'GET',
+            data: { "id": id },
+            success: function (response) {
+                debugger;
+                $('#Model1').html(response);
+                $('#idAddUser').modal("show");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+    //For open delete user model
     function deleteUser(userId) {
         debugger;
         var id = userId;
@@ -156,20 +160,78 @@
             }
         });
     }
-    function editUser(userId) {
-        var id = userId;
+    //For add new user post method
+    function addUserDetails() {
+        var data = $("#idSigninForm").serialize();
+        console.log(data);
         $.ajax({
-            url: '/Users/EditUserModel',
-            type: 'GET',
-            data: { "id": id },
-            success: function (response) {
-                debugger;
-                $('#Model3').html(response);
-                $('#idEditUser').modal("show");
+            type: 'POST',
+            url: '/Users/Register',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
+            data: data,
+            success: function (result) {
+                if (result != null && result.statusCode != 200) {
+                    toastr.error(result.message);
+                } else {
+                    toastr.success(result.message);
+                    GetUserList();
+                }
+                $('#idAddUser').modal("hide");
+                console.log(result);
             },
-            error: function (error) {
-                console.log(error);
+            error: function () {
+                debugger;
+                toastr.error('Invalid Data.');
+                console.log('Failed ');
             }
-        });
+        })
+    }
+    //For update user details post method
+    function UpdateUser() {
+        var data = $("#idSigninForm").serialize();
+        $.ajax({
+            type: 'POST',
+            url: '/Users/EditUserDetailsPost',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
+            data: data,
+            success: function (result) {
+                if (result != null && result.statusCode != 200) {
+                    toastr.error(result.message);
+                } else {
+                    toastr.success(result.message);
+                    GetUserList();
+                }
+                $('#idEditUser').modal("hide");
+                console.log(result);
+            },
+            error: function () {
+                toastr.error('Invalid Data.');
+                console.log('Failed ');
+            }
+        })
+    }
+    //For delete user details post
+    function DeleteUser() {
+        var data = $("#idDeletDetails").serialize();
+        $.ajax({
+            type: 'POST',
+            url: '/Users/DeletUserDetails',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
+            data: data,
+            success: function (result) {
+                if (result != null && result.statusCode != 200) {
+                    toastr.error(result.message);
+                } else {
+                    toastr.success(result.message);
+                    GetUserList();
+                }
+                $('#idDeleteUser').modal("hide");
+                console.log(result);
+            },
+            error: function () {
+                alert('Failed to receive the Data');
+                console.log('Failed ');
+            }
+        })
     }
 </script>

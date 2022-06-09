@@ -15,20 +15,21 @@
 </head>
 
 <body>
-   <div class="container-fluid">
-      @RenderBody()
-   </div>
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
 
-   <!-- jQuery -->
-   <script src="~/plugins/jquery/jquery.min.js"></script>
-   <!-- Bootstrap 4 -->
-   <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-   <!-- AdminLTE App -->
-   <script src="~/dist/js/adminlte.min.js"></script>
+    @await Component.InvokeAsync("NToastNotify")
+    <!-- jQuery -->
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/dist/js/adminlte.min.js"></script>
 
-   <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"></script>
-   <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
-   <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
 
 </body>
 </html>

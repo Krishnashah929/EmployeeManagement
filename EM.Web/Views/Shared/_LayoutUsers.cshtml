@@ -71,7 +71,6 @@
                     <a asp-action="Dashboard" asp-controller="Home" class="nav-link">Home</a>
                 </li>
             </ul>
-
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <!-- Navbar Search -->
@@ -113,32 +112,44 @@
                     </div>
                     @if (Context.Session.GetString("Userlogeddin") != null)
                     {
-        <div class="info">
-            <a asp-action="Dashboard" asp-controller="Home" class="d-block">  @Context.Session.GetString("Name") </a>
-        </div> }
-    else
-    {
-<div class="info">
-    <a asp-action="Dashboard" asp-controller="Home" class="d-block"> Admin User</a>
-</div>}
+                        <div class="info">
+                            <a asp-action="Dashboard" asp-controller="Home" class="d-block">  @Context.Session.GetString("Name") </a>
+                        </div> }
+                    else
+                    {
+                        <div class="info">
+                            <a asp-action="Dashboard" asp-controller="Home" class="d-block"> Admin User</a>
+                        </div>}
 
                 </div>
-               
+
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a asp-action="Index" asp-controller="Users" class="nav-link active">
-                                <i class="far fa-dot-circle nav-icon"></i>
-                                <p>Users</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-action="LogOut" asp-controller="Auth" class="nav-link">
-                                <i class="far fa-dot-circle nav-icon"></i>
-                                <p>LogOut</p>
-                            </a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a asp-action="Index" asp-controller="Users" class="nav-link active">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>Users</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="LogOut" asp-controller="Auth" class="nav-link">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>LogOut</p>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a asp-action="Dashboard" asp-controller="Home" class="nav-link active">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>Dashboard</p>
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -158,7 +169,7 @@
             <strong>Copyright &copy; 2022-2023 <a href="#">Krishna Shah</a>.</strong>
             All rights reserved.
         </footer>
-
+        @await Component.InvokeAsync("NToastNotify") 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">
             <!-- Control sidebar content goes here -->
@@ -166,7 +177,7 @@
         <!-- /.control-sidebar -->
     </div>
     <!-- ./wrapper -->
-    
+
 
 
 </body>

@@ -1,7 +1,6 @@
 ﻿using EM.Common;
 using EM.Entity;
 using EM.Models;
-using EM.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -9,13 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using NToastNotify;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -31,6 +26,7 @@ namespace EM.Web.Controllers
         private readonly IConfiguration _configuration;
         private bool errorflag;
         public string baseUrl = "";
+        private readonly IToastNotification _toastNotification;
 
         public object HttpCacheability { get; private set; }
 
@@ -41,10 +37,11 @@ namespace EM.Web.Controllers
         /// <param name="userService"></param>
         /// <param name="configuration"></param>
         [Obsolete]
-        public AuthController(IHostingEnvironment hostingEnvironment , IConfiguration configuration): base(configuration)
+        public AuthController(IHostingEnvironment hostingEnvironment, IConfiguration configuration, IToastNotification toastNotification) : base(configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _configuration = configuration;
+            _toastNotification = toastNotification;
         }
 
         /// <summary>
@@ -106,6 +103,7 @@ namespace EM.Web.Controllers
                             var Name = objUser.FirstName + " " + objUser.Lastname;
                             HttpContext.Session.SetString("Name", Name);
 
+
                             var userClaims = new List<Claim>()
                             {
                              new Claim("UserEmail", objloginModel.EmailAddress),
@@ -128,7 +126,7 @@ namespace EM.Web.Controllers
                         }
                         else
                         {
-                            TempData["Error"] = CommonValidations.InvalidUserMsg;
+                            _toastNotification.AddErrorToastMessage(CommonValidations.InvalidUserMsg);
                             return View("Login");
                         }
                     }
@@ -184,6 +182,7 @@ namespace EM.Web.Controllers
                     objUser.FirstName = objRegisterModel.FirstName;
                     objUser.Lastname = objRegisterModel.Lastname;
                     objUser.EmailAddress = objRegisterModel.EmailAddress;
+                    objUser.UserId = objRegisterModel.UserId;
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
                     result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Register", null, objUser).Result;
@@ -195,9 +194,10 @@ namespace EM.Web.Controllers
                     {
                         if (objUser == null)
                         {
-                            TempData["Error"] = CommonValidations.RecordExistsMsg;
+                            _toastNotification.AddErrorToastMessage(CommonValidations.RecordExistsMsg);
                             return View();
                         }
+                        _toastNotification.AddSuccessToastMessage(CommonValidations.NewUserRegisterd);
                         return RedirectToAction("Login", "Auth");
                     }
                 }
@@ -276,7 +276,7 @@ namespace EM.Web.Controllers
                         }
                         else
                         {
-                            TempData["Error"] = CommonValidations.RecordExistsMsg;
+                            _toastNotification.AddErrorToastMessage(CommonValidations.RecordExistsMsg);
                             return View();
                         }
                     }
@@ -328,11 +328,11 @@ namespace EM.Web.Controllers
             {
                 if (objUser != null)
                 {
-                    TempData["linkSendMsg"] = CommonValidations.LinkSendMsg;
+                    _toastNotification.AddSuccessToastMessage(CommonValidations.LinkSendMsg);
                     return RedirectToAction("ForgotPasswordModel", "Auth");
                 }
             }
-            TempData["RecordNotExistsMsg"] = CommonValidations.InvalidUserMsg;
+            _toastNotification.AddErrorToastMessage(CommonValidations.InvalidUserMsg);
             return RedirectToAction("ForgotPasswordModel", "Auth");
         }
         #endregion
@@ -394,11 +394,12 @@ namespace EM.Web.Controllers
                     {
                         if (user != null)
                         {
-                            TempData["successMsg"] = CommonValidations.PasswordUpdateMsg;
+                            _toastNotification.AddErrorToastMessage(CommonValidations.PasswordUpdateMsg);
+                            return View();
                         }
                         else
                         {
-                            TempData["failureMsg"] = CommonValidations.PasswordNotUpdateMsg;
+                            _toastNotification.AddErrorToastMessage(CommonValidations.PasswordNotUpdateMsg);
                         }
                     }
                 }

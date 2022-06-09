@@ -1,14 +1,11 @@
 ﻿using EM.Common;
 using EM.Entity;
 using EM.Models;
-using EM.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 /// <summary>
 ///Controller for all User related activites
@@ -22,13 +19,12 @@ namespace EM.Web.Controllers
     [Authorize(Roles = "Admin")]
     public class UsersController : BaseController
     {
-
         /// <summary>
         /// Constructor of an object 
         /// </summary>
         public UsersController(IConfiguration configuration) : base(configuration)
         {
-
+      
         }
 
         /// <summary>
@@ -65,7 +61,6 @@ namespace EM.Web.Controllers
         /// </summary>
         /// <returns></returns>
         #region GetUserList
-
         [HttpPost]
         public IActionResult GetUserList()
         {
@@ -132,33 +127,42 @@ namespace EM.Web.Controllers
         /// </summary>
         #region AddNewUserPost
         [HttpPost]
-        public IActionResult Register(UpdateDetails objUpdateDetails)
+        public IActionResult Register(RegisterModel objRegisterModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     User objUser = new User();
-                    objUser.FirstName = objUpdateDetails.FirstName;
-                    objUser.Lastname = objUpdateDetails.Lastname;
-                    objUser.EmailAddress = objUpdateDetails.EmailAddress;
-                    objUser.Role = objUpdateDetails.Role;
-                    //Calling BaseController.
-                    var result = new ApiGenericModel<User>();
-                    result = ApiRequest<User>(RequestTypes.Post, "UserApi/Register", null, objUser).Result;
-                    if (result != null)
+                    objUser.FirstName = objRegisterModel.FirstName;
+                    objUser.Lastname = objRegisterModel.Lastname;
+                    objUser.EmailAddress = objRegisterModel.EmailAddress;
+                    objUser.Role = objRegisterModel.Role;
+                    objUser.UserId = objRegisterModel.UserId;
+                    if (objUser.UserId == 0)
                     {
-                        objUser = result.GenericModel;
-                    }
-                    if (true)
-                    {
-                        if (objUser == null)
+                        //Calling BaseController.
+                        var result = new ApiGenericModel<User>();
+                        result = ApiRequest<User>(RequestTypes.Post, "UserApi/Register", null, objUser).Result;
+                        if (result != null)
                         {
-                            TempData["Error"] = CommonValidations.RecordExistsMsg;
-                            return RedirectToAction("Index", "Users");
+                            objUser = result.GenericModel;
                         }
-                        TempData["Success"] = CommonValidations.NewUserRegisterd;
-                        return RedirectToAction("Index", "Users");
+                        if (true)
+                        {
+                            if (objUser == null)
+                            {
+                                return Json(result);
+                                //return RedirectToAction("Index", "Users", returnvalue);
+                                //return RedirectToAction("Index", "Users");
+                                //}                        
+                            }
+                            return Json(result);
+                        }
+                    }
+                    else
+                    {
+                       return EditUserDetailsPost(objUser);
                     }
                 }
             }
@@ -166,7 +170,7 @@ namespace EM.Web.Controllers
             {
                 return View("Error");
             }
-            return RedirectToAction("Index", "Users");
+            return Content("");
         }
         #endregion
 
@@ -194,14 +198,14 @@ namespace EM.Web.Controllers
 
                 if (result != null)
                 {
-                    return PartialView("_EditUserPartial", User);
+                    return PartialView("_AddUserPartial", User);
                 }
             }
              catch (Exception)
             {
                 return View("Error");
             }
-            return PartialView("_EditUserPartial");
+            return PartialView("_AddUserPartial");
         }
         #endregion
 
@@ -210,36 +214,34 @@ namespace EM.Web.Controllers
         /// </summary>
         #region EditUserDetailsPost 
         [HttpPost]
-        public IActionResult EditUserDetailsPost(RegisterModel objRegisterModel, int id)
+        public IActionResult EditUserDetailsPost(User objUserModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (objRegisterModel != null)
+                    if (objUserModel != null)
                     {
                         User objUser = new User();
-                        objUser.UserId = objRegisterModel.UserId;
-                        objUser.FirstName = objRegisterModel.FirstName;
-                        objUser.Lastname = objRegisterModel.Lastname;
-                        objUser.EmailAddress = objRegisterModel.EmailAddress;
-                        objUser.Role = objRegisterModel.Role;
+                        objUser.UserId = objUserModel.UserId;
+                        objUser.FirstName = objUserModel.FirstName;
+                        objUser.Lastname = objUserModel.Lastname;
+                        objUser.EmailAddress = objUserModel.EmailAddress;
+                        objUser.Role = objUserModel.Role;
                         ////Calling BaseController.
                         var result = new ApiGenericModel<User>();
-                        result = ApiRequest<User>(RequestTypes.Put, "UserApi/EditUser", null, objRegisterModel).Result;
+                        result = ApiRequest<User>(RequestTypes.Put, "UserApi/EditUser", null, objUser).Result;
                         if (result != null)
                         {
                             objUser = result.GenericModel;
                         }
                         if (objUser == null)
                         {
-                            TempData["Error"] = CommonValidations.RecordExistsMsg;
-                            return RedirectToAction("Index", "Users");
+                            return Json(result);
                         }
                         else
                         {
-                            TempData["Update"] = CommonValidations.UpdateUserDetails;
-                            return RedirectToAction("Index", "Users");
+                            return Json(result);
                         }
                     }
                 }
@@ -290,7 +292,7 @@ namespace EM.Web.Controllers
                 ////Calling BaseController.
                 var result = new ApiGenericModel<User>();
                 result = ApiRequest<User>(RequestTypes.Delete, "UserApi/DeleteUser/" + model.UserId).Result;
-                return RedirectToAction("Index", "Users");
+                return Json(result);
             }
             catch (Exception)
             {

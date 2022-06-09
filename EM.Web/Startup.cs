@@ -29,7 +29,7 @@ namespace EM.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
             services.AddMvc(options =>
             {
                 // This pushes users to login if not authenticated
@@ -40,7 +40,7 @@ namespace EM.Web
                         NoStore = true
                     });
             });
-             
+
 
             services.AddAuthentication("Cookies")
                  .AddCookie("Cookies", config =>
@@ -60,7 +60,12 @@ namespace EM.Web
 
             services.AddSession();
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNToastNotifyNoty(new NToastNotify.NotyOptions()
+            {
+                ProgressBar = true,
+                Timeout = 5000,
+                Theme = "mint"
+            });
 
             services.AddDistributedMemoryCache();
         }
@@ -81,6 +86,7 @@ namespace EM.Web
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.UseNToastNotify();
             app.UseStaticFiles();
 
             app.UseSession();

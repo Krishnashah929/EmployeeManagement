@@ -97,15 +97,20 @@ namespace EM.Common
         /// </summary>
         public const string WrongMailMsg = "You entered wrong e-mail address";
 
-         /// <summary>
+        /// <summary>
         /// New user registered successfully message...
         /// </summary>
         public const string NewUserRegisterd = "New user is registered successfully.";
 
-         /// <summary>
+        /// <summary>
         /// User details updated successfully message...
         /// </summary>
         public const string UpdateUserDetails = "User details are updated successfully.";
+
+        /// <summary>
+        /// User details delete successfully message...
+        /// </summary>
+        public const string DeleteUserDetails = "User details are deleted successfully.";
 
 
     }

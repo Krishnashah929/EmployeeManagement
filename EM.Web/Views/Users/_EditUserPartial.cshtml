@@ -1,25 +1,18 @@
-﻿@model EM.Models.RegisterModel
- 
-<div class="modal model-for-completion-order" id="idEditUser">
+﻿ 
+@*<div class="modal model-for-completion-order" id="idEditUser">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content">-->*@
             <!-- Modal Header -->
-            <div class="modal-header">
+            <!--<div class="modal-header">
                 <p class="modal-title">
                     <b> Update User Details </b>
                 </p>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+            </div>-->
             <!-- Modal body -->
-            <div class="modal-body">
-                @if (TempData["Error"] != null)
-                {
-                    <div class="alert alert-danger">
-                        @TempData["Error"]
-                    </div>
-                }
+            <!--<div class="modal-body">-->
                 <!-- New user registration form -->
-                <form id="idSigninForm" method="post" asp-controller="Users" asp-action="EditUserDetailsPost">
+                <!--<form id="idSigninForm" >
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="card-body">
                         <input type="hidden" asp-for="UserId" class="form-control" id="id" value="@Model.UserId" />
@@ -66,7 +59,7 @@
                     </div>
                     <div class="row m-auto">
                         <div class="col">
-                            <button type="submit" class="btn btn-primary btn-block">  Update User </button>
+                            <button type="button" class="btn btn-primary btn-block" onclick="UpdateUser()">  Update User </button>
                         </div>
                     </div>
                 </form>
@@ -77,4 +70,4 @@
 
 
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
-<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>-->

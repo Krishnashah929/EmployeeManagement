@@ -266,30 +266,29 @@ namespace EM.Services
                     User UpdateDetails = new User();
                     UpdateDetails = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
                     {
-                        var userEmail = this.GetAllUser().FirstOrDefault(x => x.EmailAddress == user.EmailAddress);
-                        if (userEmail == null)
+                        if (userRepository != null)
                         {
-                            if (userRepository != null)
+                            UpdateDetails.FirstName = user.FirstName;
+                            UpdateDetails.Lastname = user.Lastname;
+                            var userEmail = this.GetAllUser().FirstOrDefault(x => x.EmailAddress == user.EmailAddress);
+                            if (userEmail == null)
                             {
-
-                                UpdateDetails.FirstName = user.FirstName;
-                                UpdateDetails.Lastname = user.Lastname;
                                 UpdateDetails.EmailAddress = user.EmailAddress;
-                                UpdateDetails.Role = user.Role;
-                                UpdateDetails.ModifiedDate = DateTime.Now;
-                                if (user.Role == "Admin")
-                                {
-                                    UpdateDetails.Role = "1";
-                                }
-                                else if (user.Role == "User")
-                                {
-                                    UpdateDetails.Role = "2";
-                                }
-                                _unitOfWork.GetRepository<User>().Update(UpdateDetails);
-                                _unitOfWork.Commit();
                             }
-                            return user;
+                            UpdateDetails.Role = user.Role;
+                            UpdateDetails.ModifiedDate = DateTime.Now;
+                            if (user.Role == "Admin")
+                            {
+                                UpdateDetails.Role = "1";
+                            }
+                            else if (user.Role == "User")
+                            {
+                                UpdateDetails.Role = "2";
+                            }
+                            _unitOfWork.GetRepository<User>().Update(UpdateDetails);
+                            _unitOfWork.Commit();
                         }
+                        return user;
                     }
                 }
                 return null;
