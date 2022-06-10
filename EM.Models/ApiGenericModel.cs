@@ -1,6 +1,6 @@
-﻿using System;
+﻿#region using
 using System.Collections.Generic;
-using System.Text;
+#endregion
 
 namespace EM.Models
 {

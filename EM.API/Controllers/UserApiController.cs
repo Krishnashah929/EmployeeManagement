@@ -1,4 +1,5 @@
-﻿using EM.API.Helpers;
+﻿#region using
+using EM.API.Helpers;
 using EM.Models;
 using EM.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using EM.Common;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Net.Mail;
+#endregion
 
 namespace EM.API.Controllers
 {

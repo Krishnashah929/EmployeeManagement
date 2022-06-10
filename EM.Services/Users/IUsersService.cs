@@ -1,5 +1,7 @@
-﻿using EM.Entity;
+﻿#region using
+using EM.Entity;
 using System.Collections.Generic;
+#endregion
 
 namespace EM.Services
 {

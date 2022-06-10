@@ -1,4 +1,5 @@
-﻿using EM.Common;
+﻿#region using
+using EM.Common;
 using EM.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+#endregion
 
 namespace EM.Web.Controllers
 {

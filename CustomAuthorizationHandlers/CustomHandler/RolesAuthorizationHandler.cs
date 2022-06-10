@@ -1,8 +1,10 @@
-﻿using EM.Services;
+﻿#region using
+using EM.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
+#endregion
 
 namespace CustomHandlers.CustomHandler
 {

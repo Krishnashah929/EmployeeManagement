@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EM.Models
+﻿namespace EM.Models
 {
     /// <summary>
     /// class for JqueryDatatableParameter

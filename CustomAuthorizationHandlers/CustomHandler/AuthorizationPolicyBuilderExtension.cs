@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿#region MyRegion
+using Microsoft.AspNetCore.Authorization;
+#endregion
 
 namespace CustomHandlers.CustomHandler
 {

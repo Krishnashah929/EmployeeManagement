@@ -1,12 +1,14 @@
-﻿namespace EM.EFContext
-{
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
-    using Microsoft.EntityFrameworkCore.Storage;
-    using System;
-    using System.Data.Common;
-    using System.Threading.Tasks;
+﻿#region using
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using System;
+using System.Data.Common;
+using System.Threading.Tasks;
+#endregion
 
+namespace EM.EFContext
+{
     /// <summary>
     /// dbcontext extension class
     /// </summary>

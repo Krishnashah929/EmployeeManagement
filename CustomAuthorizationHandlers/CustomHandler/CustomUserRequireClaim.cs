@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿#region using
+using Microsoft.AspNetCore.Authorization;
+#endregion
 
 namespace CustomHandlers.CustomHandler
 {

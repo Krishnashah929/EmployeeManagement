@@ -1,4 +1,5 @@
-﻿using EM.API.Helpers;
+﻿#region using
+using EM.API.Helpers;
 using EM.Common;
 using EM.Entity;
 using EM.Models;
@@ -9,6 +10,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Mail;
+#endregion
 
 
 namespace EM.API.Controllers

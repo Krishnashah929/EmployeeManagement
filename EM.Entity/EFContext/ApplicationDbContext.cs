@@ -1,10 +1,13 @@
-﻿namespace EM.EFContext
-{
-    using EM.Common;
-    using EM.Entity;
-    using Microsoft.EntityFrameworkCore;
-    using System;
+﻿#region using
+using EM.Common;
+using EM.Entity;
+using Microsoft.EntityFrameworkCore;
+using System;
+#endregion
 
+namespace EM.EFContext
+{
+    
     /// <summary>
     /// Defines the <see cref="ApplicationDbContext" />.
     /// </summary>

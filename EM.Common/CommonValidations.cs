@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EM.Common
+﻿namespace EM.Common
 {
     /// <summary>
     /// Common validation messages for whole project

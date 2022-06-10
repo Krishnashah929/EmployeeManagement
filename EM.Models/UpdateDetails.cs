@@ -1,9 +1,8 @@
-﻿using EM.Common;
-using System;
-using System.Collections.Generic;
+﻿#region using
+using EM.Common;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+#endregion
 
 namespace EM.Models
 {

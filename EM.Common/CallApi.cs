@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿#region using
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
+#endregion
 
 /// <summary>
 /// A generic wrapper class to REST API calls

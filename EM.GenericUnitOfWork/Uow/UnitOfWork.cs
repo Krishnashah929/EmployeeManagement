@@ -1,10 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿#region using
+using System;
 using System.Threading.Tasks;
 using EM.GenericUnitOfWork.Base;
 using System.Threading;
 using System.Collections.Generic;
 using EM.EFContext;
+#endregion
 
 namespace EM.GenericUnitOfWork.Uow
 {

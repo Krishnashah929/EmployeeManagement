@@ -1,11 +1,11 @@
-﻿using EM.EFContext;
+﻿#region using
+using EM.EFContext;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
+#endregion
 
 namespace EM.GenericUnitOfWork.Base
 {

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region using
 using System.ComponentModel;
+#endregion
 
 #nullable disable
-
 namespace EM.Entity
 {
     /// <summary>

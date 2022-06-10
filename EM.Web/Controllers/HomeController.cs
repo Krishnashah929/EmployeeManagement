@@ -1,9 +1,11 @@
-﻿using EM.Web.Models;
+﻿#region using
+using EM.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
+#endregion
 
 /// <summary>
 /// Home controller for users.

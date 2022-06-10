@@ -1,9 +1,11 @@
-﻿namespace EM.Entity
-{
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+﻿#region using
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
+namespace EM.Entity
+{
     /// <summary>
     /// Defines the <see cref="Setting" />.
     /// </summary>

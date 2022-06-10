@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EM.Common
+﻿namespace EM.Common
 {
     /// <summary>
     /// Response types for api

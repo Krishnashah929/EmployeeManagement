@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿#region using
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.AutoRegisterDi;
+#endregion
 
 namespace EM.Services
 {

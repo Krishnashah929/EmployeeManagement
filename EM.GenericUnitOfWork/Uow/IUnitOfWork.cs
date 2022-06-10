@@ -1,9 +1,7 @@
-﻿using EM.EFContext;
+﻿#region using
 using EM.GenericUnitOfWork.Base;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+#endregion
 
 namespace EM.GenericUnitOfWork.Uow
 {/// <summary>

@@ -1,8 +1,9 @@
-﻿using System;
+﻿#region using
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-
+#endregion
 namespace EM.Common
 {
     /// <summary>

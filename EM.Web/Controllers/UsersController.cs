@@ -1,4 +1,5 @@
-﻿using EM.Common;
+﻿#region using
+using EM.Common;
 using EM.Entity;
 using EM.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
+#endregion
 
 /// <summary>
 ///Controller for all User related activites

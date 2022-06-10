@@ -1,11 +1,12 @@
-﻿using EM.Common;
+﻿#region using
+using EM.Common;
 using EM.Entity;
 using EM.GenericUnitOfWork.Uow;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+#endregion
 
 namespace EM.Services
 {
