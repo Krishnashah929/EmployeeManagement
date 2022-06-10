@@ -16,7 +16,7 @@ namespace EM.Web.Controllers
     /// Calling cache from startup.cs
     /// </summary>
     [ResponseCache(CacheProfileName = "Default0")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User, Admin")]
     public class UsersController : BaseController
     {
         /// <summary>
@@ -24,15 +24,14 @@ namespace EM.Web.Controllers
         /// </summary>
         public UsersController(IConfiguration configuration) : base(configuration)
         {
-      
-        }
 
+        }
         /// <summary>
         /// After successfull login of user they will redirect on Index Page.
         /// Geeting all users with user repository.
         /// </summary>
         #region Index(GET)
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet]
         public IActionResult Index()
         {
@@ -40,7 +39,7 @@ namespace EM.Web.Controllers
             //ViewBag.users = user;
             try
             {
-                if (User.Identity.IsAuthenticated == true)
+                if (User.Identity.IsAuthenticated)
                 {
                     return View();
                 }
@@ -103,29 +102,42 @@ namespace EM.Web.Controllers
         #endregion
 
         /// <summary>
-        /// Method for getting add user model
+        /// Method for getting user model for add and edit
         /// </summary>
         /// <returns></returns>
-        #region AddUserModelGet
+        #region AddEditUserModelGet
         [HttpGet]
-        public IActionResult AddUserModel()
+        public IActionResult AddEditUserModel(int? id)
         {
+            RegisterModel objUser = new RegisterModel();
             try
             {
-                return PartialView("_AddUserPartial");
+                if (id > 0)
+                {
+                    //Calling BaseController.
+                    var result = new ApiGenericModel<User>();
+                    result = ApiRequest<User>(RequestTypes.Get, "UserApi/EditDetailsModel/" + id).Result;
+                    objUser.UserId = result.GenericModel.UserId;
+                    objUser.FirstName = result.GenericModel.FirstName;
+                    objUser.Lastname = result.GenericModel.Lastname;
+                    objUser.EmailAddress = result.GenericModel.EmailAddress;
+                    objUser.RoleId = result.GenericModel.Role;
+                }
             }
             catch (Exception)
             {
                 return View("Error");
             }
+
+            return PartialView("_AddUserPartial", objUser);
         }
         #endregion
 
         /// <summary>
-        /// Register for user from this post Register method.
+        /// For register and update user post method
         /// object of User is objUser.
         /// </summary>
-        #region AddNewUserPost
+        #region Register/UpdateUserPost
         [HttpPost]
         public IActionResult Register(RegisterModel objRegisterModel)
         {
@@ -137,12 +149,13 @@ namespace EM.Web.Controllers
                     objUser.FirstName = objRegisterModel.FirstName;
                     objUser.Lastname = objRegisterModel.Lastname;
                     objUser.EmailAddress = objRegisterModel.EmailAddress;
-                    objUser.Role = objRegisterModel.Role;
+                    objUser.Role = objRegisterModel.RoleId;
                     objUser.UserId = objRegisterModel.UserId;
+                    var result = new ApiGenericModel<User>();
+                    //For add new user.
                     if (objUser.UserId == 0)
                     {
                         //Calling BaseController.
-                        var result = new ApiGenericModel<User>();
                         result = ApiRequest<User>(RequestTypes.Post, "UserApi/Register", null, objUser).Result;
                         if (result != null)
                         {
@@ -153,83 +166,13 @@ namespace EM.Web.Controllers
                             if (objUser == null)
                             {
                                 return Json(result);
-                                //return RedirectToAction("Index", "Users", returnvalue);
-                                //return RedirectToAction("Index", "Users");
-                                //}                        
                             }
                             return Json(result);
                         }
                     }
+                    //For update existing user.
                     else
                     {
-                       return EditUserDetailsPost(objUser);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return View("Error");
-            }
-            return Content("");
-        }
-        #endregion
-
-        /// <summary>
-        /// Method for getting edit user model
-        /// </summary>
-        /// <returns></returns>
-        #region EditUserModelGet
-        [HttpGet]
-        public IActionResult EditUserModel(int id)
-        {
-            try
-            {
-              
-                //Calling BaseController.
-                var result = new ApiGenericModel<User>();
-                result = ApiRequest<User>(RequestTypes.Get, "UserApi/EditDetailsModel/" + id).Result;
-
-                RegisterModel User = new RegisterModel();
-                User.UserId = result.GenericModel.UserId;
-                User.FirstName = result.GenericModel.FirstName;
-                User.Lastname = result.GenericModel.Lastname;
-                User.EmailAddress = result.GenericModel.EmailAddress;
-                User.Role = result.GenericModel.Role;
-
-                if (result != null)
-                {
-                    return PartialView("_AddUserPartial", User);
-                }
-            }
-             catch (Exception)
-            {
-                return View("Error");
-            }
-            return PartialView("_AddUserPartial");
-        }
-        #endregion
-
-        /// <summary>
-        /// UpdateUserDetails is modal for updating the details of particular user.
-        /// </summary>
-        #region EditUserDetailsPost 
-        [HttpPost]
-        public IActionResult EditUserDetailsPost(User objUserModel)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    if (objUserModel != null)
-                    {
-                        User objUser = new User();
-                        objUser.UserId = objUserModel.UserId;
-                        objUser.FirstName = objUserModel.FirstName;
-                        objUser.Lastname = objUserModel.Lastname;
-                        objUser.EmailAddress = objUserModel.EmailAddress;
-                        objUser.Role = objUserModel.Role;
-                        ////Calling BaseController.
-                        var result = new ApiGenericModel<User>();
                         result = ApiRequest<User>(RequestTypes.Put, "UserApi/EditUser", null, objUser).Result;
                         if (result != null)
                         {
@@ -245,12 +188,12 @@ namespace EM.Web.Controllers
                         }
                     }
                 }
-                return RedirectToAction("Index", "Users");
             }
             catch (Exception)
             {
                 return View("Error");
             }
+            return Content("");
         }
         #endregion
 

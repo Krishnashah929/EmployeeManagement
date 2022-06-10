@@ -1,22 +1,20 @@
-using EM.EFContext;
-using EM.GenericUnitOfWork.Uow;
 using CustomHandlers.CustomHandler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Security.Claims;
-using EM.GenericUnitOfWork.Base;
-using EM.Services;
 using System.Text.Json.Serialization;
 
 namespace EM.Web
 {
+    /// <summary>
+    /// Startup file
+    /// </summary>
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -29,7 +27,6 @@ namespace EM.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddMvc(options =>
             {
                 // This pushes users to login if not authenticated
@@ -87,6 +84,7 @@ namespace EM.Web
                 app.UseHsts();
             }
             app.UseNToastNotify();
+
             app.UseStaticFiles();
 
             app.UseSession();

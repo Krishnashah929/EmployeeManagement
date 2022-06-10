@@ -1,81 +1,124 @@
 ﻿@model EM.Models.RegisterModel
 
-<div class="modal model-for-completion-order" id="idAddUser">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <p class="modal-title">
-                    <b> Add New User </b>
-                </p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="modal-content">
+    <!-- Modal Header -->
+    <div class="modal-header">
+        <h3 class="modal-title m-auto text-secondary">
+            @if (Model.UserId == 0)
+            {
+                <b> Add New User </b>
+            }
+            else
+            {
+                <b> Update User Details </b>
+            }
+        </h3>
+    </div>
+    <!-- Modal body -->
+    <div class="modal-body">
+        <!-- New user registration form -->
+        <form id="frmUsers" method="post">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <input asp-for="UserId" hidden class="form-control" />
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" asp-for="FirstName" class="form-control" placeholder="First Name" onkeydown="return /[a-z]/i.test(event.key)">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-user"></span>
+                        </div>
+                    </div>
+                </div>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
-            <!-- Modal body -->
-            <div class="modal-body">
-                <!-- New user registration form -->
-              
-                <form id="idSigninForm">
-                    @{
-                        if (Model != null && Model.UserId != null)
-                        {
-                            <input type="hidden" asp-for="UserId" class="form-control" id="id" value="@Model.UserId" />
-                        }
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" asp-for="Lastname" class="form-control" placeholder="Last Name" onkeydown="return /[a-z]/i.test(event.key)">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-user"></span>
+                        </div>
+                    </div>
+                </div>
+                <span asp-validation-for="Lastname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="email" asp-for="EmailAddress" class="form-control" placeholder="Enter email">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                </div>
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <select class="form-select form-control" asp-for="RoleId">
+                    <option disabled selected value="0"> Choose UserRole</option>
+                    <option value="1"> Admin</option>
+                    <option value="2"> User</option>
+                </select>
+                <span asp-validation-for="RoleId" class="text-danger"></span>
+            </div>
+
+            <div class="row m-auto">
+                <div class="col">
+                    @if (Model.UserId == 0)
+                    {
+                        <button type="submit" class="btn btn-primary btn-block">  Add User </button>
                     }
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" asp-for="FirstName" class="form-control" placeholder="First Name" onkeydown="return /[a-z]/i.test(event.key)">
-                                <div class="input-group-append">
-                                    <div class="input-group-text">
-                                        <span class="fas fa-user"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <span asp-validation-for="FirstName" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" asp-for="Lastname" class="form-control" placeholder="Last Name" onkeydown="return /[a-z]/i.test(event.key)">
-                                <div class="input-group-append">
-                                    <div class="input-group-text">
-                                        <span class="fas fa-user"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <span asp-validation-for="Lastname" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="email" asp-for="EmailAddress" class="form-control" placeholder="Enter email">
-                                <div class="input-group-append">
-                                    <div class="input-group-text">
-                                        <span class="fas fa-envelope"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <span asp-validation-for="EmailAddress" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <select id="idUserRole" class="form-select" asp-for="Role">
-                                <option> Choose UserRole</option>
-                                <option value="Admin"> Admin</option>
-                                <option value="User"> User</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row m-auto">
-                        <div class="col">
-                            <button type="button" class="btn btn-primary btn-block" onclick="addUserDetails()">  Add User </button>
-                        </div>
-                    </div>
-                </form>
+                    else
+                    {
+                        <button type="submit" class="btn btn-primary btn-block">  Update User </button>
+                    }
+
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
+<script>
 
-<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
-<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
- 
+    $("#frmUsers").submit(function (event) {
+        $.validator.setDefaults({
+            ignore: ':hidden, [readonly=readonly]'
+        });
+        var $form = $('#frmUsers');
+        $.validator.unobtrusive.parse($form);
+
+        if ($("#frmUsers").valid()) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            $.ajax({
+                url: '/Users/Register',
+                type: "POST",
+                async: true,
+                data: $("#frmUsers").serialize(),
+                success: function (result) {
+                    if (result != null && result.statusCode != 200) {
+                        toastr.error(result.message);
+                        $('#AddEditUsers').modal("show");
+                    } else {
+                        toastr.success(result.message);
+                        GetUserList();
+                        $('#AddEditUsers').modal("hide");
+                    }
+                    console.log(result);
+                },
+                error: function (ex) {
+                    debugger;
+                    toastr.error('Invalid Data.');
+                    console.log('Failed ');
+                }
+            });
+        }
+        else {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    });
+
+</script>

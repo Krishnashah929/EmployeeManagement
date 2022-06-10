@@ -21,26 +21,17 @@ namespace EM.Web.Controllers
     /// </summary>
     public class AuthController : BaseController
     {
-        [Obsolete]
-        private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IConfiguration _configuration;
-        private bool errorflag;
-        public string baseUrl = "";
+        public string baseUrl = string.Empty;
         private readonly IToastNotification _toastNotification;
-
         public object HttpCacheability { get; private set; }
 
         /// <summary>
         /// Constructors
         /// </summary>
-        /// <param name="hostingEnvironment"></param>
-        /// <param name="userService"></param>
         /// <param name="configuration"></param>
-        [Obsolete]
-        public AuthController(IHostingEnvironment hostingEnvironment, IConfiguration configuration, IToastNotification toastNotification) : base(configuration)
-        {
-            _hostingEnvironment = hostingEnvironment;
-            _configuration = configuration;
+        /// <param name="toastNotification"></param>
+        public AuthController(IConfiguration configuration, IToastNotification toastNotification) : base(configuration)
+        { 
             _toastNotification = toastNotification;
         }
 
@@ -51,19 +42,16 @@ namespace EM.Web.Controllers
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Login()
-
         {
             try
             {
                 //if user is already logged in then they can't go back to login page
-                if (User.Identity.IsAuthenticated == true)
+                if (User.Identity.IsAuthenticated)
                 {
                     return RedirectToAction("Index", "Users");
                 }
-                else
-                {
-                    return View();
-                }
+
+                return View();
             }
             catch (Exception)
             {
@@ -87,7 +75,6 @@ namespace EM.Web.Controllers
                     objUser.EmailAddress = objloginModel.EmailAddress;
                     objUser.Password = objloginModel.Password;
                     objUser.Role = objloginModel.Role;
-
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
                     result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Login", null, objUser).Result;
@@ -102,7 +89,6 @@ namespace EM.Web.Controllers
                         {
                             var Name = objUser.FirstName + " " + objUser.Lastname;
                             HttpContext.Session.SetString("Name", Name);
-
 
                             var userClaims = new List<Claim>()
                             {
@@ -150,7 +136,7 @@ namespace EM.Web.Controllers
             try
             {
                 //if user is already logged in then they can't go back to register page
-                if (User.Identity.IsAuthenticated == true)
+                if (User.Identity.IsAuthenticated)
                 {
                     return RedirectToAction("Index", "Users");
                 }
@@ -176,6 +162,7 @@ namespace EM.Web.Controllers
         {
             try
             {
+                ModelState.Remove("RoleId");
                 if (ModelState.IsValid)
                 {
                     User objUser = new User();
@@ -223,8 +210,6 @@ namespace EM.Web.Controllers
                 int id = Convert.ToInt32(link);
                 HttpContext.Session.SetInt32("links", id);
                 user.UserId = id;
-
-                //var url = "api/AuthApi/SetPassword/" + id;
                 //Calling BaseController.
                 var result = new ApiGenericModel<User>();
                 result = ApiRequest<User>(RequestTypes.Get, "AuthApi/SetPassword/" + id).Result;
@@ -385,7 +370,6 @@ namespace EM.Web.Controllers
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
                     result = ApiRequest<User>(RequestTypes.Post, "AuthApi/SetPassword", null, user).Result;
-
                     if (result != null)
                     {
                         user = result.GenericModel;

@@ -44,7 +44,6 @@ namespace EM.API.Controllers
             {
                 if (objloginModel != null)
                 {
-                    //var loggedinUser = _userService.GetByEmail(objloginModel.EmailAddress);
                     User objUser = new User();
                     objUser.EmailAddress = objloginModel.EmailAddress;
                     objUser.Password = objloginModel.Password;

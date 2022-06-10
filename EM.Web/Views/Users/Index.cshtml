@@ -1,18 +1,9 @@
-﻿@model EM.Models.UpdateDetails
-@{
+﻿@{
     Layout = "_LayoutUsers";
 }
 @{
-
     ViewData["Title"] = "Index";
 }
-
-@*<link href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />*@
-<link href="~/plugins/toastr/toastr.css" rel="stylesheet" />
-<!-- DataTables -->
-<link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 @{ if (!User.Identity.IsAuthenticated)
     {
         Context.Response.Redirect(Url.Action("Login", "Auth"));
@@ -20,6 +11,14 @@
 }
 @if (User.Identity.IsAuthenticated)
 {
+    <div aria-hidden="true" aria-labelledby="AddEditUsers" role="dialog" tabindex="-1" id="AddEditUsers" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="idDeleteUser" role="dialog" tabindex="-1" id="idDeleteUser" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+        </div>
+    </div>
     <div class="container-fluid">
         <div class="row mt-4">
             <div class="col-12">
@@ -30,7 +29,7 @@
                                 <h3 class="card-title mt-1">  Welcome, List of users</h3>
                             </div>
                             <div class="col text-right">
-                                <button type="button" class="btn btn-danger" onclick="addUser(this)">+ Add New User</button>
+                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#AddEditUsers" onclick="addUser(this)">+ Add New User</button>
                             </div>
                         </div>
                     </div>
@@ -52,27 +51,7 @@
             </div>
         </div>
     </div>
-    <section id="Model1"></section>
-    <section id="Model2"></section>
-    <section id="Model3"></section>
-
 }
-
-<!-- DataTables  & Plugins -->
-<script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="../../plugins/jszip/jszip.min.js"></script>
-<script src="../../plugins/pdfmake/pdfmake.min.js"></script>
-<script src="../../plugins/pdfmake/vfs_fonts.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-<!-- toaster -->
-<script src="~/plugins/toastr/toastr.min.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -104,7 +83,7 @@
                         //adds td row for button
                         data: null,
                         render: function (data) {
-                            return "<a href='#' class='btn btn-info m-auto' onclick=editUser('" + data.userId + "'); >Edit</a>";
+                            return "<a href='#' class='btn btn-info m-auto' data-toggle='model' data-target=#AddEditUsers' onclick=editUser('" + data.userId + "'); >Edit</a>";
                         }
                     },
                     {
@@ -120,11 +99,12 @@
     //For open add user model
     function addUser() {
         $.ajax({
-            url: '/Users/AddUserModel',
+            url: '/Users/AddEditUserModel',
+            data: { "id": 0 },
             type: 'GET',
             success: function (response) {
-                $('#Model1').html(response);
-                $('#idAddUser').modal("show");
+                $('#AddEditUsers').find(".modal-dialog").html(response);
+                $('#AddEditUsers').modal("show");
             }
         });
     }
@@ -133,13 +113,12 @@
         debugger;
         var id = userId;
         $.ajax({
-            url: '/Users/EditUserModel',
+            url: '/Users/AddEditUserModel',
             type: 'GET',
             data: { "id": id },
             success: function (response) {
-                debugger;
-                $('#Model1').html(response);
-                $('#idAddUser').modal("show");
+                $('#AddEditUsers').find(".modal-dialog").html(response);
+                $('#AddEditUsers').modal("show");
             },
             error: function (error) {
                 console.log(error);
@@ -155,36 +134,10 @@
             type: 'GET',
             data: { "id": id },
             success: function (response) {
-                $('#Model2').html(response);
+                $('#idDeleteUser').find(".modal-dialog").html(response);
                 $('#idDeleteUser').modal("show");
             }
         });
-    }
-    //For add new user post method
-    function addUserDetails() {
-        var data = $("#idSigninForm").serialize();
-        console.log(data);
-        $.ajax({
-            type: 'POST',
-            url: '/Users/Register',
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
-            data: data,
-            success: function (result) {
-                if (result != null && result.statusCode != 200) {
-                    toastr.error(result.message);
-                } else {
-                    toastr.success(result.message);
-                    GetUserList();
-                }
-                $('#idAddUser').modal("hide");
-                console.log(result);
-            },
-            error: function () {
-                debugger;
-                toastr.error('Invalid Data.');
-                console.log('Failed ');
-            }
-        })
     }
     //For update user details post method
     function UpdateUser() {
@@ -197,11 +150,12 @@
             success: function (result) {
                 if (result != null && result.statusCode != 200) {
                     toastr.error(result.message);
+                    $('#AddEditUsers').modal("show");
                 } else {
                     toastr.success(result.message);
                     GetUserList();
+                    $('#AddEditUsers').modal("hide");
                 }
-                $('#idEditUser').modal("hide");
                 console.log(result);
             },
             error: function () {
@@ -221,11 +175,12 @@
             success: function (result) {
                 if (result != null && result.statusCode != 200) {
                     toastr.error(result.message);
+                    $('#idDeleteUser').modal("show");
                 } else {
                     toastr.success(result.message);
                     GetUserList();
+                    $('#idDeleteUser').modal("hide");
                 }
-                $('#idDeleteUser').modal("hide");
                 console.log(result);
             },
             error: function () {

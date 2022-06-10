@@ -19,13 +19,13 @@ namespace EM.Web.Controllers
         /// <summary>
         /// Main Dashboard when user is not logged in.
         /// </summary>
-        [Authorize(Roles = "User, Admin")]
         #region Dashboard
+        [Authorize(Roles = "User, Admin")]
         public IActionResult Dashboard()
         {
             try
             {
-                if (User.Identity.IsAuthenticated == true)
+                if (User.Identity.IsAuthenticated)
                 {
                     return View();
                 }

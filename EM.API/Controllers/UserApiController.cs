@@ -48,7 +48,7 @@ namespace EM.API.Controllers
                 int totalRecord = 0;
                 int filterRecord = 0;
 
-                var data = _userService.GetUserList();
+                var data = _userService.GetAllUser();
                 if (data != null)
                 {
                     // get total count of records 

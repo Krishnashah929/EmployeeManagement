@@ -277,14 +277,6 @@ namespace EM.Services
                             }
                             UpdateDetails.Role = user.Role;
                             UpdateDetails.ModifiedDate = DateTime.Now;
-                            if (user.Role == "Admin")
-                            {
-                                UpdateDetails.Role = "1";
-                            }
-                            else if (user.Role == "User")
-                            {
-                                UpdateDetails.Role = "2";
-                            }
                             _unitOfWork.GetRepository<User>().Update(UpdateDetails);
                             _unitOfWork.Commit();
                         }
