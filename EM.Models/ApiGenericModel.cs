@@ -42,5 +42,9 @@ namespace EM.Models
         /// </summary>
         public int RecordsFiltered { get; set; }
 
+        /// <summary>
+        /// getting jwt token
+        /// </summary>
+        //public string Token { get; set; }
     }
 }

@@ -17,18 +17,16 @@ namespace EM.API.Helpers
         /// <param name="objData"></param>
         /// <param name="objDataList"></param>
         /// <returns></returns>
-        public static  ApiResponseModel GetResponse(HttpStatusCode statusCode , string sMessage, object objData = null, object objDataList = null)
+        public static  ApiResponseModel GetResponse(HttpStatusCode statusCode , string sMessage, /*string token*/ object objData = null, object objDataList = null)
         {
             return new ApiResponseModel()
             {
                 StatusCode = (int)statusCode,
                 Message = sMessage,
                 DataObj = objData != null? JsonConvert.SerializeObject(objData) :  string.Empty,
-                DataList = objDataList != null ? JsonConvert.SerializeObject(objDataList) : string.Empty
+                DataList = objDataList != null ? JsonConvert.SerializeObject(objDataList) : string.Empty,
             };
         }
-
-
 
         /// <summary>
         /// For getting responses for jqueryDatatable
@@ -48,5 +46,27 @@ namespace EM.API.Helpers
                 DataList = Data != null ? JsonConvert.SerializeObject(Data) : string.Empty
             };
         }
+
+
+        /// <summary>
+        ///  For getting jwt token 
+        /// </summary>
+        /// <param name="statusCode"></param>
+        /// <param name="sMessage"></param>
+        /// <param name="token"></param>
+        /// <param name="objData"></param>
+        /// <param name="objDataList"></param>
+        /// <returns></returns>
+        //public static ApiResponseModel GetResponseToken(HttpStatusCode statusCode, string sMessage, string token, object objData = null, object objDataList = null)
+        //{
+        //    return new ApiResponseModel()
+        //    {
+        //        StatusCode = (int)statusCode,
+        //        Message = sMessage,
+        //        DataObj = objData != null ? JsonConvert.SerializeObject(objData) : string.Empty,
+        //        DataList = objDataList != null ? JsonConvert.SerializeObject(objDataList) : string.Empty,
+        //        Token = token
+        //    };
+        //}
     }
 }

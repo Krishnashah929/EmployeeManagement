@@ -124,6 +124,7 @@ namespace EM.Web.Controllers
                 objApiGenericModel.Draw = objApiResponseModel.Draw;
                 objApiGenericModel.RecordsTotal = objApiResponseModel.RecordsTotal;
                 objApiGenericModel.RecordsFiltered = objApiResponseModel.RecordsFiltered;
+                //objApiGenericModel.Token = objApiGenericModel.Token;
 
                 //if the data is passing in object form.
                 if (!string.IsNullOrEmpty(objApiResponseModel.DataObj))

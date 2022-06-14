@@ -75,7 +75,6 @@ namespace EM.Web.Controllers
                     User objUser = new User();
                     objUser.EmailAddress = objloginModel.EmailAddress;
                     objUser.Password = objloginModel.Password;
-                    objUser.Role = objloginModel.Role;
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
                     result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Login", null, objUser).Result;
@@ -101,8 +100,7 @@ namespace EM.Web.Controllers
                             var userIdentity = new ClaimsIdentity(userClaims, "User Identity");
                             var userPrincipal = new ClaimsPrincipal(new[] { userIdentity });
                             HttpContext.SignInAsync(userPrincipal);
-
-                            if (objUser.Role == "Admin")
+                            if (objUser.Role == "1")
                             {
                                 return RedirectToAction("Index", "Users");
                             }

@@ -37,6 +37,10 @@
         /// for storing value of data 
         /// </summary>
         public string Data { get; set; }
+        /// <summary>
+        /// For jwt token
+        /// </summary>
+        //public string Token { get; set; }
 
         public ApiResponseModel()
         {
@@ -57,7 +61,5 @@
             RecordsFiltered = recordsFiltered;
             DataList = dataList;
         }
-
-
     }
 }

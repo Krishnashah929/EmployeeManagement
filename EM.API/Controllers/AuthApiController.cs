@@ -4,6 +4,7 @@ using EM.Common;
 using EM.Entity;
 using EM.Models;
 using EM.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,7 +26,6 @@ namespace EM.API.Controllers
         private IUsersService _userService;
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
-        public object HttpCacheability { get; private set; }
 
         [Obsolete]
         public AuthApiController(IUsersService userService, IHostingEnvironment hostingEnvironment)
@@ -53,16 +53,12 @@ namespace EM.API.Controllers
                     var loggedinUser = _userService.VerifyLogin(objUser);
                     if (loggedinUser != null)
                     {
-                        if(loggedinUser.Role == "1")
-                        {
-                            loggedinUser.Role = "Admin";
-                        }
-                        else if(loggedinUser.Role == "2")
-                        {
-                            loggedinUser.Role = "User";
-                        }
+                        //getting jwt token 
+                        var getJWTToken = _userService.GenerateJWT(loggedinUser.EmailAddress, loggedinUser.Role);
+
                         //getting value from common helper.
-                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser);
+                        //return CommonHelper.GetResponseToken(HttpStatusCode.OK, "", loggedinUser, getJWTToken, "");
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser, "");
                     }
                 }
                 return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");

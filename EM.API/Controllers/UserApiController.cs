@@ -12,6 +12,7 @@ using EM.Common;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Authorization;
 #endregion
 
 namespace EM.API.Controllers
@@ -21,6 +22,7 @@ namespace EM.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     public class UserApiController : ControllerBase
     {
         private IUsersService _userService;
@@ -43,6 +45,7 @@ namespace EM.API.Controllers
         /// <returns></returns>
         #region GetUserList
         [HttpPost("GetUserList")]
+        [Authorize (Roles ="1")]
         public ApiResponseModel GetUserList(JqueryDatatableParam jqueryDatatableParam)
         {
             try
@@ -96,6 +99,7 @@ namespace EM.API.Controllers
         #region AddNewUserPost
         [HttpPost("Register")]
         [Obsolete]
+        [AllowAnonymous]
         public ApiResponseModel Register(User objUser)
         {
             try
@@ -143,6 +147,7 @@ namespace EM.API.Controllers
         /// </summary>
         #region EditDetailsModel(GET)
         [HttpGet("EditDetailsModel/{id}")]
+        [AllowAnonymous]
         public ApiResponseModel EditDetailsModel(int id)
         {
             try
@@ -169,6 +174,7 @@ namespace EM.API.Controllers
         /// <returns></returns>
         #region UpdateUserDetails
         [HttpPut("EditUser")]
+        [AllowAnonymous]
         public ApiResponseModel EditUser(User user)
         {
             try
@@ -195,6 +201,7 @@ namespace EM.API.Controllers
         /// </summary>
         #region DeleteDetailsModel(GET)
         [HttpGet("DeleteDetailsModel/{id}")]
+        [AllowAnonymous]
         public ApiResponseModel DeleteDetailsModel(int id)
         {
             try
@@ -221,6 +228,7 @@ namespace EM.API.Controllers
         /// <returns></returns>
         #region DeleteUserPost
         [HttpDelete("DeleteUser/{id}")]
+        [AllowAnonymous]
         public ApiResponseModel DeleteUser(int id)
         {
             try

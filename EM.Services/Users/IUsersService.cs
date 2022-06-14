@@ -77,5 +77,7 @@ namespace EM.Services
         /// <param name="id"></param>
         /// <returns></returns>
         User DeleteDetails(int id);
+
+        public string GenerateJWT(string Email, string Role);
     }
 }

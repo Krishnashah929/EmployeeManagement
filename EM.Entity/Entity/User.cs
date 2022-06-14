@@ -27,21 +27,18 @@ namespace EM.Entity
         /// <summary>
         /// FirstName input feild.
         /// </summary>
-        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         [DisplayName ("First Name")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// LastName input feild.
         /// </summary>
-        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         [DisplayName("Last Name")]
         public string Lastname { get; set; }
 
         /// <summary>
         /// Email Address input feild.
         /// </summary>
-        //[Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         [MaxLength(50)]
         [DisplayName("Email")]
         public string EmailAddress { get; set; }
@@ -53,6 +50,16 @@ namespace EM.Entity
         [StringLength(10, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 8)]
         [DisplayName("Password")]
         public string Password { get; set; }
+
+        /// <summary>
+        /// RetypePassword it is for confirm user's password.
+        /// This value is not stored into the database.
+        /// </summary>
+        [NotMapped]
+        [Compare("Password", ErrorMessage = CommonValidations.ComparePasswordMsg)]
+        [DataType(DataType.Password)]
+        [DisplayName("Reenter Password")]
+        public string RetypePassword { get; set; }
 
         /// <summary>
         /// ISactive feild for users.
@@ -95,16 +102,6 @@ namespace EM.Entity
         /// </summary>
         [DisplayName("Modified Date")]
         public DateTime? ModifiedDate { get; set; }
-
-        /// <summary>
-        /// RetypePassword it is for confirm user's password.
-        /// This value is not stored into the database.
-        /// </summary>
-        [NotMapped]
-        [Compare("Password", ErrorMessage = CommonValidations.ComparePasswordMsg)]
-        [DataType(DataType.Password)]
-        [DisplayName("Reenter Password")]
-        public string RetypePassword { get; set; }
 
         /// <summary>
         /// Get or set userrole table

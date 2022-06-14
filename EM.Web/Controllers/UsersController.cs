@@ -18,7 +18,7 @@ namespace EM.Web.Controllers
     /// Calling cache from startup.cs
     /// </summary>
     [ResponseCache(CacheProfileName = "Default0")]
-    [Authorize(Roles = "User, Admin")]
+   
     public class UsersController : BaseController
     {
         /// <summary>
@@ -33,7 +33,7 @@ namespace EM.Web.Controllers
         /// Geeting all users with user repository.
         /// </summary>
         #region Index(GET)
-        [Authorize(Roles = "User, Admin")]
+        [Authorize(Roles = "2, 1")]
         [HttpGet]
         public IActionResult Index()
         {
@@ -63,13 +63,15 @@ namespace EM.Web.Controllers
         /// <returns></returns>
         #region GetUserList
         [HttpPost]
+        [Authorize(Roles = "1")]
         public IActionResult GetUserList()
         {
             try
             {
-                JqueryDatatableParam objJqueryDatatableParam = new JqueryDatatableParam();
                 int totalRecord = 0;
                 int filterRecord = 0;
+
+                JqueryDatatableParam objJqueryDatatableParam = new JqueryDatatableParam();
 
                 objJqueryDatatableParam.draw = Request.Form["draw"].FirstOrDefault();
 
@@ -83,7 +85,6 @@ namespace EM.Web.Controllers
 
                 objJqueryDatatableParam.skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
 
-
                 ////Calling BaseController.
                 var result = new ApiGenericModel<User>();
                 result = ApiRequest<User>(RequestTypes.Post, "UserApi/GetUserList", null, objJqueryDatatableParam).Result;
@@ -93,7 +94,6 @@ namespace EM.Web.Controllers
                 if (true)
                 {
                     return Json(returnObj);
-                    //return RedirectToAction("Index", "Users");
                 }
             }
             catch (Exception)

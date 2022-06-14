@@ -3,9 +3,14 @@ using EM.Common;
 using EM.Entity;
 using EM.GenericUnitOfWork.Uow;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 #endregion
 
 namespace EM.Services
@@ -20,16 +25,19 @@ namespace EM.Services
         /// The unit of work.
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration;
         #endregion
 
         #region Ctor
         /// <summary>
         /// Initializes a new instance of the <see cref="UserService"/> class.
         /// </summary>
-        /// <param name="unitOfWork">The Unit Of Work.</param>
-        public UsersService(IUnitOfWork unitOfWork)
+        /// <param name="unitOfWork"></param>
+        /// <param name="configuration"></param>
+        public UsersService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             this._unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
         #endregion
 
@@ -44,8 +52,14 @@ namespace EM.Services
             {
                 var repoList = this._unitOfWork.GetRepository<User>();
                 List<User> lstUsers = repoList.GetAll().Where(x => x.IsDelete == false).AsNoTracking().ToList();
-
-                return lstUsers;
+                if (lstUsers != null)
+                {
+                    return lstUsers;
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception ex)
             {
@@ -197,9 +211,16 @@ namespace EM.Services
                 User verifyLogin = new User();
                 var password = EncryptionDecryption.Encrypt(user.Password.ToString());
                 verifyLogin = this.GetAllUser().FirstOrDefault(x => x.Password == password && x.EmailAddress == user.EmailAddress && x.IsActive == true && x.IsDelete == false);
-                //_unitOfWork.Commit();
-
-                return verifyLogin;
+                //get jwt token 
+               
+                if (verifyLogin != null)
+                {
+                    return verifyLogin;
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception ex)
             {
@@ -317,6 +338,39 @@ namespace EM.Services
             {
                 throw ex;
             }
+        }
+        #endregion
+
+        /// <summary>
+        /// For generate jwt token of varified login user.
+        /// </summary>
+        /// <param name="Email"></param>
+        /// <param name="Role"></param>
+        /// <returns></returns>
+        #region GenerateJwt
+        public string GenerateJWT(string Email, string Role)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            //claim is used to add identity to JWT token
+            var claims = new[] {
+             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+             new Claim(JwtRegisteredClaimNames.Email, Email),
+             new Claim(ClaimTypes.Role,Role),
+             new Claim("Date", DateTime.Now.ToString()),
+        };
+
+                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+              _configuration["Jwt:Audiance"],
+              claims,    //null original value
+              expires: DateTime.Now.AddMinutes(120),
+
+              //notBefore:
+              signingCredentials: credentials);
+
+            string Data = new JwtSecurityTokenHandler().WriteToken(token); //return access token 
+            return Data;
         }
         #endregion
     }
