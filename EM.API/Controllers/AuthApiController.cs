@@ -7,10 +7,15 @@ using EM.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
+using System.Text;
 #endregion
 
 
@@ -26,12 +31,14 @@ namespace EM.API.Controllers
         private IUsersService _userService;
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IConfiguration _configuration;
 
         [Obsolete]
-        public AuthApiController(IUsersService userService, IHostingEnvironment hostingEnvironment)
+        public AuthApiController(IUsersService userService, IHostingEnvironment hostingEnvironment, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _userService = userService;
+            _configuration = configuration;
         }
         /// <summary>
         /// Login for user from this post login method.
@@ -53,18 +60,34 @@ namespace EM.API.Controllers
                     var loggedinUser = _userService.VerifyLogin(objUser);
                     if (loggedinUser != null)
                     {
-                        //getting jwt token 
-                        var getJWTToken = _userService.GenerateJWT(loggedinUser.EmailAddress, loggedinUser.Role);
+                        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-                        //getting value from common helper.
-                        //return CommonHelper.GetResponseToken(HttpStatusCode.OK, "", loggedinUser, getJWTToken, "");
-                        return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser, "");
+                        //claim is used to add identity to JWT token
+                        var claims = new[] {
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, loggedinUser.EmailAddress),
+                        new Claim(ClaimTypes.Role,loggedinUser.Role),
+                        new Claim("Date", DateTime.Now.ToString()),
+                    };
+
+                        var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+                        _configuration["Jwt:Audiance"],
+                        claims,    //null original value
+                        expires: DateTime.Now.AddMinutes(120),
+
+                        signingCredentials: credentials); //notBefore:
+
+                        var GeneratedToken = new JwtSecurityTokenHandler().WriteToken(token); //return access token
+                         
+                        //getting value from common helper.    
+                        return CommonHelper.GetResponseToken(HttpStatusCode.OK, "", GeneratedToken, loggedinUser, "");
                     }
                 }
-                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "" , "");
             }
             catch
-            {
+            { 
                 return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }

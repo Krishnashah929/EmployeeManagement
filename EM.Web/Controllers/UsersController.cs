@@ -3,6 +3,7 @@ using EM.Common;
 using EM.Entity;
 using EM.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -18,7 +19,7 @@ namespace EM.Web.Controllers
     /// Calling cache from startup.cs
     /// </summary>
     [ResponseCache(CacheProfileName = "Default0")]
-   
+
     public class UsersController : BaseController
     {
         /// <summary>
@@ -68,32 +69,36 @@ namespace EM.Web.Controllers
         {
             try
             {
-                int totalRecord = 0;
-                int filterRecord = 0;
-
-                JqueryDatatableParam objJqueryDatatableParam = new JqueryDatatableParam();
-
-                objJqueryDatatableParam.draw = Request.Form["draw"].FirstOrDefault();
-
-                objJqueryDatatableParam.sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
-
-                objJqueryDatatableParam.sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
-
-                objJqueryDatatableParam.searchValue = Request.Form["search[value]"].FirstOrDefault();
-
-                objJqueryDatatableParam.pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
-
-                objJqueryDatatableParam.skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
-
-                ////Calling BaseController.
-                var result = new ApiGenericModel<User>();
-                result = ApiRequest<User>(RequestTypes.Post, "UserApi/GetUserList", null, objJqueryDatatableParam).Result;
-
-                var returnObj = new { draw = result.Draw, recordsTotal = result.RecordsTotal, recordsFiltered = result.RecordsFiltered, data = result.GenericList };
-
-                if (true)
+                if(HttpContext.Session.GetString("JWToken") == null)
                 {
-                    return Json(returnObj);
+                    return Unauthorized();
+                }
+                else
+                {
+                    JqueryDatatableParam objJqueryDatatableParam = new JqueryDatatableParam();
+
+                    objJqueryDatatableParam.draw = Request.Form["draw"].FirstOrDefault();
+
+                    objJqueryDatatableParam.sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+
+                    objJqueryDatatableParam.sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+
+                    objJqueryDatatableParam.searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+                    objJqueryDatatableParam.pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
+
+                    objJqueryDatatableParam.skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
+
+                    ////Calling BaseController.
+                    var result = new ApiGenericModel<User>();
+                    result = ApiRequest<User>(RequestTypes.Post, "UserApi/GetUserList", null, objJqueryDatatableParam).Result;
+
+                    var returnObj = new { draw = result.Draw, recordsTotal = result.RecordsTotal, recordsFiltered = result.RecordsFiltered, data = result.GenericList };
+                    
+                    if (true)
+                    {
+                        return Json(returnObj);
+                    }
                 }
             }
             catch (Exception)
@@ -109,6 +114,7 @@ namespace EM.Web.Controllers
         /// <returns></returns>
         #region AddEditUserModelGet
         [HttpGet]
+        [Authorize(Roles = "1")]
         public IActionResult AddEditUserModel(int? id)
         {
             RegisterModel objUser = new RegisterModel();
@@ -141,6 +147,7 @@ namespace EM.Web.Controllers
         /// </summary>
         #region Register/UpdateUserPost
         [HttpPost]
+        [Authorize(Roles = "1")]
         public IActionResult Register(RegisterModel objRegisterModel)
         {
             try
@@ -205,6 +212,7 @@ namespace EM.Web.Controllers
         /// <returns></returns>
         #region DeleteUserModelGet
         [HttpGet]
+        [Authorize(Roles = "1")]
         public IActionResult DeleteUserModel(int id)
         {
             try
@@ -230,6 +238,7 @@ namespace EM.Web.Controllers
         /// </summary>
         #region DeletUserDetailsPost
         [HttpPost]
+        [Authorize(Roles = "1")]
         public IActionResult DeletUserDetails(User model)
         {
             try

@@ -40,7 +40,7 @@
         /// <summary>
         /// For jwt token
         /// </summary>
-        //public string Token { get; set; }
+        public string Token { get; set; }
 
         public ApiResponseModel()
         {

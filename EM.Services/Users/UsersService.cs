@@ -211,8 +211,6 @@ namespace EM.Services
                 User verifyLogin = new User();
                 var password = EncryptionDecryption.Encrypt(user.Password.ToString());
                 verifyLogin = this.GetAllUser().FirstOrDefault(x => x.Password == password && x.EmailAddress == user.EmailAddress && x.IsActive == true && x.IsDelete == false);
-                //get jwt token 
-               
                 if (verifyLogin != null)
                 {
                     return verifyLogin;
@@ -338,39 +336,6 @@ namespace EM.Services
             {
                 throw ex;
             }
-        }
-        #endregion
-
-        /// <summary>
-        /// For generate jwt token of varified login user.
-        /// </summary>
-        /// <param name="Email"></param>
-        /// <param name="Role"></param>
-        /// <returns></returns>
-        #region GenerateJwt
-        public string GenerateJWT(string Email, string Role)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            //claim is used to add identity to JWT token
-            var claims = new[] {
-             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-             new Claim(JwtRegisteredClaimNames.Email, Email),
-             new Claim(ClaimTypes.Role,Role),
-             new Claim("Date", DateTime.Now.ToString()),
-        };
-
-                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
-              _configuration["Jwt:Audiance"],
-              claims,    //null original value
-              expires: DateTime.Now.AddMinutes(120),
-
-              //notBefore:
-              signingCredentials: credentials);
-
-            string Data = new JwtSecurityTokenHandler().WriteToken(token); //return access token 
-            return Data;
         }
         #endregion
     }

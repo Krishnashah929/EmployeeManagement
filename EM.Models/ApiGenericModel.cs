@@ -45,6 +45,6 @@ namespace EM.Models
         /// <summary>
         /// getting jwt token
         /// </summary>
-        //public string Token { get; set; }
+        public string Token { get; set; }
     }
 }

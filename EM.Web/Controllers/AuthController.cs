@@ -32,7 +32,7 @@ namespace EM.Web.Controllers
         /// <param name="configuration"></param>
         /// <param name="toastNotification"></param>
         public AuthController(IConfiguration configuration, IToastNotification toastNotification) : base(configuration)
-        { 
+        {
             _toastNotification = toastNotification;
         }
 
@@ -79,12 +79,12 @@ namespace EM.Web.Controllers
                     var result = new ApiGenericModel<User>();
                     result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Login", null, objUser).Result;
 
-                    if (result != null)
+                    if (result.StatusCode != 400)
                     {
                         objUser = result.GenericModel;
-                    }
-                    if (true)
-                    {
+                        //Set session of jwt token
+                        HttpContext.Session.SetString("JWToken", result.Token);
+
                         if (objUser != null)
                         {
                             var Name = objUser.FirstName + " " + objUser.Lastname;
@@ -100,11 +100,11 @@ namespace EM.Web.Controllers
                             var userIdentity = new ClaimsIdentity(userClaims, "User Identity");
                             var userPrincipal = new ClaimsPrincipal(new[] { userIdentity });
                             HttpContext.SignInAsync(userPrincipal);
-                            if (objUser.Role == "1")
+                            if (objUser.Role == "1" && objUser.IsDelete == false)
                             {
                                 return RedirectToAction("Index", "Users");
                             }
-                            else
+                            else if (objUser.Role == "2" && objUser.IsDelete == false)
                             {
                                 return RedirectToAction("Dashboard", "Home");
                             }
@@ -114,6 +114,11 @@ namespace EM.Web.Controllers
                             _toastNotification.AddErrorToastMessage(CommonValidations.InvalidUserMsg);
                             return View("Login");
                         }
+                    }
+                    else
+                    {
+                        _toastNotification.AddErrorToastMessage(CommonValidations.InvalidUserMsg);
+                        return View("Login");
                     }
                 }
             }

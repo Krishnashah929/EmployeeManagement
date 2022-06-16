@@ -57,16 +57,16 @@ namespace EM.API.Helpers
         /// <param name="objData"></param>
         /// <param name="objDataList"></param>
         /// <returns></returns>
-        //public static ApiResponseModel GetResponseToken(HttpStatusCode statusCode, string sMessage, string token, object objData = null, object objDataList = null)
-        //{
-        //    return new ApiResponseModel()
-        //    {
-        //        StatusCode = (int)statusCode,
-        //        Message = sMessage,
-        //        DataObj = objData != null ? JsonConvert.SerializeObject(objData) : string.Empty,
-        //        DataList = objDataList != null ? JsonConvert.SerializeObject(objDataList) : string.Empty,
-        //        Token = token
-        //    };
-        //}
+        public static ApiResponseModel GetResponseToken(HttpStatusCode statusCode, string sMessage, string token, object objData = null, object objDataList = null)
+        {
+            return new ApiResponseModel()
+            {
+                StatusCode = (int)statusCode,
+                Message = sMessage,
+                DataObj = objData != null ? JsonConvert.SerializeObject(objData) : string.Empty,
+                DataList = objDataList != null ? JsonConvert.SerializeObject(objDataList) : string.Empty,
+                Token = token
+            };
+        }
     }
 }

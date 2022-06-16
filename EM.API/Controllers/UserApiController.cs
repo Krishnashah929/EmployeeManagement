@@ -79,7 +79,6 @@ namespace EM.API.Controllers
                     var empList = data.Skip(jqueryDatatableParam.skip).Take(jqueryDatatableParam.pageSize).ToList();
 
                     return CommonHelper.GetResponseDataTable(jqueryDatatableParam.draw, totalRecord, filterRecord, empList);
-                    //return Json(returnObj);
                 }
                 //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
@@ -99,7 +98,7 @@ namespace EM.API.Controllers
         #region AddNewUserPost
         [HttpPost("Register")]
         [Obsolete]
-        [AllowAnonymous]
+        [Authorize(Roles = "1")]
         public ApiResponseModel Register(User objUser)
         {
             try
@@ -147,7 +146,7 @@ namespace EM.API.Controllers
         /// </summary>
         #region EditDetailsModel(GET)
         [HttpGet("EditDetailsModel/{id}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "1")]
         public ApiResponseModel EditDetailsModel(int id)
         {
             try
@@ -174,7 +173,7 @@ namespace EM.API.Controllers
         /// <returns></returns>
         #region UpdateUserDetails
         [HttpPut("EditUser")]
-        [AllowAnonymous]
+        [Authorize(Roles = "1")]
         public ApiResponseModel EditUser(User user)
         {
             try
@@ -201,7 +200,7 @@ namespace EM.API.Controllers
         /// </summary>
         #region DeleteDetailsModel(GET)
         [HttpGet("DeleteDetailsModel/{id}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "1")]
         public ApiResponseModel DeleteDetailsModel(int id)
         {
             try
@@ -228,7 +227,7 @@ namespace EM.API.Controllers
         /// <returns></returns>
         #region DeleteUserPost
         [HttpDelete("DeleteUser/{id}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "1")]
         public ApiResponseModel DeleteUser(int id)
         {
             try
@@ -275,5 +274,6 @@ namespace EM.API.Controllers
             }
         }
         #endregion
+       
     }
 }

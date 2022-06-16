@@ -27,11 +27,5 @@ namespace EM.Models
         [StringLength(10, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 8)]
         [DisplayName("Password")]
         public string Password { get; set; }
-
-        ///// <summary>
-        ///// UserRole input feild.
-        ///// </summary>
-        public string Role { get; set; }
-
     }
 }

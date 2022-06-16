@@ -1,6 +1,7 @@
 ﻿#region using
 using EM.Common;
 using EM.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -46,6 +47,15 @@ namespace EM.Web.Controllers
             {
                 client = httpClient;
             }
+
+            //For geeting session of jwt token
+            var token = HttpContext.Session.GetString("JWToken");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            }
+
             ApiGenericModel<T> objApiGenericModel = new ApiGenericModel<T>();
             try
             {
@@ -124,7 +134,7 @@ namespace EM.Web.Controllers
                 objApiGenericModel.Draw = objApiResponseModel.Draw;
                 objApiGenericModel.RecordsTotal = objApiResponseModel.RecordsTotal;
                 objApiGenericModel.RecordsFiltered = objApiResponseModel.RecordsFiltered;
-                //objApiGenericModel.Token = objApiGenericModel.Token;
+                objApiGenericModel.Token = objApiResponseModel.Token;
 
                 //if the data is passing in object form.
                 if (!string.IsNullOrEmpty(objApiResponseModel.DataObj))

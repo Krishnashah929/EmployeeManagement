@@ -39,19 +39,10 @@ namespace EM.API
             //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "EM.API", Version = "v1" });
             //});
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddMvc(options =>
-            {
-                options.CacheProfiles.Add("Default0",
-                    new CacheProfile()
-                    {
-                        Duration = 0,
-                        NoStore = true
-                    });
-            });
-
+           
             //for JWT authentication
             #region Swagger(JWT Authentication)
+
             var key = Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]);
             services.AddAuthentication(x =>
             {
@@ -98,7 +89,6 @@ namespace EM.API
                      });
 
             });
-
             #endregion
 
             services.AddScoped<IDatabaseContext, ApplicationDbContext>();
@@ -106,37 +96,15 @@ namespace EM.API
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddServices();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-
-            services.AddAuthentication("Cookies")
-                 .AddCookie("Cookies", config =>
-                 {
-                     config.Cookie.Name = "UserLoginCookie"; // Name of cookie     
-                     config.LoginPath = "/Auth/Login"; // Path for the redirect to user login page    
-                     config.AccessDeniedPath = "/Auth/Error";
-                 });
-
-            services.AddAuthorization(config =>
-            {
-                config.AddPolicy("UserPolicy", policyBuilder =>
-                {
-                    policyBuilder.UserRequireCustomClaim(ClaimTypes.Email);
-                });
-            });
-            
+             
             services.AddSession();
             services.AddControllers();
             services.AddControllersWithViews();
-
-            services.AddDistributedMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
         {
-            var cookiePolicyOptions = new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            };
             dbContext.Database.Migrate();
 
             if (env.IsDevelopment())
@@ -153,10 +121,6 @@ namespace EM.API
 
             app.UseRouting();
 
-            //app.UseCookiePolicy(CookiePolicyOptions);
-
-            app.UseCookiePolicy();
-
             // who are you?  
             app.UseAuthentication();
 
@@ -164,13 +128,7 @@ namespace EM.API
             app.UseAuthorization();
 
             app.UseHttpsRedirection();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //        //name: "default",
-            //        //pattern: "{controller=Auth}/{action=Login}/{id?}");
-            //});
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -179,8 +137,6 @@ namespace EM.API
             });
             AppDomain.CurrentDomain.SetData("ContentRootPath", env.ContentRootPath);
             AppDomain.CurrentDomain.SetData("WebRootPath", env.WebRootPath);
-            
-
         }
     }
 }
