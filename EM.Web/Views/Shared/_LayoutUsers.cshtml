@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!--Full Calender-->                        
+    <link href='fullcalendar/main.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0/main.min.css,npm/fullcalendar@5.11.0/main.min.css">
     <!-- jQuery -->
     <script src="~/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
@@ -37,6 +40,15 @@
 
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <!-- multiple Select2 -->
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!--  multiple Select2 -->
+    <script src="../../plugins/select2/js/select2.full.min.js"></script>
+    <!--Full calender-->
+    <script src='fullcalendar/main.js'></script>
+    <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0,npm/fullcalendar@5.11.0/main.min.js,npm/fullcalendar@5.11.0/locales-all.min.js,npm/fullcalendar@5.11.0/locales-all.min.js"></script>
+
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -88,7 +100,7 @@
             <!-- Brand Logo -->
             <a asp-action="Dashboard" asp-controller="Home" class="brand-link">
                 <img src="~/dist/img/AdminLTELogo.png" alt="" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light"> School Management</span>
+                <span class="brand-text font-weight-light"> Hospital Management</span>
             </a>
             <!-- Sidebar -->
             <div class="sidebar">
@@ -112,12 +124,24 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.IsInRole("Admin") || User.IsInRole("Users"))
                         {
                             <li class="nav-item">
-                                <a asp-action="Index" asp-controller="Users" class="nav-link active">
+                                <a asp-action="Index" asp-controller="Admin" class="nav-link active">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Users</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="GetDoctors" asp-controller="Admin" class="nav-link">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>Doctors</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="TimeSheets" asp-controller="Admin" class="nav-link">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>TimeSheets</p>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -133,6 +157,12 @@
                                 <a asp-action="Dashboard" asp-controller="Home" class="nav-link active">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Dashboard</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="LogOut" asp-controller="Auth" class="nav-link">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>LogOut</p>
                                 </a>
                             </li>
                         }

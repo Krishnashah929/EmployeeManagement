@@ -57,12 +57,13 @@
             <div class="form-group">
                 <select class="form-select form-control" asp-for="RoleId">
                     <option disabled selected value="0"> Choose UserRole</option>
-                    <option value="1"> Admin</option>
-                    <option value="2"> User</option>
+                    <option value="1"> Admin </option>
+                    <option value="2"> User </option>
+                    <option value="3"> Receptionist </option>
+                    <option value="4"> Doctor </option>
                 </select>
                 <span asp-validation-for="RoleId" class="text-danger"></span>
             </div>
-
             <div class="row m-auto">
                 <div class="col">
                     @if (Model.UserId == 0)
@@ -73,7 +74,7 @@
                     {
                         <button type="submit" class="btn btn-primary btn-block">  Update User </button>
                     }
-
+                   
                 </div>
             </div>
         </form>
@@ -93,7 +94,7 @@
             event.preventDefault();
             event.stopImmediatePropagation();
             $.ajax({
-                url: '/Users/Register',
+                url: '@Url.Content("~/Admin/Register")',
                 type: "POST",
                 async: true,
                 data: $("#frmUsers").serialize(),

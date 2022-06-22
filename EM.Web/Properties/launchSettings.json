@@ -21,13 +21,17 @@
       "use64Bit": true
     },
     "EM.Web": {
-      "commandName": "Project",
+      "commandName": "IIS",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:5000"
+    },
+    "LocalIIS": {
+      "commandName": "IIS",
+      "launchBrowser": true
     }
   }
 }

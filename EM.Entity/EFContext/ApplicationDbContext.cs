@@ -58,5 +58,16 @@ namespace EM.EFContext
         /// Get or set the user role.
         /// </summary>
         public virtual DbSet<UserRole> UserRole { get; set; }
+        /// <summary>
+        /// Get all doctors details.
+        /// </summary>
+        public virtual DbSet<Doctor> Doctor { get; set; }
+        /// <summary>
+        /// Get doctor's speciality
+        /// </summary>
+        public virtual DbSet<Speciality> Specialitie { get; set; }
+       
+
+        public virtual DbSet<Appointment> Appointment { get; set; }
     }
 }

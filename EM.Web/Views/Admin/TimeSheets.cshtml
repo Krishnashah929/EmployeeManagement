@@ -1,0 +1,201 @@
+﻿@{
+    Layout = "_LayoutUsers";
+}
+
+@*AppointmentId, PatientId, Diagnosis, Remarks, DoctorId, StartDateTime, EndDateTime,*@
+
+<div id='calendar'></div>
+
+<div aria-hidden="true" aria-labelledby="idAddAppointments" role="dialog" tabindex="-1" id="idAddAppointments" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h3 class="modal-title m-auto text-secondary">
+                    <b> Add Appointment </b>
+                </h3>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <!-- New user registration form -->
+                <form id="frmAppointment" method="post">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Diagnosis" onkeydown="return /[a-z]/i.test(event.key)">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Remarks" onkeydown="return /[a-z]/i.test(event.key)">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="datetime" class="form-control" placeholder="StartDateTime">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="datetime" class="form-control" placeholder="EndDateTime">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row m-auto">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary btn-block"> Add Appointment </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            initialDate: '2022-04-07',
+            selectable: true,
+            dragScroll: true,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            dateClick: function () {
+                $('#idAddAppointments').modal("show");
+            },
+            events: [
+                {
+                    title: 'Long Event',
+                    start: '2022-04-07',
+                    end: '2022-04-10'
+                },
+                {
+                    groupId: '999',
+                    title: 'Repeating Event',
+                    start: '2022-04-09T16:00:00'
+                },
+                {
+                    groupId: '999',
+                    title: 'Repeating Event',
+                    start: '2022-04-16T16:00:00'
+                },
+                {
+                    title: 'Conference',
+                    start: '2022-04-11',
+                    end: '2022-04-13'
+                },
+                {
+                    title: 'Meeting',
+                    start: '2022-04-12T10:30:00',
+                    end: '2022-04-12T12:30:00'
+                },
+                {
+                    title: 'Lunch',
+                    start: '2022-04-12T12:00:00'
+                },
+                {
+                    title: 'Meeting',
+                    start: '2022-04-12T14:30:00'
+                },
+                {
+                    title: 'Birthday Party',
+                    start: '2022-04-13T07:00:00'
+                },
+                {
+                    title: 'Click for Google',
+                    url: 'http://google.com/',
+                    start: '2022-04-28'
+                }
+            ],
+            selectOverlap: function (event) {
+                return event.rendering === 'background';
+            }
+        });
+        calendar.render();
+        //eventClick: $('#idAddAppointments').modal('show');
+    });
+
+
+    $("#frmAppointment").submit(function (event) {
+        debugger;
+        $.validator.setDefaults({
+            ignore: ':hidden, [readonly=readonly]'
+        });
+        var $form = $('#frmAppointment');
+        $.validator.unobtrusive.parse($form);
+
+        if ($("#frmAppointment").valid()) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            $.ajax({
+                url: '@Url.Content("~/Admin/EditDoctor")',
+                type: "POST",
+                async: true,
+                data: $("#frmAppointment").serialize(),
+                success: function (result) {
+                    if (result != null && result.statusCode != 200) {
+                        toastr.error(result.message);
+                        $('#idAddAppointments').modal("show");
+                    } else {
+                        toastr.success(result.message);
+                        $('#idAddAppointments').modal("hide");
+                    }
+                    console.log(result);
+                },
+                error: function (ex) {
+                    debugger;
+                    toastr.error('Invalid Data.');
+                    console.log('Failed ');
+                }
+            });
+        }
+        else {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    });
+</script>
+  @*//     eventClick: function (calEvent, jsEvent, view) {
+        //        selectedEvent = calEvent;
+        //        $('#idAddAppointments #eventTitle').text(calEvent.title);
+        //        var $description = $('
+<div />');
+        //        $description.append($('
+<p />').html('<b>Start:</b>' + calEvent.start.format("DD-MMM-YYYY HH:mm a")));
+        //        if (calEvent.end != null) {
+        //            $description.append($('
+<p />').html('<b>End:</b>' + calEvent.end.format("DD-MMM-YYYY HH:mm a")));
+        //        }
+        //        $description.append($('
+<p />').html('<b>Description:</b>' + calEvent.description));
+        //        $('#myModal #pDetails').empty().html($description);
+
+        //        $('#idAddAppointments').modal('show');
+        //    },
+        //});*@

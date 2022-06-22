@@ -48,6 +48,7 @@ namespace EM.Web
                  });
 
             services.AddAuthorization(config =>
+            
             {
                 config.AddPolicy("UserPolicy", policyBuilder =>
                 {

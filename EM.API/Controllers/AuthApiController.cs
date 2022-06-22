@@ -16,11 +16,13 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
+using static EM.Common.GlobalEnum;
 #endregion
 
 
 namespace EM.API.Controllers
 {
+
     /// <summary>
     /// Main all account related methods are in this AuthApi controller.
     /// </summary>
@@ -28,11 +30,23 @@ namespace EM.API.Controllers
     [ApiController]
     public class AuthApiController : ControllerBase
     {
+        /// <summary>
+        /// Generate fields for IUsersService, IHostingEnvironment, IConfiguration
+        /// </summary>
+        #region Fields
         private IUsersService _userService;
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IConfiguration _configuration;
+        #endregion
 
+        /// <summary>
+        /// Constructors for AuthApiController.
+        /// </summary>
+        /// <param name="userService"></param>
+        /// <param name="hostingEnvironment"></param>
+        /// <param name="configuration"></param>
+        #region Constructors
         [Obsolete]
         public AuthApiController(IUsersService userService, IHostingEnvironment hostingEnvironment, IConfiguration configuration)
         {
@@ -40,11 +54,16 @@ namespace EM.API.Controllers
             _userService = userService;
             _configuration = configuration;
         }
+
+        #endregion
+
         /// <summary>
         /// Login for user from this post login method.
         /// loginModel is a viewmodel and used for login form.
         /// object of LoginModel is objLoginModel.
         /// </summary>
+        /// <param name="objloginModel"></param>
+        /// <returns>LoginModel</returns>
         #region Login(POST)
         [HttpPost("Login")]
         public ApiResponseModel Login(LoginModel objloginModel)
@@ -53,23 +72,20 @@ namespace EM.API.Controllers
             {
                 if (objloginModel != null)
                 {
-                    User objUser = new User();
-                    objUser.EmailAddress = objloginModel.EmailAddress;
-                    objUser.Password = objloginModel.Password;
-
-                    var loggedinUser = _userService.VerifyLogin(objUser);
+                    var loggedinUser = _userService.VerifyLogin(objloginModel);
                     if (loggedinUser != null)
                     {
                         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
+                        int roleId = Convert.ToInt32(loggedinUser.Role);
+                        string roleName = ((UserRoles)roleId).ToString();
                         //claim is used to add identity to JWT token
                         var claims = new[] {
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Email, loggedinUser.EmailAddress),
-                        new Claim(ClaimTypes.Role,loggedinUser.Role),
+                        new Claim(ClaimTypes.Role, roleName),
                         new Claim("Date", DateTime.Now.ToString()),
-                    };
+                        };
 
                         var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
                         _configuration["Jwt:Audiance"],
@@ -79,41 +95,43 @@ namespace EM.API.Controllers
                         signingCredentials: credentials); //notBefore:
 
                         var GeneratedToken = new JwtSecurityTokenHandler().WriteToken(token); //return access token
-                         
+
                         //getting value from common helper.    
                         return CommonHelper.GetResponseToken(HttpStatusCode.OK, "", GeneratedToken, loggedinUser, "");
                     }
                 }
-                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "" , "");
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
             catch
-            { 
+            {
                 return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion
 
-        ///// <summary>
-        ///// Register for user from this post Register method.
-        ///// object of User is objUser.
-        ///// </summary>
+        /// <summary>
+        /// Register for user from this post Register method.
+        /// object of User is objUser.
+        /// </summary>
+        /// <param name="objUser"></param>
+        /// <returns>Register new user</returns>
         #region Register(POST)
         [HttpPost("Register")]
         [Obsolete]
-        public ApiResponseModel Register(User objUser)
+        public ApiResponseModel Register(RegisterModel objRegisterModel)
         {
             try
             {
-                if (objUser != null)
+                if (objRegisterModel != null )
                 {
-                    var registerUsers = _userService.Register(objUser);
-                    if (registerUsers != null && objUser.UserId != 0)
+                    var registerUsers = _userService.Register(objRegisterModel);
+                    if (registerUsers != null)
                     {
                         //encrypt the userid for link in url.
-                        var userId = EncryptionDecryption.Encrypt(objUser.UserId.ToString());
-
+                        var userId = EncryptionDecryption.Encrypt(objRegisterModel.UserId.ToString());
+                        string basicUrl = _configuration.GetValue<string>("MailLinks:UrlLink");
                         //link generation with userid.
-                        var linkPath = "http://localhost:7399/Auth/SetPassword?link=" + userId;
+                        var linkPath = basicUrl + "SetPassword?link=" + userId;
 
                         string webRootPath = _hostingEnvironment.WebRootPath + "/MalTemplates/SetPasswordTemplate.html";
                         StreamReader reader = new StreamReader(webRootPath);
@@ -122,9 +140,9 @@ namespace EM.API.Controllers
                         myString = readFile;
                         var subject = "Set Password";
                         //when you have to replace the content of html page
-                        myString = myString.Replace("@@Name@@", objUser.FirstName);
-                        myString = myString.Replace("@@FullName@@", objUser.FirstName + " " + objUser.Lastname);
-                        myString = myString.Replace("@@Email@@", objUser.EmailAddress);
+                        myString = myString.Replace("@@Name@@", objRegisterModel.FirstName);
+                        myString = myString.Replace("@@FullName@@", objRegisterModel.FirstName + " " + objRegisterModel.Lastname);
+                        myString = myString.Replace("@@Email@@", objRegisterModel.EmailAddress);
                         myString = myString.Replace("@@Link@@", linkPath);
                         var body = myString.ToString();
 
@@ -143,41 +161,10 @@ namespace EM.API.Controllers
         #endregion
 
         /// <summary>
-        ///  In this method we are sending main set password template to user. where they can set their new password.
-        /// </summary>
-        #region SendEmail
-        private void SendEmail(string email, string body, string subject)
-        {
-            try
-            {
-                using (MailMessage mm = new MailMessage("krishnaa9121@gmail.com", email))
-                {
-                    mm.Subject = subject;
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
-
-                    using (SmtpClient smtp = new SmtpClient())
-                    {
-                        smtp.Host = "smtp.gmail.com";
-                        smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "Kri$hn@@91");
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = NetworkCred;
-                        smtp.Port = 587;
-                        smtp.Send(mm);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-        #endregion
-
-        /// <summary>
         /// Link method of sending mail for reset password. 
         /// </summary>
+        /// <param name="objUser"></param>
+        /// <returns>send link for forgot password</returns>
         #region Sendlink
         [HttpPost("Sendlink")]
         public ApiResponseModel Sendlink(User objUser)
@@ -187,14 +174,17 @@ namespace EM.API.Controllers
                 var loggedinUser = _userService.GetByEmail(objUser.EmailAddress);
                 if (loggedinUser != null)
                 {
+                    string basicUrl = _configuration.GetValue<string>("MailLinks:UrlLink");
                     var userId = EncryptionDecryption.Encrypt(loggedinUser.UserId.ToString());
                     //link generation with userid.
-                    var linkPath = "http://localhost:7399/Auth/ForgotPassword?link=" + userId;
+                    var linkPath = basicUrl + "ForgotPassword?link=" + userId;
                     var subject = "Password Reset Request";
                     var body = "Hi " + objUser.FirstName + ", <br/> You recently requested to reset the password for your account. " +
-                               "Click the link below to reset ." + "<br/> <br/><a href='" + linkPath + "'>" + linkPath + "</a> <br/> <br/>" +
+                               "Click the link below to reset ." + "<br/> <br/>" +
+                               " <button type=' button ' class=' btn-info'> <a href='" + linkPath + "'> </a> Forgot Password </button> <br/> <br/>" +
                                "If you did not request for reset password please ignore this mail.";
-                    SendEmail(objUser.EmailAddress, body, subject);
+
+                    //MailService.SendEmail(objUser.EmailAddress, body, subject);
 
                     return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser);
                 }
@@ -210,9 +200,11 @@ namespace EM.API.Controllers
         }
         #endregion
 
-        ///// <summary>
-        /////  Set password method will call when user set their password from email-template
-        ///// </summary>
+        /// <summary>
+        ///  Set password method will call when user set their password from email-template
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>open set password with particular user id</returns>
         #region SetPassword(GET)
         [HttpGet("SetPassword/{id}")]
         public ApiResponseModel SetPassword(int id)
@@ -234,9 +226,11 @@ namespace EM.API.Controllers
         }
         #endregion
 
-        ///// <summary>
-        /////  Set password Post method will call when user enter both their password and click to set password.
-        ///// </summary>
+        /// <summary>
+        ///  Set password Post method will call when user enter both their password and click to set password.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>set new password for user</returns>
         #region SetPassword(POST)
         [HttpPost("SetPassword")]
         public ApiResponseModel SetPassword(User user)
@@ -264,6 +258,8 @@ namespace EM.API.Controllers
         /// <summary>
         /// Reset Password get method.
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns>open forgot password</returns>
         #region ForgotPassword(GET)
         [HttpGet("ForgotPassword/{id}")]
         public ApiResponseModel ForgotPasswordAsync(int id)
@@ -288,6 +284,8 @@ namespace EM.API.Controllers
         /// <summary>
         /// Reset Password post method.
         /// </summary>
+        /// <param name="user"></param>
+        /// <returns>change user's password</returns>
         #region ForgotPassword(POST)
         [HttpPost("ForgotPassword")]
         public ApiResponseModel ForgotPasswordAsync(User user)

@@ -60,6 +60,11 @@ namespace EM.GenericUnitOfWork.Base
         /// <returns>The Entity's state</returns>
         EntityState HardDelete(T entity);
 
+        /// <summary>
+        /// Hard delete with where condition
+        /// </summary>
+        public IQueryable<T> HardDelete();
+     
         bool Exists(Expression<Func<T, bool>> predicate);
     }
     }

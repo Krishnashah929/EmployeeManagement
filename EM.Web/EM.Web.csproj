@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Users\_EditUserPartial.cshtml" />
+    <Content Remove="Views\Admin\_EditUserPartial.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

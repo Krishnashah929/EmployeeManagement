@@ -62,7 +62,7 @@
         $('#idUserTable').DataTable(
             {
                 ajax: {
-                    url: "GetUserList",
+                    url:'@Url.Content("GetUserList")',
                     type: "POST",
                 },
                 destroy: true,
@@ -99,7 +99,7 @@
     //For open add user model
     function addUser() {
         $.ajax({
-            url: '/Users/AddEditUserModel',
+            url: '@Url.Content("~/Admin/AddEditUserModel")',
             data: { "id": 0 },
             type: 'GET',
             success: function (response) {
@@ -113,7 +113,7 @@
         debugger;
         var id = userId;
         $.ajax({
-            url: '/Users/AddEditUserModel',
+            url: '@Url.Content("~/Admin/AddEditUserModel")',
             type: 'GET',
             data: { "id": id },
             success: function (response) {
@@ -130,7 +130,7 @@
         debugger;
         var id = userId;
         $.ajax({
-            url: '/Users/DeleteUserModel',
+            url:'@Url.Content("~/Admin/DeleteUserModel")',
             type: 'GET',
             data: { "id": id },
             success: function (response) {
@@ -144,7 +144,7 @@
         var data = $("#idSigninForm").serialize();
         $.ajax({
             type: 'POST',
-            url: '/Users/EditUserDetailsPost',
+            url: '@Url.Content("~/Admin/EditUserDetailsPost")',
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
             data: data,
             success: function (result) {
@@ -169,7 +169,7 @@
         var data = $("#idDeletDetails").serialize();
         $.ajax({
             type: 'POST',
-            url: '/Users/DeletUserDetails',
+            url: '@Url.Content("~/Admin/DeletUserDetails")',
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
             data: data,
             success: function (result) {

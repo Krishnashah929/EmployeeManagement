@@ -38,7 +38,61 @@ namespace EM.Entity.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.UserId);
                 });
+            migrationBuilder.CreateTable(
+                name: "Doctor",
+                columns: table => new
+                {
+                    DoctorId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Age = table.Column<int>(type: "int", nullable: true),
+                    Degree = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    speciality = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Experience = table.Column<int>(type: "int", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedBy = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
 
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Doctor", x => x.DoctorId);
+                });
+
+            //migrationBuilder.CreateTable(
+            //   name: "AppointmentDetail",
+            //   columns: table => new
+            //   {
+            //       AppointmentId = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
+            //       PatientId = table.Column<int>(type: "int", nullable: false),
+            //       DoctorId = table.Column<int>(type: "int", nullable: false),
+            //       Diagnosis = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+            //       Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+            //       StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+            //       EndDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+            //       IsDelete = table.Column<bool>(type: "bit", nullable: false),
+            //       CreatedBy = table.Column<int>(type: "int", nullable: false),
+            //       CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+            //       ModifiedBy = table.Column<int>(type: "int", nullable: true),
+            //       ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+
+            //   },
+            //   constraints: table =>
+            //   {
+            //       table.PrimaryKey("PK_AppointmentDetail", x => x.AppointmentId);
+            //       table.ForeignKey(
+            //           name: "FK_AppointmentDetail_Doctor_DoctorId",
+            //           column: x => x.DoctorId,
+            //           principalTable: "Doctor",
+            //           principalColumn: "DoctorId",
+            //           onDelete: ReferentialAction.Cascade);
+            //   });
+        
             migrationBuilder.CreateTable(
                 name: "UserRole",
                 columns: table => new
@@ -76,6 +130,12 @@ namespace EM.Entity.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+               name: "Doctor");
+            
+            //migrationBuilder.DropTable(
+            //   name: "AppointmentDetail");
         }
     }
 }

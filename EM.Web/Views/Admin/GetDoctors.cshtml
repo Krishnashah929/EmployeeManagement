@@ -1,0 +1,109 @@
+﻿@{
+    Layout = "_LayoutUsers";
+}
+@{
+    ViewData["Title"] = "Doctor's Index";
+}
+ 
+@if (User.Identity.IsAuthenticated)
+{
+    <div aria-hidden="true" aria-labelledby="EdiDoctors" role="dialog" tabindex="-1" id="EdiDoctors" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="idDeleteUser" role="dialog" tabindex="-1" id="idDeleteUser" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="card-title mt-1">  Welcome, List of Doctors</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="idDoctorTable" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>DoctorId</th>
+                                    <th>FirstName</th>
+                                    <th>LastName</th>
+                                    <th>EmailAddress</th>
+                                    <th>PhoneNumber</th>
+                                    <th>Pincode</th>
+                                    <th>Address</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        GetDoctorsList();
+    });
+    //for getting userlist.
+    function GetDoctorsList() {
+        $('#idDoctorTable').DataTable(
+            {
+                ajax: {
+                    url:'@Url.Content("GetDoctorsList")',
+                    type: "POST",
+                },
+                destroy: true,
+                "paging": true,
+                "searching": true,
+                "info": true,
+                "lengthChange": false,
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+
+                columns: [
+                    { data: "doctorId", name: "DoctorId" },
+                    { data: "firstName", name: "FirstName" },
+                    { data: "lastname", name: "lastname" },
+                    { data: "emailAddress", name: "EmailAddress" },
+                    { data: "phoneNumber", name: "PhoneNumber" },
+                    { data: "pincode", name: "Pincode" },
+                    { data: "address", name: "Address" },
+                    {
+                        //adds td row for button
+                        data: null,
+                        render: function (data) {
+                            return "<a href='#' class='btn btn-info m-auto' data-toggle='model' data-target=#EdiDoctors' onclick=editDoctor('" + data.doctorId + "'); >Edit</a>";
+                        }
+                    },
+                ],
+            }
+        );
+    }
+ 
+    //For open edit doctor model
+    function editDoctor(doctorId) {
+        debugger;
+        var id = doctorId;
+        $.ajax({
+            url: '@Url.Content("~/Admin/EditDoctorsModel")',
+            type: 'GET',
+            data: { "id": id },
+            success: function (response) {
+                $('#EdiDoctors').find(".modal-dialog").html(response);
+                $('#EdiDoctors').modal("show");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+</script>

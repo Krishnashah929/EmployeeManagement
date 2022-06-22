@@ -107,7 +107,7 @@ namespace EM.Entity
         /// Get or set userrole table
         /// </summary>
         public virtual ICollection<UserRole> UserRoles { get; set; }
-
+        
         /// <summary>
         /// Get or set user role
         /// </summary>

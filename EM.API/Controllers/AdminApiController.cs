@@ -13,6 +13,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 #endregion
 
 namespace EM.API.Controllers
@@ -23,29 +24,43 @@ namespace EM.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
-    public class UserApiController : ControllerBase
+    public class AdminApiController : ControllerBase
     {
+        /// <summary>
+        /// Generate fields for IUsersService, IHostingEnvironment, HttpCacheability,IConfiguration
+        /// </summary>
+        #region Fields
         private IUsersService _userService;
+        private IConfiguration _configuration;
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnvironment;
-
         public object HttpCacheability { get; private set; }
+        #endregion
 
+        /// <summary>
+        /// Constructors for UserApiController.
+        /// </summary>
+        /// <param name="userService"></param>
+        /// <param name="hostingEnvironment"></param>
+        /// <param name="configuration"></param>
+        #region Constructors
         [Obsolete]
-        public UserApiController(IUsersService userService, IHostingEnvironment hostingEnvironment)
+        public AdminApiController(IUsersService userService, IHostingEnvironment hostingEnvironment, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _userService = userService;
+            _configuration = configuration;
         }
-
+        #endregion
+        
         /// <summary>
         /// Getting user list
         /// </summary>
         /// <param name="jqueryDatatableParam"></param>
-        /// <returns></returns>
+        /// <returns>all list of users</returns>
         #region GetUserList
         [HttpPost("GetUserList")]
-        [Authorize (Roles ="1")]
+        [Authorize(Roles = "Admin, Users")]
         public ApiResponseModel GetUserList(JqueryDatatableParam jqueryDatatableParam)
         {
             try
@@ -95,10 +110,12 @@ namespace EM.API.Controllers
         /// Register for user from this post Register method.
         /// object of User is objUser.
         /// </summary>
+        /// <param name="objUser"></param>
+        /// <returns>Add new user form admin side</returns>
         #region AddNewUserPost
         [HttpPost("Register")]
         [Obsolete]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "Admin")]
         public ApiResponseModel Register(User objUser)
         {
             try
@@ -110,10 +127,9 @@ namespace EM.API.Controllers
                     {
                         //encrypt the userid for link in url.
                         var userId = EncryptionDecryption.Encrypt(objUser.UserId.ToString());
-
+                        string basicUrl = _configuration.GetValue<string>("MailLinks:UrlLink");
                         //link generation with userid.
-                        var linkPath = "http://localhost:7399/Auth/SetPassword?link=" + userId;
-
+                        var linkPath = basicUrl + "SetPassword?link=" + userId;
                         string webRootPath = _hostingEnvironment.WebRootPath + "/MalTemplates/SetPasswordTemplate.html";
                         StreamReader reader = new StreamReader(webRootPath);
                         string readFile = reader.ReadToEnd();
@@ -127,9 +143,9 @@ namespace EM.API.Controllers
                         myString = myString.Replace("@@Link@@", linkPath);
                         var body = myString.ToString();
 
-                        //SendEmail(objUser.EmailAddress, body, subject);
+                        //MailService.SendEmail(objUser.EmailAddress, body, subject);
                         //getting value from common helper.
-                        return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.NewUserRegisterd , registerUsers);
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.NewUserRegisterd, registerUsers);
                     }
                 }
                 return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg, "");
@@ -142,11 +158,13 @@ namespace EM.API.Controllers
         #endregion
 
         /// <summary>
-        ///   Get method edit details 
+        /// Get method edit details 
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns>open edit model model</returns>
         #region EditDetailsModel(GET)
         [HttpGet("EditDetailsModel/{id}")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "Admin")]
         public ApiResponseModel EditDetailsModel(int id)
         {
             try
@@ -170,22 +188,22 @@ namespace EM.API.Controllers
         /// Post method for edit details
         /// </summary>
         /// <param name="user"></param>
-        /// <returns></returns>
+        /// <returns>edit existing user details from admin side</returns>
         #region UpdateUserDetails
         [HttpPut("EditUser")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "Admin")]
         public ApiResponseModel EditUser(User user)
         {
             try
             {
-                if(user != null)
+                if (user != null)
                 {
                     var editUser = _userService.UpdateDetails(user);
                     return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateUserDetails, editUser);
                 }
                 else
                 {
-                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest,CommonValidations.RecordExistsMsg);
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg);
                 }
             }
             catch
@@ -198,9 +216,11 @@ namespace EM.API.Controllers
         /// <summary>
         ///   get delete details 
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns>open delete model</returns>
         #region DeleteDetailsModel(GET)
         [HttpGet("DeleteDetailsModel/{id}")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "Admin")]
         public ApiResponseModel DeleteDetailsModel(int id)
         {
             try
@@ -223,19 +243,19 @@ namespace EM.API.Controllers
         /// <summary>
         /// Post method for delete user
         /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
+        /// <param name="id"></param>
+        /// <returns>delete user details from admin side</returns>
         #region DeleteUserPost
         [HttpDelete("DeleteUser/{id}")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "Admin")]
         public ApiResponseModel DeleteUser(int id)
         {
             try
             {
                 var deleteUser = _userService.DeleteDetails(id);
-                return CommonHelper.GetResponse(HttpStatusCode.OK,CommonValidations.DeleteUserDetails, deleteUser);
+                return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.DeleteUserDetails, deleteUser);
             }
-             catch
+            catch
             {
                 return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, CommonValidations.RecordNotExistsMsg, "");
             }
@@ -243,37 +263,112 @@ namespace EM.API.Controllers
         #endregion
 
         /// <summary>
-        ///  In this method we are sending main set password template to user. where they can set their new password.
+        /// Getting doctors list
         /// </summary>
-        #region SendEmail
-        private void SendEmail(string email, string body, string subject)
+        /// <param name="jqueryDatatableParam"></param>
+        /// <returns>all list of doctors</returns>
+        #region GetDoctorList
+        [HttpPost("GetDoctorList")]
+        [Authorize(Roles = "Admin")]
+        public ApiResponseModel GetDoctorList(JqueryDatatableParam jqueryDatatableParam)
         {
             try
             {
-                using (MailMessage mm = new MailMessage("krishnaa9121@gmail.com", email))
-                {
-                    mm.Subject = subject;
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
+                int totalRecord = 0;
+                int filterRecord = 0;
 
-                    using (SmtpClient smtp = new SmtpClient())
+                var data = _userService.GetAllDoctors();
+                if (data != null)
+                {
+                    // get total count of records 
+                    totalRecord = data.Count();
+
+                    // search data when search value found
+                    if (!string.IsNullOrEmpty(jqueryDatatableParam.searchValue))
                     {
-                        smtp.Host = "smtp.gmail.com";
-                        smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "KriShn@@91");
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = NetworkCred;
-                        smtp.Port = 587;
-                        smtp.Send(mm);
+                        data = data.Where(x =>
+                          x.FirstName.ToLower().Contains(jqueryDatatableParam.searchValue.ToLower())
+                          || x.Lastname.ToLower().Contains(jqueryDatatableParam.searchValue.ToLower())
+                          || x.EmailAddress.ToLower().Contains(jqueryDatatableParam.searchValue.ToLower())
+                        );
                     }
+                    // get total count of records after search 
+                    filterRecord = data.Count();
+
+                    //sort data
+                    if (!string.IsNullOrEmpty(jqueryDatatableParam.sortColumn) && !string.IsNullOrEmpty(jqueryDatatableParam.sortColumnDirection))
+                        data = data.AsQueryable().OrderBy(jqueryDatatableParam.sortColumn + " " + jqueryDatatableParam.sortColumnDirection);
+
+                    //pagination
+                    var empList = data.Skip(jqueryDatatableParam.skip).Take(jqueryDatatableParam.pageSize).ToList();
+
+                    return CommonHelper.GetResponseDataTable(jqueryDatatableParam.draw, totalRecord, filterRecord, empList);
                 }
+                //getting value from common helper.
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
-            catch (Exception)
+
+            catch
             {
-                throw;
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
         }
         #endregion
-       
+
+        /// <summary>
+        /// Get method edit doctor details 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>open edit model</returns>
+        #region EditDoctorModel(GET)
+        [HttpGet("EditDoctorModel/{id}")]
+        [Authorize(Roles = "Admin")]
+        public ApiResponseModel EditDoctorModel(int id)
+        {
+            try
+            {
+                var userDetails = _userService.GetByDoctorId(id);
+                if (userDetails != null)
+                {
+                    //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, "", userDetails);
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Post method for edit details
+        /// </summary>
+        /// <param name="doctor"></param>
+        /// <returns>edit existing doctor details from admin side</returns>
+        #region EditDoctor
+        [HttpPut("EditDoctor")]
+        [Authorize(Roles = "Admin")]
+        public ApiResponseModel EditDoctor(Doctor objDoctor)
+        {
+            try
+            {
+                if (objDoctor != null)
+                {
+                    var editDoctor = _userService.UpdateDoctorDetails(objDoctor);
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateUserDetails, editDoctor);
+                }
+                else
+                {
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg);
+                }
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
+            }
+        }
+        #endregion
     }
 }

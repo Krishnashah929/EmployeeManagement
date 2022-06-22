@@ -153,7 +153,7 @@ namespace EM.GenericUnitOfWork.Base
         public IQueryable<T> GetAll(int page, int pageCount)
         {
             var pageSize = (page - 1) * pageCount;
-
+            
             return dbSet.Skip(pageSize).Take(pageCount);
         }
 
@@ -208,7 +208,15 @@ namespace EM.GenericUnitOfWork.Base
         {
             return dbSet.Remove(entity).State;
         }
-      
+
+        /// <summary>
+        /// Delete record with where condition
+        /// </summary>
+        /// <returns></returns>
+        public IQueryable<T> HardDelete()
+        {
+            return dbSet;
+        }
         /// <summary>
         /// RawSql
         /// </summary>

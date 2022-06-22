@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EM.Entity\EM.Entity.csproj" />
     <ProjectReference Include="..\EM.GenericUnitOfWork\EM.GenericUnitOfWork.csproj" />
+    <ProjectReference Include="..\EM.Models\EM.Models.csproj" />
   </ItemGroup>
 
 </Project>

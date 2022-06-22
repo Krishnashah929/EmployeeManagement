@@ -41,7 +41,7 @@ namespace EM.Models
         /// <summary>
         /// Defien user role
         /// </summary>
-        [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
+        //[Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
         [DisplayName("Roles")]
         public string RoleId { get; set; }
     }
