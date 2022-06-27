@@ -2,6 +2,7 @@
 using EM.EFContext;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for add.
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <returns> Add entity</returns>
         public virtual EntityState Add(T entity)
         {
             return dbSet.Add(entity).State;
@@ -58,7 +59,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for update.
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <returns> update entity</returns>
         public virtual EntityState Update(T entity)
         {
             return dbSet.Update(entity).State;
@@ -69,7 +70,7 @@ namespace EM.GenericUnitOfWork.Base
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>get data</returns>
         public T Get<TKey>(TKey id)
         {
             return dbSet.Find(id);
@@ -79,7 +80,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for get by id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns> get from id</returns>
         public T GetByID(int id)
         {
             try
@@ -98,7 +99,7 @@ namespace EM.GenericUnitOfWork.Base
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns> get async data</returns>
         public async Task<T> GetAsync<TKey>(TKey id)
         {
             return await dbSet.FindAsync(id);
@@ -108,7 +109,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for get 
         /// </summary>
         /// <param name="keyValues"></param>
-        /// <returns></returns>
+        /// <returns get keyvalue></returns>
         public T Get(params object[] keyValues)
         {
             return dbSet.Find(keyValues);
@@ -118,7 +119,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for find by with predicate
         /// </summary>
         /// <param name="predicate"></param>
-        /// <returns></returns>
+        /// <returns>find by id </returns>
         public IQueryable<T> FindBy(Expression<Func<T, bool>> predicate)
         {
             return dbSet.Where(predicate);
@@ -129,7 +130,7 @@ namespace EM.GenericUnitOfWork.Base
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="include"></param>
-        /// <returns></returns>
+        /// <returns> find by id predicate </returns>
         public IQueryable<T> FindBy(Expression<Func<T, bool>> predicate, string include)
         {
             return FindBy(predicate).Include(include);
@@ -138,7 +139,7 @@ namespace EM.GenericUnitOfWork.Base
         /// <summary>
         /// Method for get all.
         /// </summary>
-        /// <returns></returns>
+        /// <returns> get all users</returns>
         public IQueryable<T> GetAll()
         {
             return dbSet;
@@ -149,11 +150,10 @@ namespace EM.GenericUnitOfWork.Base
         /// </summary>
         /// <param name="page"></param>
         /// <param name="pageCount"></param>
-        /// <returns></returns>
+        /// <returns> get all users with parameter</returns>
         public IQueryable<T> GetAll(int page, int pageCount)
         {
             var pageSize = (page - 1) * pageCount;
-            
             return dbSet.Skip(pageSize).Take(pageCount);
         }
 
@@ -161,7 +161,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for get all single include
         /// </summary>
         /// <param name="include"></param>
-        /// <returns></returns>
+        /// <returns> get all</returns>
         public IQueryable<T> GetAll(string include)
         {
             return dbSet.Include(include);
@@ -172,7 +172,7 @@ namespace EM.GenericUnitOfWork.Base
         /// </summary>
         /// <param name="include"></param>
         /// <param name="include2"></param>
-        /// <returns></returns>
+        /// <returns> get all</returns>
         public IQueryable<T> GetAll(string include, string include2)
         {
             return dbSet.Include(include).Include(include2);
@@ -182,7 +182,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for Exists
         /// </summary>
         /// <param name="predicate"></param>
-        /// <returns></returns>
+        /// <returns>exists</returns>
         public bool Exists(Expression<Func<T, bool>> predicate)
         {
             return dbSet.Any(predicate);
@@ -192,7 +192,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for soft delete
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <returns>soft delete from database</returns>
         public virtual EntityState SoftDelete(T entity)
         {
             entity.GetType().GetProperty("IsActive")?.SetValue(entity, false);
@@ -203,7 +203,7 @@ namespace EM.GenericUnitOfWork.Base
         /// Method for hard delete
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <returns>hard delete from database</returns>
         public virtual EntityState HardDelete(T entity)
         {
             return dbSet.Remove(entity).State;
@@ -212,21 +212,54 @@ namespace EM.GenericUnitOfWork.Base
         /// <summary>
         /// Delete record with where condition
         /// </summary>
-        /// <returns></returns>
+        /// <returns>hard delete with particular row</returns>
         public IQueryable<T> HardDelete()
         {
             return dbSet;
         }
+
+        /// <summary>
+        /// AddRange with where condition
+        /// add lsit
+        /// </summary>
+        /// <param name="entity"></param>
+        public void AddRange(IEnumerable<T> entity)
+        {
+            this.dbSet.AddRange(entity);
+            context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Delete record with where condition
+        /// </summary>
+        /// <returns>Remove list from database.</returns>
+        /// <param name="entity"></param>
+        public void RemoveRange(IEnumerable<T> entity)
+        {
+            this.dbSet.RemoveRange(entity);
+            context.SaveChanges();
+        }
+
+        /// <summary>
+        /// UpdateRange with where condition
+        /// Update list
+        /// </summary>
+        /// <param name="entity"></param>
+        public void UpdateRange(IEnumerable<T> entity)
+        {
+            this.dbSet.UpdateRange(entity);
+            context.SaveChanges();
+        }
+
         /// <summary>
         /// RawSql
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <returns>raw sql</returns>
         public IQueryable<T> RawSql(string sql, params object[] parameters)
         {
             throw new NotImplementedException();
         }
-       
     }
 }

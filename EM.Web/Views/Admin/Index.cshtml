@@ -75,24 +75,28 @@
                 "serverSide": true,
 
                 columns: [
-                    { data: "userId", name: "UserId" },
-                    { data: "firstName", name: "FirstName" },
-                    { data: "lastname", name: "Lastname" },
-                    { data: "emailAddress", name: "EmailAddress" },
+                    { data: "userId", name: "UserId" }, //index - 0
+                    { data: "firstName", name: "FirstName" }, //index - 1
+                    { data: "lastname", name: "Lastname" }, //index - 2
+                    { data: "emailAddress", name: "EmailAddress" }, //index - 3
                     {
                         //adds td row for button
                         data: null,
                         render: function (data) {
                             return "<a href='#' class='btn btn-info m-auto' data-toggle='model' data-target=#AddEditUsers' onclick=editUser('" + data.userId + "'); >Edit</a>";
-                        }
+                        } //index - 4
                     },
                     {
                         data: null,
                         render: function (row) {
                             return "<a href='#' class='btn btn-danger m-auto' onclick=deleteUser('" + row.userId + "'); >Delete</a>";
-                        }
+                        } //index - 5
                     },
                 ],
+                'columnDefs': [{
+                    'targets': [4,5], // column index (start from 0)
+                    'orderable': false, // set orderable false for selected columns
+                }]
             }
         );
     }

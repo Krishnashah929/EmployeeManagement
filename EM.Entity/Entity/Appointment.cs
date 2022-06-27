@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using
+using EM.Common;
+using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+#endregion
 
 namespace EM.Entity
 {
@@ -20,28 +22,31 @@ namespace EM.Entity
         /// <summary>
         /// Getting user id   
         /// </summary>
-        [DisplayName("UserId")]
+        [DisplayName("Patient Name")]
         [ForeignKey ("UserId")]
-       
+        [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
         public int? UserId { get; set; }
 
         /// <summary>
         /// Getting DoctorId  
         /// </summary>
-        [DisplayName("DoctorId")]
+        [DisplayName("Doctor Name")]
         [ForeignKey("DoctorId")]
+        [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
         public int? DoctorId { get; set; }
 
         /// <summary>
         /// Getting Diagnosis
         /// </summary>
         [DisplayName("Diagnosis")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         public string Diagnosis { get; set; }
 
         /// <summary>
         /// Getting Doctor's Remarks
         /// </summary>
         [DisplayName("Remarks")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         public string Remarks { get; set; }
 
         /// <summary>
@@ -57,15 +62,17 @@ namespace EM.Entity
         public DateTime CreatedDate { get; set; }
 
         /// <summary>
-        ///  
+        ///  Get StartDateTime
         /// </summary>
         [DisplayName("StartDateTime")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         public DateTime StartDateTime { get; set; }
 
         /// <summary>
-        ///  
+        ///  Get EndDateTime
         /// </summary>
-        [DisplayName("StartDateTime")]
+        [DisplayName("EndDateTime")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         public DateTime EndDateTime { get; set; }
 
         /// <summary>
@@ -85,7 +92,9 @@ namespace EM.Entity
         /// Get or set user table
         /// </summary>
         public virtual User User { get; set; }
-
+        /// <summary>
+        /// Get or set Doctor table
+        /// </summary>
         public virtual Doctor Doctor  {get; set;}
     }
 }

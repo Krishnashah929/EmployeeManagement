@@ -5,13 +5,9 @@ using EM.GenericUnitOfWork.Uow;
 using EM.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using static EM.Common.GlobalEnum;
 #endregion
 
@@ -71,6 +67,33 @@ namespace EM.Services
         #endregion
 
         /// <summary>
+        /// Method for get all patients
+        /// </summary>
+        /// <returns>All patients who is not deleted and whose role is not 4(doctor)</returns>
+        #region GetAllPatients
+        public IEnumerable<User> GetAllPatients()
+        {
+            try
+            {
+                var repoList = this._unitOfWork.GetRepository<User>();
+                List<User> lstpatients = repoList.GetAll().Where(x => x.IsDelete == false && x.Role != "4").AsNoTracking().ToList();
+                if (lstpatients != null)
+                {
+                    return lstpatients;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        /// <summary>
         /// Method for get all doctors
         /// </summary>
         /// <returns>All users who is not deleted</returns>
@@ -82,7 +105,6 @@ namespace EM.Services
                 var repoList = this._unitOfWork.GetRepository<Doctor>();
 
                 var userList = this._unitOfWork.GetRepository<User>();
-
                 //Join operation for fetching user id from user table to doctor table.
                 var data = (from d in repoList.GetAll() //d = doctor
                             join u in userList.GetAll() on d.UserId equals u.UserId //u = user
@@ -171,10 +193,11 @@ namespace EM.Services
                                 StateID = d.StateID,
                                 CountryID = d.CountryID,
                                 Color = d.Color,
+                                CreatedDate = DateTime.Now,
                             }).FirstOrDefault();
 
                 //Get list of particular doctor's speciality
-                data.SpecialityId = specialityList.GetAll().Where(x => x.DoctorId == data.DoctorId).Select(x=> x.SpecialityId).ToList();
+                data.SpecialityId = specialityList.GetAll().Where(x => x.DoctorId == data.DoctorId).Select(x => x.SpecialityId).ToList();
 
                 return data;
             }
@@ -359,15 +382,6 @@ namespace EM.Services
                         doctorlist.CreatedDate = DateTime.Now;
                         doctorRepository.Add(doctorlist);
                         _unitOfWork.Commit();
-
-                        //Add record in speciality table as well.
-                        Speciality specialitylist = new Speciality();
-                        var specialityRepository = _unitOfWork.GetRepository<Speciality>();
-
-                        specialitylist.DoctorId = doctorlist.DoctorId;
-                        specialitylist.SpecialityId = 1;
-                        specialityRepository.Add(specialitylist);
-                        _unitOfWork.Commit();
                     }
                 }
                 return user;
@@ -458,66 +472,159 @@ namespace EM.Services
         {
             try
             {
-                if (doctor != null)
+                _unitOfWork.GetRepository<Doctor>();
+                Doctor UpdateDetails = new Doctor();
+
+                var objDoctor = this.GetAllDoctors().FirstOrDefault(x => x.DoctorId == doctor.DoctorId);
+                if (objDoctor != null && objDoctor.DoctorId > 0)
                 {
-                    var userRepository = _unitOfWork.GetRepository<Doctor>();
-                    Doctor UpdateDetails = new Doctor();
-                    UpdateDetails = this.GetAllDoctors().FirstOrDefault(x => x.DoctorId == doctor.DoctorId);
+                    doctor.ModifiedDate = DateTime.Now;
+                    doctor.ModifiedBy = 1;
+
+                    //1. GET ALL FROM DB BASED ON DOCTOR ID
+                    var repoSpeciality = _unitOfWork.GetRepository<Speciality>();
+                    var lstGetAllSpeciality = repoSpeciality.FindBy(x => x.DoctorId == doctor.DoctorId).ToList();
+
+                    //2. CREATE A LIST which WE NEED TO ADD ON DB , which is new
+                    var lstAddSpeciality = new List<Speciality>();
+                    foreach (var item in doctor.SpecialityId)
                     {
-                        if (userRepository != null)
+                        if (lstGetAllSpeciality.Count(x => x.SpecialityId == item) == 0)
                         {
-                            var userList = this._unitOfWork.GetRepository<User>();
-
-                            var spec = this._unitOfWork.GetRepository<Speciality>(); //spec variable is for speciality
-                            //First delete existing specialities
-                            spec.HardDelete().Where(x => x.DoctorId == doctor.DoctorId);
-
-                            //Now add updated specialities
-                            if(doctor != null && doctor.SpecialityId.Count > 0)
+                            lstAddSpeciality.Add(new Speciality()
                             {
-                                foreach (var item in doctor.SpecialityId)
-                                {
-                                    Speciality speciality = new Speciality();
-                                    speciality.DoctorId = doctor.DoctorId;
-                                    speciality.SpecialityId = item;
-
-                                    spec.Add(speciality);
-                                }
-                            }
-                            _unitOfWork.Commit();
-
-                            //Join operation for fetching user id from user table to doctor table.
-                            var data = (from d in userRepository.GetAll().Where(x => x.DoctorId == doctor.DoctorId) //d = doctor
-                                        join u in userList.GetAll() on d.UserId equals u.UserId //u = user
-                                        select new Doctor()
-                                        {
-                                            UserId = u.UserId,
-
-                                        }).FirstOrDefault();
-                            var userId = data.UserId;
-                            UpdateDetails.UserId = userId;
-                            UpdateDetails.PhoneNumber = doctor.PhoneNumber;
-                            UpdateDetails.Pincode = doctor.Pincode;
-                            UpdateDetails.Address = doctor.Address;
-                            UpdateDetails.CityID = doctor.CityID;
-                            UpdateDetails.StateID = doctor.StateID;
-                            UpdateDetails.CountryID = doctor.CountryID;
-                            UpdateDetails.Color = doctor.Color;
-                            UpdateDetails.ModifiedDate = DateTime.Now;
-
-                            _unitOfWork.GetRepository<Doctor>().Update(UpdateDetails);
-                            _unitOfWork.Commit();
+                                SpecialityId = item,
+                                DoctorId = doctor.DoctorId
+                            });
                         }
-                        return doctor;
                     }
+
+                    //3.CREATE A LIST which we need to DELETE FROM DB.
+                    var lstRemoveSpeciality = new List<Speciality>();
+                    foreach (var item in lstGetAllSpeciality)
+                    {
+                        if (doctor.SpecialityId.Count(x => x == item.SpecialityId) == 0)
+                        {
+                            lstRemoveSpeciality.Add(item);
+                        }
+                    }
+
+                    _unitOfWork.GetRepository<Doctor>().Update(doctor);
+                    _unitOfWork.GetRepository<Speciality>().RemoveRange(lstRemoveSpeciality);
+                    _unitOfWork.GetRepository<Speciality>().AddRange(lstAddSpeciality);
+                    _unitOfWork.Commit();
                 }
-                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return doctor;
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for get all countries
+        /// </summary>
+        /// <returns>List of countries</returns>
+        #region GetCountry
+        public IEnumerable<Country> GetCountry()
+        {
+            try
+            {
+                var repoList = this._unitOfWork.GetRepository<Country>();
+                List<Country> lsCountries = repoList.GetAll().AsNoTracking().ToList();
+                if (lsCountries != null)
+                {
+                    return lsCountries;
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Method for get all states
+        /// </summary>
+        /// <returns>List of states</returns>
+        #region GetState
+        public IEnumerable<State> GetState(int id)
+        {
+            try
+            {
+                var repoList = this._unitOfWork.GetRepository<State>();
+                List<State> lsStates = repoList.GetAll().Where(x => x.CountryId == id).AsNoTracking().ToList();
+                if (lsStates != null)
+                {
+                    return lsStates;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for get all cities
+        /// </summary>
+        /// <returns>List of cities</returns>
+        #region GetCity
+        public IEnumerable<City> GetCity(int id)
+        {
+            try
+            {
+                var repoList = this._unitOfWork.GetRepository<City>();
+                List<City> lsCities = repoList.GetAll().Where(x => x.StatesId == id).AsNoTracking().ToList();
+                if (lsCities != null)
+                {
+                    return lsCities;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Book appointment
+        /// </summary>
+        /// <param name="appointment"></param>
+        /// <returns>Post appointment for user.</returns>
+        #region PostAppointment
+        public Appointment PostAppointment(Appointment appointment)
+        {
+            try
+            {
+                var appoinmentRepository = _unitOfWork.GetRepository<Appointment>();
+                Appointment appointmentUser = new Appointment();
+                return appointmentUser;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
     }
 }

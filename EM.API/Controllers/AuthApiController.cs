@@ -4,7 +4,6 @@ using EM.Common;
 using EM.Entity;
 using EM.Models;
 using EM.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -13,12 +12,10 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net;
-using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using static EM.Common.GlobalEnum;
 #endregion
-
 
 namespace EM.API.Controllers
 {

@@ -31,6 +31,7 @@
     @*<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>*@
     <!-- AdminLTE App -->
     <script src="~/dist/js/adminlte.min.js"></script>
+
     <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
@@ -110,6 +111,7 @@
                     </div>
                     @if (Context.Session.GetString("Userlogeddin") != null)
                     {
+
                         <div class="info">
                             <a asp-action="Dashboard" asp-controller="Home" class="d-block">  @Context.Session.GetString("Name") </a>
                         </div> }
@@ -127,25 +129,25 @@
                         @if (User.IsInRole("Admin") || User.IsInRole("Users"))
                         {
                             <li class="nav-item">
-                                <a asp-action="Index" asp-controller="Admin" class="nav-link active">
+                                <a asp-action="Index" asp-controller="Admin" class="nav-link active" aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Users</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-action="GetDoctors" asp-controller="Admin" class="nav-link">
+                                <a asp-action="GetDoctors" asp-controller="Doctor" class="nav-link" aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Doctors</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-action="TimeSheets" asp-controller="Admin" class="nav-link">
+                                <a asp-action="TimeSheets" asp-controller="Doctor" class="nav-link" aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>TimeSheets</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-action="LogOut" asp-controller="Auth" class="nav-link">
+                                <a asp-action="LogOut" asp-controller="Auth" class="nav-link"  aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>LogOut</p>
                                 </a>
@@ -154,13 +156,13 @@
                         else
                         {
                             <li class="nav-item">
-                                <a asp-action="Dashboard" asp-controller="Home" class="nav-link active">
+                                <a asp-action="Dashboard" asp-controller="Home" class="nav-link active" data-toggle="pill" aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Dashboard</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-action="LogOut" asp-controller="Auth" class="nav-link">
+                                <a asp-action="LogOut" asp-controller="Auth" class="nav-link" data-toggle="pill" aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>LogOut</p>
                                 </a>
@@ -193,10 +195,5 @@
         <!-- /.control-sidebar -->
     </div>
     <!-- ./wrapper -->
-
-
-
-
-
 </body>
 </html>

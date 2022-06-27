@@ -1,6 +1,7 @@
 ﻿#region using
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -46,7 +47,6 @@ namespace EM.GenericUnitOfWork.Base
 
         /// <returns>List of entities</returns>
         IQueryable<T> GetAll(string include, string include2);
-        
 
         /// <summary>
         /// Soft delete with using IsActive flag for entity
@@ -64,7 +64,33 @@ namespace EM.GenericUnitOfWork.Base
         /// Hard delete with where condition
         /// </summary>
         public IQueryable<T> HardDelete();
-     
+
+        /// <summary>
+        /// AddRange with where condition
+        /// add lsit
+        /// </summary>
+        /// <param name="entity"></param>
+        void AddRange(IEnumerable<T> entity);
+        
+        /// <summary>
+        /// RemoveRange with where condition
+        /// remove list 
+        /// </summary>
+        /// <param name="entity"></param>
+        void RemoveRange(IEnumerable<T> entity);
+
+        /// <summary>
+        /// UpdateRange with where condition
+        /// update list
+        /// </summary>
+        /// <param name="entity"></param>
+        void UpdateRange(IEnumerable<T> entity);
+
+        /// <summary>
+        /// Exists
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns> boolen </returns>
         bool Exists(Expression<Func<T, bool>> predicate);
     }
-    }
+}

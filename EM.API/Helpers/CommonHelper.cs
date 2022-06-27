@@ -1,7 +1,9 @@
-﻿using EM.Models;
+﻿#region Using
+using EM.Models;
 using Newtonsoft.Json;
 using System.Net;
- 
+#endregion
+
 namespace EM.API.Helpers
 {
     /// <summary>
@@ -16,17 +18,19 @@ namespace EM.API.Helpers
         /// <param name="sMessage"></param>
         /// <param name="objData"></param>
         /// <param name="objDataList"></param>
-        /// <returns></returns>
-        public static  ApiResponseModel GetResponse(HttpStatusCode statusCode , string sMessage, /*string token*/ object objData = null, object objDataList = null)
+        /// <returns>Get response from api.</returns>
+        #region GetResponse
+        public static ApiResponseModel GetResponse(HttpStatusCode statusCode, string sMessage, /*string token*/ object objData = null, object objDataList = null)
         {
             return new ApiResponseModel()
             {
                 StatusCode = (int)statusCode,
                 Message = sMessage,
-                DataObj = objData != null? JsonConvert.SerializeObject(objData) :  string.Empty,
+                DataObj = objData != null ? JsonConvert.SerializeObject(objData) : string.Empty,
                 DataList = objDataList != null ? JsonConvert.SerializeObject(objDataList) : string.Empty,
             };
         }
+        #endregion
 
         /// <summary>
         /// For getting responses for jqueryDatatable
@@ -35,8 +39,9 @@ namespace EM.API.Helpers
         /// <param name="recordsTotal"></param>
         /// <param name="recordsFiltered"></param>
         /// <param name="Data"></param>
-        /// <returns></returns>
-        public static ApiResponseModel GetResponseDataTable(string draw, int recordsTotal, int recordsFiltered , object Data = null)
+        /// <returns>GetResponseDataTable(for user's list) </returns>
+        #region GetResponseDataTable
+        public static ApiResponseModel GetResponseDataTable(string draw, int recordsTotal, int recordsFiltered, object Data = null)
         {
             return new ApiResponseModel()
             {
@@ -46,7 +51,7 @@ namespace EM.API.Helpers
                 DataList = Data != null ? JsonConvert.SerializeObject(Data) : string.Empty
             };
         }
-
+        #endregion
 
         /// <summary>
         ///  For getting jwt token 
@@ -56,7 +61,8 @@ namespace EM.API.Helpers
         /// <param name="token"></param>
         /// <param name="objData"></param>
         /// <param name="objDataList"></param>
-        /// <returns></returns>
+        /// <returns>token value </returns>
+        #region GetResponseToken
         public static ApiResponseModel GetResponseToken(HttpStatusCode statusCode, string sMessage, string token, object objData = null, object objDataList = null)
         {
             return new ApiResponseModel()
@@ -68,5 +74,6 @@ namespace EM.API.Helpers
                 Token = token
             };
         }
+        #endregion
     }
 }

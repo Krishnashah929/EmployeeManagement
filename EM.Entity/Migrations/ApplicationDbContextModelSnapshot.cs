@@ -76,14 +76,14 @@ namespace EM.Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CityID")
+                    b.Property<int>("CityId")
                         .HasColumnType("int");
 
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CountryID")
+                    b.Property<int>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<int>("CreatedBy")
@@ -104,7 +104,7 @@ namespace EM.Entity.Migrations
                     b.Property<int>("Pincode")
                         .HasColumnType("int");
 
-                    b.Property<int>("StateID")
+                    b.Property<int>("StatesId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")

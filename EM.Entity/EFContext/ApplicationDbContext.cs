@@ -7,7 +7,7 @@ using System;
 
 namespace EM.EFContext
 {
-    
+
     /// <summary>
     /// Defines the <see cref="ApplicationDbContext" />.
     /// </summary>
@@ -66,8 +66,23 @@ namespace EM.EFContext
         /// Get doctor's speciality
         /// </summary>
         public virtual DbSet<Speciality> Specialitie { get; set; }
-       
-
+        /// <summary>
+        /// Do Appointment
+        /// </summary>
         public virtual DbSet<Appointment> Appointment { get; set; }
+        /// <summary>
+        /// Get City 
+        /// </summary>
+        public virtual DbSet<City> Cities { get; set; }
+
+        /// <summary>
+        /// Get State
+        /// </summary>
+        public virtual DbSet<State> States { get; set; }
+
+        /// <summary>
+        /// Get Country
+        /// </summary>
+        public virtual DbSet<Country> Country { get; set; }
     }
 }

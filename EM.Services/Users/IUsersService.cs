@@ -35,13 +35,19 @@ namespace EM.Services
         /// <summary>
         /// Get all users
         /// </summary>
-        /// <returns></returns>
+        /// <returns>list of users</returns>
         IEnumerable<User> GetAllUser();
+
+        /// <summary>
+        /// Get all patients
+        /// </summary>
+        /// <returns>list of patients</returns>
+        IEnumerable<User> GetAllPatients();
 
         /// <summary>
         /// Get all doctors
         /// </summary>
-        /// <returns></returns>
+        /// <returns>list of doctors</returns>
         IEnumerable<Doctor> GetAllDoctors();
 
         /// <summary>
@@ -92,5 +98,30 @@ namespace EM.Services
         /// <param name="id"></param>
         /// <returns>user's id</returns>
         User DeleteDetails(int id);
+
+        /// <summary>
+        /// Get Countries
+        /// </summary>
+        /// <returns>get list of all countries</returns>
+        IEnumerable<Country> GetCountry();
+
+        /// <summary>
+        /// Get States
+        /// </summary>
+        /// <returns>get list of all states</returns>
+        IEnumerable<State> GetState(int id);
+
+        /// <summary>
+        /// Get Cities
+        /// </summary>
+        /// <returns>get list of all cities</returns>
+        IEnumerable<City> GetCity(int id);
+
+        /// <summary>
+        /// Book Appointment
+        /// </summary>
+        /// <param name="appointment"></param>
+        /// <returns>Post appointment </returns>
+        Appointment PostAppointment(Appointment appointment);
     }
 }
