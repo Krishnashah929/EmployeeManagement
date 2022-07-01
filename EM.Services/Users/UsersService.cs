@@ -660,7 +660,7 @@ namespace EM.Services
                     if (appoinmentRepository != null)
                     { 
                         //Checking appointment time respect to doctor id 
-                        var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == appointment.DoctorId && x.StartDateTime == appointment.StartDateTime && x.EndDateTime == appointment.EndDateTime);
+                        var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == appointment.DoctorId && x.StartDateTime <= appointment.StartDateTime && x.EndDateTime >= appointment.EndDateTime);
                         if (appointmentTime == null)
                         {
                             userAppointment.StartDateTime = appointment.StartDateTime;
@@ -741,7 +741,7 @@ namespace EM.Services
                             }
                             //Checking appointment time with respect to doctor id
                             var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == objAppointment.DoctorId &&  x.StartDateTime == objAppointment.StartDateTime && x.EndDateTime == objAppointment.EndDateTime);
-                            if (appointmentTime == null && objAppointment.StartDateTime > updateAppointment.EndDateTime) 
+                            if (appointmentTime == null && objAppointment.StartDateTime >= updateAppointment.StartDateTime && objAppointment.EndDateTime <= updateAppointment.EndDateTime) 
                             {
                                 updateAppointment.StartDateTime = objAppointment.StartDateTime;
                                 updateAppointment.EndDateTime = objAppointment.EndDateTime;
