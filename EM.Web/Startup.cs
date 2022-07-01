@@ -1,3 +1,4 @@
+#region Using
 using CustomHandlers.CustomHandler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
+#endregion
 
 namespace EM.Web
 {
@@ -17,16 +19,25 @@ namespace EM.Web
     /// </summary>
     public class Startup
     {
+        #region Ctor
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
+        #endregion
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// ConfigureServices
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            //For run time compilation
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+
             services.AddMvc(options =>
             {
                 // This pushes users to login if not authenticated
@@ -38,7 +49,7 @@ namespace EM.Web
                     });
             });
 
-
+            //For cookie authentication
             services.AddAuthentication("Cookies")
                  .AddCookie("Cookies", config =>
                  {
@@ -46,9 +57,8 @@ namespace EM.Web
                      config.LoginPath = "/Auth/Login"; // Path for the redirect to user login page    
                      config.AccessDeniedPath = "/Auth/Error";
                  });
-
+            //For authorization
             services.AddAuthorization(config =>
-            
             {
                 config.AddPolicy("UserPolicy", policyBuilder =>
                 {
@@ -58,18 +68,25 @@ namespace EM.Web
 
             services.AddSession();
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+            //For toast notifications
             services.AddControllersWithViews().AddNToastNotifyNoty(new NToastNotify.NotyOptions()
             {
                 ProgressBar = true,
                 Timeout = 5000,
                 Theme = "mint"
             });
-
+            //For distributing cache memory
             services.AddDistributedMemoryCache();
         }
 
+        /// <summary>
+        /// Configure
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Cookie policy options
             var cookiePolicyOptions = new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
@@ -84,21 +101,19 @@ namespace EM.Web
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-            app.UseNToastNotify();
+            app.UseNToastNotify(); //For Toast notification
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(); //For static files
 
-            app.UseSession();
+            app.UseSession(); //For using session
 
-            app.UseRouting();
+            app.UseRouting();//For routing
 
-            app.UseCookiePolicy(cookiePolicyOptions);
+            app.UseCookiePolicy(cookiePolicyOptions);//For cookie policy
 
-            // who are you?  
-            app.UseAuthentication();
+            app.UseAuthentication();// who are you?  
 
-            // are you allowed?  
-            app.UseAuthorization();
+            app.UseAuthorization();// are you allowed?  
 
             app.UseEndpoints(endpoints =>
             {

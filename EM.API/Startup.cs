@@ -1,3 +1,4 @@
+#region Using
 using EM.EFContext;
 using EM.GenericUnitOfWork.Base;
 using EM.GenericUnitOfWork.Uow;
@@ -5,23 +6,28 @@ using EM.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Security.Claims;
-using CustomHandlers.CustomHandler;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+#endregion
 
 namespace EM.API
 {
+    /// <summary>
+    /// Startup class
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// IConfiguration class
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,17 +38,12 @@ namespace EM.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "EM.API", Version = "v1" });
-            //});
+            //Connection string
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
            
             //for JWT authentication
             #region Swagger(JWT Authentication)
-
             var key = Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]);
             services.AddAuthentication(x =>
             {
@@ -91,20 +92,26 @@ namespace EM.API
             });
             #endregion
 
-            services.AddScoped<IDatabaseContext, ApplicationDbContext>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddServices();
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
-             
-            services.AddSession();
+            services.AddScoped<IDatabaseContext, ApplicationDbContext>();//Reference of ApplicationDbContext
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();//Reference of HttpContextAccessor
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));//Reference of Repository
+            services.AddServices();//For services
+            services.AddTransient<IUnitOfWork, UnitOfWork>();//Reference of UnitOfWork
+            services.AddSession();//For session
             services.AddControllers();
             services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// Configure Method
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="dbContext"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
         {
+            //For migrate database.
             dbContext.Database.Migrate();
 
             if (env.IsDevelopment())
@@ -113,22 +120,20 @@ namespace EM.API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EM.API v1"));
             }
-            app.UseStaticFiles();
+            app.UseStaticFiles();//Use staticfiles
 
-            dbContext.Database.Migrate();
+            dbContext.Database.Migrate();// Use Migration
 
-            app.UseSession();
+            app.UseSession(); //Use session
 
-            app.UseRouting();
+            app.UseRouting();//Use routing
 
-            // who are you?  
-            app.UseAuthentication();
+            app.UseAuthentication();// who are you?  
 
-            // are you allowed?  
-            app.UseAuthorization();
+            app.UseAuthorization();// are you allowed?  
 
-            app.UseHttpsRedirection();
-            
+            app.UseHttpsRedirection();//Use httpsRedirection
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

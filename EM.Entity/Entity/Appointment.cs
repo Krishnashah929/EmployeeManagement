@@ -20,12 +20,32 @@ namespace EM.Entity
         public int AppointmentId { get; set; }
 
         /// <summary>
-        /// Getting user id   
+        /// FirstName input feild.
         /// </summary>
-        [DisplayName("Patient Name")]
-        [ForeignKey ("UserId")]
-        [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
-        public int? UserId { get; set; }
+        [DisplayName("First Name")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// LastName input feild.
+        /// </summary>
+        [DisplayName("Last Name")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        public string LastName { get; set; }
+
+        /// <summary>
+        /// Email Address input feild.
+        /// </summary>
+        [DisplayName("Email")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        public string EmailAddress { get; set; }
+
+        /// <summary>
+        /// For geeting PhoneNumber 
+        /// </summary>
+        [DisplayName("Phone Number")]
+        [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
+        public decimal PhoneNumber { get; set; }
 
         /// <summary>
         /// Getting DoctorId  
@@ -87,11 +107,14 @@ namespace EM.Entity
         [DisplayName("Modified Date")]
         public DateTime? ModifiedDate { get; set; }
 
-        //Foreign key purpose
         /// <summary>
-        /// Get or set user table
+        /// For getting Color.
         /// </summary>
-        public virtual User User { get; set; }
+        [DisplayName("Color")]
+        [NotMapped]
+        public string Color { get; set; }
+
+        //Foreign key purpose
         /// <summary>
         /// Get or set Doctor table
         /// </summary>

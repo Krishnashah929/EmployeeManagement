@@ -19,7 +19,6 @@ using static EM.Common.GlobalEnum;
 
 namespace EM.API.Controllers
 {
-
     /// <summary>
     /// Main all account related methods are in this AuthApi controller.
     /// </summary>
@@ -83,11 +82,11 @@ namespace EM.API.Controllers
                         new Claim(ClaimTypes.Role, roleName),
                         new Claim("Date", DateTime.Now.ToString()),
                         };
-
+                        //Token
                         var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
                         _configuration["Jwt:Audiance"],
                         claims,    //null original value
-                        expires: DateTime.Now.AddMinutes(120),
+                        expires: DateTime.Now.AddMinutes(120), //Token expires time
 
                         signingCredentials: credentials); //notBefore:
 
@@ -129,7 +128,7 @@ namespace EM.API.Controllers
                         string basicUrl = _configuration.GetValue<string>("MailLinks:UrlLink");
                         //link generation with userid.
                         var linkPath = basicUrl + "SetPassword?link=" + userId;
-
+                        //Send html template in mail 
                         string webRootPath = _hostingEnvironment.WebRootPath + "/MalTemplates/SetPasswordTemplate.html";
                         StreamReader reader = new StreamReader(webRootPath);
                         string readFile = reader.ReadToEnd();
@@ -142,8 +141,8 @@ namespace EM.API.Controllers
                         myString = myString.Replace("@@Email@@", objRegisterModel.EmailAddress);
                         myString = myString.Replace("@@Link@@", linkPath);
                         var body = myString.ToString();
-
                         //SendEmail(objUser.EmailAddress, body, subject);
+
                         //getting value from common helper.
                         return CommonHelper.GetResponse(HttpStatusCode.OK, "", registerUsers);
                     }
@@ -172,17 +171,18 @@ namespace EM.API.Controllers
                 if (loggedinUser != null)
                 {
                     string basicUrl = _configuration.GetValue<string>("MailLinks:UrlLink");
-                    var userId = EncryptionDecryption.Encrypt(loggedinUser.UserId.ToString());
                     //link generation with userid.
+                    var userId = EncryptionDecryption.Encrypt(loggedinUser.UserId.ToString());
+                    //linkpath of forgot password page
                     var linkPath = basicUrl + "ForgotPassword?link=" + userId;
                     var subject = "Password Reset Request";
                     var body = "Hi " + objUser.FirstName + ", <br/> You recently requested to reset the password for your account. " +
                                "Click the link below to reset ." + "<br/> <br/>" +
                                " <button type=' button ' class=' btn-info'> <a href='" + linkPath + "'> </a> Forgot Password </button> <br/> <br/>" +
                                "If you did not request for reset password please ignore this mail.";
-
                     //MailService.SendEmail(objUser.EmailAddress, body, subject);
 
+                    //getting value from common helper.
                     return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser);
                 }
                 else

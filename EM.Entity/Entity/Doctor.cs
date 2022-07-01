@@ -30,25 +30,23 @@ namespace EM.Entity
         /// <summary>
         /// For geeting CityID
         /// </summary>
-        [DisplayName("CityID")]
+        [DisplayName("City")]
         [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
-        public int CityID { get; set; }
-
+        public int CityId { get; set; }
 
         /// <summary>
         /// For geeting StateID
         /// </summary>
-        [DisplayName("StateID")]
+        [DisplayName("State")]
         [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
-        public int StateID { get; set; }
-
+        public int StatesId { get; set; }
 
         /// <summary>
         /// For geeting CountryID 
         /// </summary>
-        [DisplayName("CountryID")]
+        [DisplayName("Country")]
         [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
-        public int CountryID { get; set; }
+        public int CountryId { get; set; }
 
         /// <summary>
         /// For geeting Pincode 
@@ -129,7 +127,7 @@ namespace EM.Entity
         /// </summary>
         [DisplayName("SpecialityId")]
         [NotMapped]
-        //[Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
+        [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
         public List<int> SpecialityId { get; set; }
     }
 }

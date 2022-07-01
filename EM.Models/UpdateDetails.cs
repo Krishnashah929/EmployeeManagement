@@ -20,7 +20,6 @@ namespace EM.Models
         /// FirstName input feild.
         /// </summary>
         [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName("First Name")]
         public string FirstName { get; set; }
 
@@ -28,7 +27,6 @@ namespace EM.Models
         /// LastName input feild.
         /// </summary>
         [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthErrorMsg, MinimumLength = 6)]
         [DisplayName("Last Name")]
         public string Lastname { get; set; }
 
@@ -36,8 +34,6 @@ namespace EM.Models
         /// Email Address input feild.
         /// </summary>
         [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
-        //[StringLength(8, ErrorMessage = CommonValidations.RequiredLengthMailErrorMsg)]
-        //[MinLength(5, ErrorMessage = CommonValidations.RequiredLengthMailErrorMsg)]
         [DisplayName("Email")]
         public string EmailAddress { get; set; }
 

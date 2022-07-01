@@ -22,6 +22,7 @@ namespace EM.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    //For jwt token authorization
     [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     public class AdminApiController : ControllerBase
     {
@@ -129,6 +130,7 @@ namespace EM.API.Controllers
                         string basicUrl = _configuration.GetValue<string>("MailLinks:UrlLink");
                         //link generation with userid.
                         var linkPath = basicUrl + "SetPassword?link=" + userId;
+                        //For send html page in mail
                         string webRootPath = _hostingEnvironment.WebRootPath + "/MalTemplates/SetPasswordTemplate.html";
                         StreamReader reader = new StreamReader(webRootPath);
                         string readFile = reader.ReadToEnd();
@@ -141,8 +143,8 @@ namespace EM.API.Controllers
                         myString = myString.Replace("@@Email@@", objUser.EmailAddress);
                         myString = myString.Replace("@@Link@@", linkPath);
                         var body = myString.ToString();
-
                         //MailService.SendEmail(objUser.EmailAddress, body, subject);
+
                         //getting value from common helper.
                         return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.NewUserRegisterd, registerUsers);
                     }
@@ -198,6 +200,7 @@ namespace EM.API.Controllers
                 if (user != null)
                 {
                     var editUser = _userService.UpdateDetails(user);
+                    //getting value from common helper.
                     return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateUserDetails, editUser);
                 }
                 else
@@ -252,6 +255,7 @@ namespace EM.API.Controllers
             try
             {
                 var deleteUser = _userService.DeleteDetails(id);
+                //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.DeleteUserDetails, deleteUser);
             }
             catch

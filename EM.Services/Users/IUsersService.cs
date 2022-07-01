@@ -24,7 +24,7 @@ namespace EM.Services
         /// <param name="id"></param>
         /// <returns> returns user's id </returns>
         User GetById(int id);
-     
+
         /// <summary>
         /// Get doctor by id
         /// </summary>
@@ -33,16 +33,17 @@ namespace EM.Services
         Doctor GetByDoctorId(int id);
 
         /// <summary>
+        /// Get id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns> returns appointment's id </returns>
+        Appointment GetAppointmentById(int id);
+
+        /// <summary>
         /// Get all users
         /// </summary>
         /// <returns>list of users</returns>
         IEnumerable<User> GetAllUser();
-
-        /// <summary>
-        /// Get all patients
-        /// </summary>
-        /// <returns>list of patients</returns>
-        IEnumerable<User> GetAllPatients();
 
         /// <summary>
         /// Get all doctors
@@ -118,10 +119,37 @@ namespace EM.Services
         IEnumerable<City> GetCity(int id);
 
         /// <summary>
+        /// Get Appointments
+        /// </summary>
+        /// <returns>get list of all appointments</returns>
+        IEnumerable<Appointment> GetAppointments();
+
+        /// <summary>
         /// Book Appointment
         /// </summary>
         /// <param name="appointment"></param>
         /// <returns>Post appointment </returns>
         Appointment PostAppointment(Appointment appointment);
+
+        /// <summary>
+        /// Method for update existing appointment 
+        /// </summary>
+        /// <param name="objAppointment"></param>
+        /// <returns>Appointment Model</returns>
+        Appointment EditAppointment(Appointment objAppointment);
+
+        /// <summary>
+        /// Method for delete appointment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>user's id</returns>
+        Appointment DeleteAppointment(int id);
+
+        /// <summary>
+        /// Method for event date for drag and drop
+        /// </summary>
+        /// <param name="objDragAndDrop"></param>
+        /// <returns>get events</returns>
+        Appointment DragAndDrop(DragAndDrop objDragAndDrop);
     }
 }

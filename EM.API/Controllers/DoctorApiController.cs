@@ -19,6 +19,7 @@ namespace EM.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    //For jwt authorization
     [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     public class DoctorApiController : ControllerBase
     {
@@ -41,6 +42,8 @@ namespace EM.API.Controllers
             _userService = userService;
         }
         #endregion
+
+        //////////////////////// Doctor' s method ////////////////////////
 
         /// <summary>
         /// Getting doctors list
@@ -81,10 +84,9 @@ namespace EM.API.Controllers
 
                     //pagination
                     var empList = data.Skip(jqueryDatatableParam.skip).Take(jqueryDatatableParam.pageSize).ToList();
-
+                    //getting value from common helper.
                     return CommonHelper.GetResponseDataTable(jqueryDatatableParam.draw, totalRecord, filterRecord, empList);
                 }
-                //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
             }
 
@@ -107,28 +109,8 @@ namespace EM.API.Controllers
             try
             {
                 var getDoctors = _userService.GetAllDoctors();
+                //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.OK, "", "", getDoctors);
-            }
-            catch
-            {
-                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// Get Patients 
-        /// </summary>
-        /// <returns>List of patients</returns>
-        #region GetPatient
-        [HttpGet("GetPatient")]
-        [Authorize(Roles = "Admin")]
-        public ApiResponseModel GetPatient()
-        {
-            try
-            {
-                var getPatients = _userService.GetAllPatients();
-                return CommonHelper.GetResponse(HttpStatusCode.OK, "", "", getPatients);
             }
             catch
             {
@@ -145,7 +127,7 @@ namespace EM.API.Controllers
         #region EditDoctorModel(GET)
         [HttpGet("EditDoctorModel/{id}")]
         [Authorize(Roles = "Admin")]
-        public ApiResponseModel EditDoctorModel(int id, int userId)
+        public ApiResponseModel EditDoctorModel(int id)
         {
             try
             {
@@ -169,7 +151,7 @@ namespace EM.API.Controllers
         /// </summary>
         /// <param name="doctor"></param>
         /// <returns>edit existing doctor details from admin side</returns>
-        #region EditDoctor
+        #region EditDoctorPost
         [HttpPut("EditDoctor")]
         [Authorize(Roles = "Admin")]
         public ApiResponseModel EditDoctor(Doctor objDoctor)
@@ -179,6 +161,7 @@ namespace EM.API.Controllers
                 if (objDoctor != null)
                 {
                     var editDoctor = _userService.UpdateDoctorDetails(objDoctor);
+                    //getting value from common helper.
                     return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateUserDetails, editDoctor);
                 }
                 else
@@ -205,6 +188,7 @@ namespace EM.API.Controllers
             try
             {
                 var getCountry = _userService.GetCountry();
+                //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.OK, "", "", getCountry);
             }
             catch
@@ -227,6 +211,7 @@ namespace EM.API.Controllers
             try
             {
                 var getState = _userService.GetState(id);
+                //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.OK, "", "", getState);
             }
             catch
@@ -249,7 +234,32 @@ namespace EM.API.Controllers
             try
             {
                 var getCity = _userService.GetCity(id);
+                //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.OK, "", "", getCity);
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
+            }
+        }
+        #endregion
+
+        //////////////////////// TimeSheet' s method ////////////////////////
+        
+        /// <summary>
+        /// Get Appointments 
+        /// </summary>
+        /// <returns>List of appointments</returns>
+        #region GetAppointments
+        [HttpGet("GetAppointments")]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public ApiResponseModel GetAppointments()
+        {
+            try
+            {
+                var getAppointments = _userService.GetAppointments();
+                //getting value from common helper.
+                return CommonHelper.GetResponse(HttpStatusCode.OK, "", "", getAppointments);
             }
             catch
             {
@@ -264,19 +274,168 @@ namespace EM.API.Controllers
         /// <param name="objAppointment"></param>
         /// <returns>Add Appointment for user. </returns>
         #region PostAppointment
-        [HttpPost("PostAppointment")]
-        [Authorize(Roles = "Admin")]
+        [HttpPut("PostAppointment")]
+        [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel PostAppointment(Appointment objAppointment)
         {
             try
             {
-
+                if (objAppointment != null)
+                {
+                    var postAppointment = _userService.PostAppointment(objAppointment);
+                    if(postAppointment == null)
+                    {
+                        //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.DoctorUnavailableMsg, postAppointment);
+                    }
+                    else
+                    {
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.BookedAppointment, postAppointment);
+                    }
+                }
+                else
+                {
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg);
+                }
             }
             catch (Exception)
             {
                 return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
             }
-            return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for getting Appointment model for add and edit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Add/edit Appointment model</returns>
+        #region EditAppointmentGet(GET)
+        [HttpGet("EditAppointmentModel/{id}")]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public ApiResponseModel EditAppointmentModel(int id)
+        {
+            try
+            {
+                var getAppointment = _userService.GetAppointmentById(id);
+                if (getAppointment != null)
+                {
+                    //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, "", getAppointment);
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Post method for edit appointments
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>edit existing appointment</returns>
+        #region EditAppointment(POST)
+        [HttpPut("EditAppointment")]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public ApiResponseModel EditAppointment(Appointment objAppointment)
+        {
+            try
+            {
+                if (objAppointment != null)
+                {
+                    var editAppointment = _userService.EditAppointment(objAppointment);
+                    //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateAppointment, editAppointment);
+                }
+                else
+                {
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg);
+                }
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        ///   get delete Appointment 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>open delete appointment model</returns>
+        #region DeleteAppointmentModel(GET)
+        [HttpGet("DeleteAppointmentModel/{id}")]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public ApiResponseModel DeleteAppointmentModel(int id)
+        {
+            try
+            {
+                var deleteAppointment = _userService.GetAppointmentById(id);
+                if (deleteAppointment != null)
+                {
+                    //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, "", deleteAppointment);
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Post method for delete user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>delete user details from admin side</returns>
+        #region DeleteAppointments(POST)
+        [HttpDelete("DeleteAppointments/{id}")]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public ApiResponseModel DeleteAppointments(int id)
+        {
+            try
+            {
+                var deleteAppointment = _userService.DeleteAppointment(id);
+                //getting value from common helper.
+                return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.DeleteUserDetails, deleteAppointment);
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, CommonValidations.RecordNotExistsMsg, "");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for event date for drag and drop
+        /// </summary>
+        /// <param name="objDragAndDrop"></param>
+        /// <returns>List of events</returns>
+        #region DragAndDrop(GET)
+        [HttpPost("DragAndDrop")]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public ApiResponseModel DragAndDrop(DragAndDrop objDragAndDrop)
+        {
+            try
+            {
+                var getAppointment = _userService.DragAndDrop(objDragAndDrop);
+                if (getAppointment != null)
+                {
+                    //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateAppointment, getAppointment);
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg, "");
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
+            }
         }
         #endregion
     }

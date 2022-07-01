@@ -116,6 +116,10 @@ namespace EM.Web.Controllers
                             {
                                 return RedirectToAction("Dashboard", "Home");
                             }
+                            else if (roleName == "Receptionist" && objUser.IsDelete == false)
+                            {
+                                return RedirectToAction("Dashboard", "Home");
+                            }
                         }
                         else
                         {

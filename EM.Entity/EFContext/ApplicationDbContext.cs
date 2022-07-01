@@ -84,5 +84,11 @@ namespace EM.EFContext
         /// Get Country
         /// </summary>
         public virtual DbSet<Country> Country { get; set; }
+
+        /// <summary>
+        /// Get Email 
+        /// </summary>
+        public virtual DbSet<Email> Email { get; set; }
+
     }
 }

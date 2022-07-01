@@ -110,6 +110,19 @@
         /// </summary>
         public const string DeleteUserDetails = "User details are deleted successfully.";
 
+        /// <summary>
+        /// Appointment is booked successfully message...
+        /// </summary>
+        public const string BookedAppointment = "Appointment is booked successfully.";
 
+        /// <summary>
+        /// Appointment is updated successfully message...
+        /// </summary>
+        public const string UpdateAppointment = "Appointment is updated successfully.";
+
+        /// <summary>
+        /// if there is time conflict from doctor's side...
+        /// </summary>
+        public const string DoctorUnavailableMsg = "Doctor is not available for that time, Please select different time.";
     }
 }

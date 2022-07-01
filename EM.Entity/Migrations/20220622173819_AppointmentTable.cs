@@ -13,7 +13,10 @@ namespace EM.Entity.Migrations
                 {
                     AppointmentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    Lastname = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<int>(type: "decimal(18, 0)", nullable: false),
                     DoctorId = table.Column<int>(type: "int", nullable: true),
                     Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -33,23 +36,12 @@ namespace EM.Entity.Migrations
                         principalTable: "Doctors",
                         principalColumn: "DoctorId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Appointment_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointment_DoctorId",
                 table: "Appointment",
                 column: "DoctorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointment_UserId",
-                table: "Appointment",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

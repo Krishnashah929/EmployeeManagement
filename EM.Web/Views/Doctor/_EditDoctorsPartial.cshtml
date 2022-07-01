@@ -21,11 +21,6 @@
                         <label> First Name : </label>
                         <div class="input-group">
                             <input type="text" asp-for="FirstName" class="form-control" placeholder="First Name" onkeydown="return /[a-z]/i.test(event.key)" disabled>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-user"></span>
-                                </div>
-                            </div>
                         </div>
                         <span asp-validation-for="FirstName" class="text-danger"></span>
                     </div>
@@ -35,11 +30,6 @@
                         <label> Last Name :</label>
                         <div class="input-group">
                             <input type="text" asp-for="Lastname" class="form-control" placeholder="Last Name" onkeydown="return /[a-z]/i.test(event.key)" disabled>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-user"></span>
-                                </div>
-                            </div>
                         </div>
                         <span asp-validation-for="Lastname" class="text-danger"></span>
                     </div>
@@ -52,26 +42,22 @@
                         <label> Email Address</label>
                         <div class="input-group">
                             <input type="email" asp-for="EmailAddress" class="form-control" placeholder="Enter email" disabled>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-envelope"></span>
-                                </div>
-                            </div>
                         </div>
                         <span asp-validation-for="EmailAddress" class="text-danger"></span>
                     </div>
-
                 </div>
                 <div class="col-6">
                     <div class="form-group">
                         <label>Phone Number : </label>
                         <div class="input-group">
-                            <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-phone"></span>
-                                </div>
-                            </div>
+                            @if (Model.PhoneNumber == 0)
+                            {
+                                <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number" value="" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+                            }
+                            else
+                            {
+                                <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number">
+                            }
                         </div>
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
@@ -83,12 +69,14 @@
                     <div class="form-group">
                         <label>Pincode :</label>
                         <div class="input-group">
-                            <input type="number" asp-for="Pincode" class="form-control" placeholder="Enter Pincode">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-pen"></span>
-                                </div>
-                            </div>
+                            @if (Model.Pincode == 0)
+                            {
+                                <input type="number" value="" asp-for="Pincode" class="form-control" placeholder="Enter Pincode">
+                            }
+                            else
+                            {
+                                <input type="number" asp-for="Pincode" class="form-control" placeholder="Enter Pincode">
+                            }
                         </div>
                         <span asp-validation-for="Pincode" class="text-danger"></span>
                     </div>
@@ -97,12 +85,7 @@
                     <div class="form-group">
                         <label>Address : </label>
                         <div class="input-group">
-                            <input type="text" asp-for="Address" class="form-control" placeholder="Enter Address">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-home"></span>
-                                </div>
-                            </div>
+                            <input type="text" asp-for="Address" class="form-control" placeholder="Enter Address" onkeydown="return /[a-z]/i.test(event.key)">
                         </div>
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
@@ -112,21 +95,23 @@
             <div class="row">
                 <div class="col-6">
                     <div class="form-group">
-                        <label> Choose Speciality :</label>
-                        <select class="select2" multiple="multiple" style="width: 100%;" asp-for="SpecialityId" id="idSpecialities">
-                            <option value="2" id="idNuero">Nuero Surgon</option>
-                            <option value="3" id="idOrtho">Orthopedic Surgon</option>
-                            <option value="4" id="idENT">ENT Specilaist</option>
-                            <option value="5" id="idEye">Eye Specialist</option>
-                        </select>
-                        <span asp-validation-for="SpecialityId" class="text-danger"></span>
-                    </div>
+                        <label> Speciality :</label>
+                        <div class="select2-blue">
+                            <select class="select2" multiple="multiple" asp-for="SpecialityId" id="idSpecialities" data-dropdown-css-class="select2-blue">
+                                <option value="2" id="idNuero">Nuero Surgon</option>
+                                <option value="3" id="idOrtho">Orthopedic Surgon</option>
+                                <option value="4" id="idENT">ENT Specilaist</option>
+                                <option value="5" id="idEye">Eye Specialist</option>
+                            </select>
+                            </div>
+                            <span asp-validation-for="SpecialityId" class="text-danger"></span>
+                        </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <label>Choose Color : </label>
+                        <label> Color : </label>
                         <select class="form-select form-control" asp-for="Color">
-                            <option disabled selected value="0"> Choose Color</option>
+                            <option selected value=""> Choose Color</option>
                             <option value="1"> Red </option>
                             <option value="2"> Blue </option>
                             <option value="3"> Green </option>
@@ -139,29 +124,29 @@
             <div class="row">
                 <div class="col-4">
                     <div class="form-group">
-                        <label>Select Country : </label>
-                        <select class="form-select form-control" asp-for="CountryID" id="idCountryList" onchange="fnGetState(this)">
-                            <option value="CountryId" disabled selected> Select Country</option>
+                        <label> Country : </label>
+                        <select class="form-select form-control" asp-for="CountryId" id="idCountryList" onchange="fnGetState(this)">
+                            <option selected value=""> Select Country</option>
                         </select>
-                        <span asp-validation-for="CountryID" class="text-danger"></span>
+                        <span asp-validation-for="CountryId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="form-group">
-                        <label>Select State : </label>
-                        <select class="form-select form-control" asp-for="StateID" id="idStateList" onchange="fnGetCity(this)">
-                            <option disabled selected> Select State</option>
+                        <label>State : </label>
+                        <select class="form-select form-control" asp-for="StatesId" id="idStateList" onchange="fnGetCity(this)">
+                            <option selected value=""> Select State</option>
                         </select>
-                        <span asp-validation-for="StateID" class="text-danger"></span>
+                        <span asp-validation-for="StatesId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="form-group">
-                        <label>Select City : </label>
-                        <select class="form-select form-control" asp-for="CityID" id="idCityList">
-                            <option disabled selected> Select City </option>
+                        <label>City : </label>
+                        <select class="form-select form-control" asp-for="CityId" id="idCityList">
+                            <option selected value=""> Select City </option>
                         </select>
-                        <span asp-validation-for="CityID" class="text-danger"></span>
+                        <span asp-validation-for="CityId" class="text-danger"></span>
                     </div>
                 </div>
             </div>
@@ -176,7 +161,7 @@
 </div>
 
 <script type="text/javascript">
-    //onload 
+    //onload
     $(function () {
         fnGetCountry();
     })
@@ -228,7 +213,7 @@
             data: { id: statesId },
 
             success: function (city) {
-                $("#idCityList").append('<option value="' + -1 + '">' + "Select City" + '</option>');
+                $("#idCityList").append('<option value="' + 1 + '">' + "Select City" + '</option>');
                 $.each(city, function (i, city) {
                     $("#idCityList").append('<option value="' + city.cityId + '">' + city.cityName + '</option > ');
                 }

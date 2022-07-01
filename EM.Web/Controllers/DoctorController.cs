@@ -118,35 +118,19 @@ namespace EM.Web.Controllers
         #endregion
 
         /// <summary>
-        /// Get Patient
-        /// </summary>
-        /// <returns>List of Patient</returns>
-        #region GetPatient
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public JsonResult GetPatient()
-        {
-            //Calling BaseController.
-            var result = new ApiGenericModel<User>();
-            result = ApiRequest<User>(RequestTypes.Get, "DoctorApi/GetPatient").Result;
-            return new JsonResult(result.GenericList);
-        }
-        #endregion
-
-        /// <summary>
         /// Method for edit doctor details
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Edit Doctor model</returns>
-        #region EditDoctorsModel
+        #region EditDoctorsModelGet
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public IActionResult EditDoctorsModel(int? id, int userId)
+        public IActionResult EditDoctorsModel(int? id)
         {
             Doctor objDoctor = new Doctor();
             try
             {
-                if (id > 0 && userId != null)
+                if (id > 0)
                 {
                     //Calling BaseController.
                     var result = new ApiGenericModel<Doctor>();
@@ -159,9 +143,9 @@ namespace EM.Web.Controllers
                     objDoctor.PhoneNumber = result.GenericModel.PhoneNumber;
                     objDoctor.Pincode = result.GenericModel.Pincode;
                     objDoctor.Address = result.GenericModel.Address;
-                    objDoctor.CityID = result.GenericModel.CityID;
-                    objDoctor.StateID = result.GenericModel.StateID;
-                    objDoctor.CountryID = result.GenericModel.CountryID;
+                    objDoctor.CityId = result.GenericModel.CityId;
+                    objDoctor.StatesId = result.GenericModel.StatesId;
+                    objDoctor.CountryId = result.GenericModel.CountryId;
                     objDoctor.Color = result.GenericModel.Color;
                     objDoctor.SpecialityId = result.GenericModel.SpecialityId;
                 }
@@ -181,7 +165,7 @@ namespace EM.Web.Controllers
         /// </summary>
         /// <param name="objDoctor"></param>
         /// <returns>Add new edit exisitng doctor from admin side </returns>
-        #region EditDoctor
+        #region EditDoctorPost
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public IActionResult EditDoctor(Doctor objDoctor)
@@ -262,24 +246,38 @@ namespace EM.Web.Controllers
         #endregion
 
         /// <summary>
+        /// Get Appointments
+        /// </summary>
+        /// <returns>List of appointments</returns>
+        #region GetAppointments
+        [HttpGet]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public JsonResult GetAppointments()
+        {
+            //Calling BaseController.
+            var result = new ApiGenericModel<Appointment>();
+            result = ApiRequest<Appointment>(RequestTypes.Get, "DoctorApi/GetAppointments").Result;
+            return new JsonResult(result.GenericList);
+        }
+        #endregion
+
+        /// <summary>
         ///  Post Appontment .
         /// </summary>
         /// <param name="objAppointment"></param>
         /// <returns>Add Appointment for user. </returns>
         #region PostAppointment
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , Receptionist")]
         public IActionResult PostAppointment(Appointment objAppointment)
         {
             try
             {
-                if (ModelState.IsValid)
+                var result = new ApiGenericModel<Appointment>();
+                if (objAppointment.AppointmentId == 0)
                 {
-
-                    var result = new ApiGenericModel<Appointment>();
                     //For add appointment.
-
-                    result = ApiRequest<Appointment>(RequestTypes.Put, "Doctor/PostAppointment", null, objAppointment).Result;
+                    result = ApiRequest<Appointment>(RequestTypes.Put, "DoctorApi/PostAppointment", null, objAppointment).Result;
                     if (result != null)
                     {
                         objAppointment = result.GenericModel;
@@ -292,6 +290,141 @@ namespace EM.Web.Controllers
                     {
                         return Json(result);
                     }
+                }
+                //For update existing appointment.
+                else
+                {
+                    result = ApiRequest<Appointment>(RequestTypes.Put, "DoctorApi/EditAppointment", null, objAppointment).Result;
+                    if (result != null)
+                    {
+                        objAppointment = result.GenericModel;
+                    }
+                    if (objAppointment == null)
+                    {
+                        return Json(result);
+                    }
+                    else
+                    {
+                        return Json(result);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for getting Appointment model for add and edit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Add/edit Appointment model</returns>
+        #region EditAppointmentGet
+        [HttpGet]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public IActionResult EditAppointmentModel(int? id)
+        {
+            Appointment objAppointment = new Appointment();
+            try
+            {
+                if (id > 0)
+                {
+                    //Calling BaseController.
+                    var result = new ApiGenericModel<Appointment>();
+                    result = ApiRequest<Appointment>(RequestTypes.Get, "DoctorApi/EditAppointmentModel/" + id).Result;
+
+                    objAppointment.AppointmentId = result.GenericModel.AppointmentId;
+                    objAppointment.FirstName = result.GenericModel.FirstName;
+                    objAppointment.LastName = result.GenericModel.LastName;
+                    objAppointment.EmailAddress = result.GenericModel.EmailAddress;
+                    objAppointment.PhoneNumber = result.GenericModel.PhoneNumber;
+                    objAppointment.DoctorId = result.GenericModel.DoctorId;
+                    objAppointment.Diagnosis = result.GenericModel.Diagnosis;
+                    objAppointment.Remarks = result.GenericModel.Remarks;
+                    objAppointment.StartDateTime = result.GenericModel.StartDateTime;
+                    objAppointment.EndDateTime = result.GenericModel.EndDateTime;
+                }
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+            return new JsonResult(objAppointment);
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for getting delete appointment model
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Delete appointment model</returns>
+        #region DeleteAppointmentGet
+        [HttpGet]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public IActionResult DeleteAppointmentModel(int id)
+        {
+            try
+            {
+                //Calling BaseController.
+                var result = new ApiGenericModel<Appointment>();
+                result = ApiRequest<Appointment>(RequestTypes.Get, "DoctorApi/DeleteAppointmentModel/" + id).Result;
+                if (result != null)
+                {
+                    return new JsonResult(result.GenericModel);
+                }
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+            return null;
+        }
+        #endregion
+
+        /// <summary>
+        /// Post method for delete appointment 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Delete appointment</returns>
+        #region DeleteAppointmentPost
+        [HttpPost]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public IActionResult DeleteAppointments(Appointment model)
+        {
+            try
+            {
+                ////Calling BaseController.
+                var result = new ApiGenericModel<Appointment>();
+                result = ApiRequest<Appointment>(RequestTypes.Delete, "DoctorApi/DeleteAppointments/" + model.AppointmentId).Result;
+                return Json(result);
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for event date for drag and drop
+        /// </summary>
+        /// <param name="objDragAndDrop"></param>
+        /// <returns>List of events</returns>
+        #region DragAndDrop
+        [HttpPost]
+        [Authorize(Roles = "Admin , Receptionist")]
+        public IActionResult DragAndDrop(DragAndDrop objDragAndDrop)
+        {
+            try
+            {
+                if (objDragAndDrop != null)
+                {
+                    //Calling BaseController.
+                    var result = new ApiGenericModel<DragAndDrop>();
+                    result = ApiRequest<DragAndDrop>(RequestTypes.Post, "DoctorApi/DragAndDrop", null, objDragAndDrop).Result;
+                    return Json(result);
                 }
             }
             catch (Exception)

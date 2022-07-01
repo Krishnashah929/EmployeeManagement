@@ -20,49 +20,69 @@
             <div class="modal-body">
                 <!-- New user registration form -->
                 <form id="frmAppointment" method="post">
+                    <input type="hidden" asp-for="AppointmentId" class="form-control" id="idAppointmentId" />
+                    <div id="picker"> </div>
+                    <input type="hidden" id="result" value="">
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true)
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label> Select Doctor : </label>
-                                <select class="form-select form-control" asp-for="DoctorId" id="idDoctorList">
-                                    <option disabled selected value="DoctorId"> Select Doctor</option>
-                                </select>
-                                <span asp-validation-for="DoctorId" class="text-danger"></span>
+                                <label> First Name : </label>
+                                <div class="input-group">
+                                    <input type="text" asp-for="FirstName" class="form-control" id="idFirstName" placeholder="First Name" onkeydown="return /[a-z]/i.test(event.key)">
+                                </div>
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <label> Select Patient : </label>
-                                <select class="form-select form-control" asp-for="UserId" id="idPatientList">
-                                    <option disabled selected value="UserId"> Select Patient</option>
-                                </select>
-                                <span asp-validation-for="UserId" class="text-danger"></span>
+                                <label> Last Name : </label>
+                                <div class="input-group">
+                                    <input type="text" asp-for="LastName" class="form-control" id="idLastName" placeholder="Last Name" onkeydown="return /[a-z]/i.test(event.key)">
+                                </div>
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label> Email Address : </label>
+                                <div class="input-group">
+                                    <input type="email" asp-for="EmailAddress" class="form-control" id="idEmail" placeholder="Enter email">
+                                </div>
+                                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label> Phone Number: </label>
+                                <div class="input-group">
+                                    <input type="tel" asp-for="PhoneNumber" class="form-control" id="idPhone" placeholder="Enter phone " oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
+                        <label> Doctor : </label>
+                        <select class="form-select form-control" asp-for="DoctorId" id="idDoctorList">
+                            <option selected value=""> Select Doctor</option>
+                        </select>
+                        <span asp-validation-for="DoctorId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
                         <label> Diagnosis :  </label>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Diagnosis" onkeydown="return /[a-z]/i.test(event.key)" asp-for="Diagnosis">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-notes-medical"></span>
-                                </div>
-                            </div>
+                            <textarea id="idDiagnosis" cols="60" asp-for="Diagnosis"></textarea>
                         </div>
                         <span asp-validation-for="Diagnosis" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label> Remarks : </label>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Remarks" onkeydown="return /[a-z]/i.test(event.key)" asp-for="Remarks">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-notes-medical"></span>
-                                </div>
-                            </div>
+                            <textarea id="idRemarks" cols="60" asp-for="Remarks"></textarea>
                         </div>
                         <span asp-validation-for="Remarks" class="text-danger"></span>
                     </div>
@@ -71,12 +91,7 @@
                             <div class="form-group">
                                 <label> StartDateTime :  </label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="StartDateTime" asp-for="StartDateTime" onfocus="(this.type = 'datetime-local')">
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-clock"></span>
-                                        </div>
-                                    </div>
+                                    <input type="text" value="" id="idStartDate" class="pickatime" placeholder="StartDateTime" asp-for="StartDateTime" />
                                 </div>
                                 <span asp-validation-for="StartDateTime" class="text-danger"></span>
                             </div>
@@ -85,20 +100,18 @@
                             <div class="form-group">
                                 <label> EndDateTime :  </label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="EndDateTime" asp-for="EndDateTime" onfocus="(this.type = 'datetime-local')">
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-clock"></span>
-                                        </div>
-                                    </div>
+                                    <input type="text" id="idEndDate" class="pickatime" placeholder="EndDateTime" asp-for="EndDateTime" />
                                 </div>
                                 <span asp-validation-for="EndDateTime" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
-                    <div class="row m-auto">
-                        <div class="col">
-                            <button type="submit" class="btn btn-primary btn-block"> Add Appointment </button>
+                    <div class="row">
+                        <div class="col-md -12">
+                            <button type="submit" id="idAddUpdatebutton" class="btn btn-primary btn-block"> Add Appointment </button>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <button type="button" id="idDeleteButton" class="btn btn-danger btn-block" style="display:none;" onclick="fnDeleteAppointment(this)"> Delete Appointment </button>
                         </div>
                     </div>
                 </form>
@@ -107,80 +120,202 @@
     </div>
 </div>
 
-<script>
+<div aria-hidden="true" aria-labelledby="idDeleteAppointment" role="dialog" tabindex="-1" id="idDeleteAppointment" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title m-auto text-secondary">
+                    <b> Delete Appointment </b>
+                </h3>
+            </div>
+            <div class="modal-body">
+                <form id="idDeletDetails">
+                    <div class="row">
+                        <div class="col">
+                            <input type="hidden" asp-for="AppointmentId" class="form-control" id="idDeleteId" />
+                            <p class="text-center">
+                                Are you sure you want to delete this appointment?
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-danger btn-block" onclick="fnDeleteAppointmentPost(this)">
+                                Yes
+                            </button>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <button type="button" class="btn btn-secondary btn-block" onclick="fnNoDeleteAppointmentPost(this)">
+                                No
+                            </button>
+                        </div>
+                    </div>
+                    <br>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
     //onload
+    events = [];
+    appointmentDetails = [];
     $(function () {
         fnGetDoctor();
-        fnGetPatient();
-    })
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
-
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            initialDate: '2022-04-07',
-            selectable: true,
-            editable: true,
-            Draggable : true,
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            dateClick: function () {
-                $('#idAddAppointments').modal("show");
-            },
-            events: [
-                {
-                    title: 'Long Event',
-                    start: '2022-04-07',
-                    end: '2022-04-10'
-                },
-                {
-                    groupId: '999',
-                    title: 'Repeating Event',
-                    start: '2022-04-09T16:00:00'
-                },
-                {
-                    groupId: '999',
-                    title: 'Repeating Event',
-                    start: '2022-04-16T16:00:00'
-                },
-                {
-                    title: 'Conference',
-                    start: '2022-04-11',
-                    end: '2022-04-13'
-                },
-                {
-                    title: 'Meeting',
-                    start: '2022-04-12T10:30:00',
-                    end: '2022-04-12T12:30:00'
-                },
-                {
-                    title: 'Lunch',
-                    start: '2022-04-12T12:00:00'
-                },
-                {
-                    title: 'Meeting',
-                    start: '2022-04-12T14:30:00'
-                },
-                {
-                    title: 'Birthday Party',
-                    start: '2022-04-13T07:00:00'
-                },
-                {
-                    title: 'Click for Google',
-                    url: 'http://google.com/',
-                    start: '2022-04-28'
-                }
-            ],
-
+        getAllAppointmentinCalander();
+        $("#idStartDate").flatpickr({
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",  //For start and end time is not be less then current time.
         });
-        calendar.render();
+        $("#idEndDate").flatpickr({
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",
+        });
     });
+
+    //Fetxh data into calender from database
+    function FetchEventAndRenderCalendar() {
+        $.ajax({
+            type: "GET",
+            url: "/Doctor/GetAppointments",
+            async: false,
+            success: function (data) {
+                if (data != null && data.length > 0) {
+                    events = [];
+                    appointmentDetails = [];
+                    appointmentDetails = data;
+                    for (var i = 0; i < data.length; i++) {
+                        events.push({
+                            id: data[i].appointmentId+"_"+data[i].doctorId,
+                            title: data[i].diagnosis,
+                            description: data[i].remarks,
+                            start: data[i].startDateTime,
+                            end: data[i].endDateTime,
+                            color: data[i].color,
+                        });
+                    }
+                }
+            },
+            error: function (error) {
+                alert('failed');
+            }
+        })
+    }
+    //For get calender
+    function getAllAppointmentinCalander() {
+        FetchEventAndRenderCalendar();
+        var calendarEl = document.getElementById('calendar');
+        //var calendarEl = $("#calendar");
+        calendarEl.innerHTML = "";
+            var selectedEvent = null;
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                editable: true,
+                Draggable: true,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                dateClick: function () {
+                    $('#idAddAppointments').modal("show");
+                },
+                events: events,
+                eventLimit: true,
+                eventClick: function (event) {
+                    if (event != null && parseInt(event.event.id) > 0)
+                    {
+                        const data = appointmentDetails.filter(v => v.appointmentId === parseInt(event.event.id));
+                        //For open edit appointment model
+                                var id = parseInt(event.event.id);
+                                $.ajax({
+                                    url: '@Url.Content("~/Doctor/EditAppointmentModel")',
+                                    type: 'GET',
+                                    data: { "id": id },
+                                    success: function (response) {
+                                        if (response != null && response != undefined) {
+                                            //Set control values from response
+                                            $("#idAppointmentId").val(response.appointmentId);
+                                            $("#idDoctorList").val(response.doctorId);
+                                            $("#idFirstName").val(response.firstName);
+                                            $("#idLastName").val(response.lastName);
+                                            $("#idEmail").val(response.emailAddress);
+                                            $("#idPhone").val(response.phoneNumber);
+                                            $("#idDiagnosis").val(response.diagnosis);
+                                            $("#idRemarks").val(response.remarks);
+                                            $("#idStartDate").val(response.startDateTime);
+                                            $("#idEndDate").val(response.endDateTime);
+
+                                            if (response.appointmentId != null && response.appointmentId != undefined &&
+                                                parseInt(response.appointmentId) > 0)
+                                            {
+                                                $("#idDeleteId").val(response.appointmentId); //set value of delete id
+                                                $("#idAddUpdatebutton").text("Update Appointment"); //change the text of button
+                                                $("#idDeleteButton").css("display", "block"); //display delete buttton
+                                            }
+                                            else
+                                            {
+                                                $("#idAddUpdatebutton").text("Add");
+                                                $("#idDeleteButton").css("display", "none");
+                                                $("#idDeleteId").val(0);
+                                            }
+                                            $('#idAddAppointments').modal("show");
+                                        }
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
+                                    }
+                                });
+                        $('#idAddAppointments').modal("show");
+                    }
+                },
+                eventDrop: function (event) {
+                    debugger;
+                    var appointmentId = 0;
+                    var doctorId = 0;
+                    if (event != null && event.event.id != null && event.event.id != undefined) {
+                        appointmentId = parseInt(event.event.id.split("_")[0]);
+                        doctorId = parseInt(event.event.id.split("_")[1]);
+                        var startDate = moment(event.event.start, "MM-DD-YYYY").format("DD-MM-YYYY");
+                        var startTime = moment(event.event.start).format('LT');
+                        var endDate = moment(event.event.end, "MM-DD-YYYY").format("DD-MM-YYYY");
+                        var endTime = moment(event.event.end).format('LT');
+                        startDateTime = (startDate + ' ' + startTime);
+                        endDateTime = (endDate + ' ' + endTime);
+                        if (doctorId > 0) {
+                            debugger;
+                            //controller call
+                        $.ajax({
+                            url: '@Url.Content("~/Doctor/DragAndDrop")',
+                            type: "POST",
+                            data: { appointmentId: appointmentId, doctorId: doctorId, StartDateTime: startDateTime, EndDateTime: endDateTime },                              
+                            async: true,
+                            success: function (result)
+                            {
+                                if (result.statusCode == 200)
+                                {
+                                    toastr.success(result.message);
+                                    getAllAppointmentinCalander();
+                                } 
+                                else
+                                {
+                                    toastr.error(result.message);
+                                    getAllAppointmentinCalander();
+                                }
+                            }
+                        });
+                         }
+                        }
+                    }
+            });
+            calendar.render();
+    }
     //Get list of doctors from database
     function fnGetDoctor() {
-        debugger;
         $.ajax({
             url: '@Url.Content("~/Doctor/GetDoctor")',
             success: function (result) {
@@ -190,21 +325,8 @@
             }
             });
     };
-    //Get list of doctors from database
-    function fnGetPatient() {
-        debugger;
-        $.ajax({
-            url: '@Url.Content("~/Doctor/GetPatient")',
-            success: function (result) {
-                $.each(result, function (i, data) {
-                    $('#idPatientList').append('<option value="' + data.userId + '">' + data.firstName + " " + data.lastname + '</option > ');
-                });
-            }
-            });
-    };
     //Post Appointment
     $("#frmAppointment").submit(function (event) {
-        debugger;
         $.validator.setDefaults({
             ignore: ':hidden, [readonly=readonly]'
         });
@@ -212,6 +334,7 @@
         $.validator.unobtrusive.parse($form);
 
         if ($("#frmAppointment").valid()) {
+            debugger;
             event.preventDefault();
             event.stopImmediatePropagation();
             $.ajax({
@@ -223,15 +346,16 @@
                     if (result != null && result.statusCode != 200) {
                         toastr.error(result.message);
                         $('#idAddAppointments').modal("show");
-                    } else {
+                        getAllAppointmentinCalander();
+                    }
+                    else {
                         toastr.success(result.message);
                         $('#idAddAppointments').modal("hide");
+                        getAllAppointmentinCalander();
                     }
                     console.log(result);
                 },
                 error: function (ex) {
-                    debugger;
-                    toastr.error('Invalid Data.');
                     console.log('Failed ');
                 }
             });
@@ -241,4 +365,51 @@
             event.stopImmediatePropagation();
         }
     });
+    //Get Delete Model
+    function fnDeleteAppointment() {
+        debugger;
+        var id = $("#idDeleteId").val();
+        if (id != null && id != undefined && parseInt(id) > 0) {
+            $.ajax({
+                url:'@Url.Content("~/Doctor/DeleteAppointmentModel")',
+                type: 'GET',
+                data: { "id": id },
+                success: function () {
+                    $('#idAddAppointments').modal("hide");
+                    $('#idDeleteAppointment').modal("show");
+                }
+            });
+        }
+    }
+    //Post Delete Appointment
+    function fnDeleteAppointmentPost() {
+        var data = $("#idDeletDetails").serialize();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Doctor/DeleteAppointments")',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
+            data: data,
+            success: function (result) {
+                if (result != null && result.statusCode != 200) {
+                    toastr.error(result.message);
+                    $('#idDeleteAppointment').modal("show");
+                    getAllAppointmentinCalander();
+                } else {
+                    toastr.success(result.message);
+                    $('#idDeleteAppointment').modal("hide");
+                    getAllAppointmentinCalander();
+                }
+                console.log(result);
+            },
+            error: function () {
+                alert('Failed to receive the Data');
+                console.log('Failed ');
+            }
+        })
+    }
+    //Post NoDelete Appointment
+    function fnNoDeleteAppointmentPost() {
+        $('#idDeleteAppointment').modal("hide");
+        getAllAppointmentinCalander();
+    }
 </script>
