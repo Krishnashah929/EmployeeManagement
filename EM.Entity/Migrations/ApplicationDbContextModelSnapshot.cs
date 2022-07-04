@@ -41,16 +41,18 @@ namespace EM.Entity.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("EmailAddress")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ModifiedBy")
@@ -72,8 +74,6 @@ namespace EM.Entity.Migrations
                     b.HasKey("AppointmentId");
 
                     b.HasIndex("DoctorId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Appointment");
                 });
@@ -164,6 +164,28 @@ namespace EM.Entity.Migrations
                     b.HasKey("DoctorId");
 
                     b.ToTable("Doctors");
+                });
+
+            modelBuilder.Entity("EM.Entity.Email", b =>
+                {
+                    b.Property<string>("ToEmail")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsSend")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ToEmail");
+
+                    b.ToTable("Email");
                 });
 
             modelBuilder.Entity("EM.Entity.Setting", b =>
@@ -335,8 +357,6 @@ namespace EM.Entity.Migrations
                         .IsRequired();
 
                     b.Navigation("Doctor");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EM.Entity.City", b =>
