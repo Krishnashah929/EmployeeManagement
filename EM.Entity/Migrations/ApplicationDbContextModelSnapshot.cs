@@ -277,7 +277,7 @@ namespace EM.Entity.Migrations
 
                     b.Property<string>("Password")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ResetPasswordCode")
                         .HasColumnType("nvarchar(max)");

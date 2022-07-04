@@ -65,7 +65,7 @@ namespace EM.EFContext
         /// <summary>
         /// Get doctor's speciality
         /// </summary>
-        public virtual DbSet<Speciality> Specialitie { get; set; }
+        public virtual DbSet<Speciality> Specialities { get; set; }
         /// <summary>
         /// Do Appointment
         /// </summary>
