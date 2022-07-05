@@ -34,5 +34,11 @@ namespace EM.Models
         /// </summary>
         [DisplayName("EndDateTime")]
         public DateTime EndDateTime { get; set; }
+
+        /// <summary>
+        /// Current Date
+        /// </summary>
+        [DisplayName("CurrentDate")]
+        public DateTime CurrentDate { get; set; }
     }
 }

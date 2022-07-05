@@ -13,6 +13,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
+using static EM.Common.GlobalEnum;
 #endregion
 
 namespace EM.API.Controllers
@@ -85,14 +86,12 @@ namespace EM.API.Controllers
                     }
                     // get total count of records after search 
                     filterRecord = data.Count();
-
                     //sort data
                     if (!string.IsNullOrEmpty(jqueryDatatableParam.sortColumn) && !string.IsNullOrEmpty(jqueryDatatableParam.sortColumnDirection))
                         data = data.AsQueryable().OrderBy(jqueryDatatableParam.sortColumn + " " + jqueryDatatableParam.sortColumnDirection);
 
                     //pagination
                     var empList = data.Skip(jqueryDatatableParam.skip).Take(jqueryDatatableParam.pageSize).ToList();
-
                     return CommonHelper.GetResponseDataTable(jqueryDatatableParam.draw, totalRecord, filterRecord, empList);
                 }
                 //getting value from common helper.

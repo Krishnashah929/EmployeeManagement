@@ -108,7 +108,7 @@ namespace EM.API.Controllers
         {
             try
             {
-                var getDoctors = _userService.GetAllDoctors();
+                var getDoctors = _userService.GetSortedDoctors();
                 //getting value from common helper.
                 return CommonHelper.GetResponse(HttpStatusCode.OK, "", "", getDoctors);
             }
@@ -171,7 +171,7 @@ namespace EM.API.Controllers
             }
             catch
             {
-                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "");
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.InvalidMsg);
             }
         }
         #endregion
@@ -429,6 +429,10 @@ namespace EM.API.Controllers
                 {
                     //getting value from common helper.
                     return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateAppointment, getAppointment);
+                }
+                else if (getAppointment == null)
+                {
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.NotDropEventMsg, "");
                 }
                 return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg, "");
             }

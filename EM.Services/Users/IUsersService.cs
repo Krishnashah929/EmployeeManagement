@@ -52,6 +52,12 @@ namespace EM.Services
         IEnumerable<Doctor> GetAllDoctors();
 
         /// <summary>
+        /// Get sorted doctors
+        /// </summary>
+        /// <returns>list of doctors</returns>
+        IEnumerable<Doctor> GetSortedDoctors();
+
+        /// <summary>
         /// Method for register user
         /// </summary>
         /// <param name="user"></param>

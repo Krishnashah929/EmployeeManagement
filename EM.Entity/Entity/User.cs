@@ -21,7 +21,9 @@ namespace EM.Entity
         {
             UserRoles = new HashSet<UserRole>();
         }
-
+        /// <summary>
+        /// Get userId.
+        /// </summary>
         public int UserId { get; set; }
 
         /// <summary>
@@ -113,8 +115,27 @@ namespace EM.Entity
         /// </summary>
         public string Role { get; set; }
 
-        //this line for the mailing services//
+        /// <summary>
+        ///this line for the mailing services
+        /// </summary>
         public string ResetPasswordCode { get; set; }
+
+        /// <summary>
+        /// For created by name
+        /// </summary>
+        [NotMapped]
+        public string CreateByName { get; set; }
+         
+        /// <summary>
+        /// For modified by name
+        /// </summary>
+        [NotMapped]
+        public string ModifiedByName { get; set; }
+
+        /// <summary>
+        /// For getting role in string format for data table
+        /// </summary>
+        [NotMapped]
+        public string RoleName { get; set; }
     }
 }
-

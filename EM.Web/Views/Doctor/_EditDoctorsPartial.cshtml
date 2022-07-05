@@ -52,11 +52,11 @@
                         <div class="input-group">
                             @if (Model.PhoneNumber == 0)
                             {
-                                <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number" value="" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+                                <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number" maxlength="10" value="" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                             }
                             else
                             {
-                                <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number">
+                                <input type="tel" asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number" maxlength="10">
                             }
                         </div>
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
@@ -71,11 +71,11 @@
                         <div class="input-group">
                             @if (Model.Pincode == 0)
                             {
-                                <input type="number" value="" asp-for="Pincode" class="form-control" placeholder="Enter Pincode">
+                                <input type="number" value="" asp-for="Pincode" class="form-control" placeholder="Enter Pincode" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6">
                             }
                             else
                             {
-                                <input type="number" asp-for="Pincode" class="form-control" placeholder="Enter Pincode">
+                                <input type="number" asp-for="Pincode" class="form-control" placeholder="Enter Pincode"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6">
                             }
                         </div>
                         <span asp-validation-for="Pincode" class="text-danger"></span>
@@ -85,7 +85,7 @@
                     <div class="form-group">
                         <label>Address : </label>
                         <div class="input-group">
-                            <input type="text" asp-for="Address" class="form-control" placeholder="Enter Address" onkeydown="return /[a-z]/i.test(event.key)">
+                            <input type="text" asp-for="Address" class="form-control" placeholder="Enter Address">
                         </div>
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
@@ -126,7 +126,7 @@
                     <div class="form-group">
                         <label> Country : </label>
                         <select class="form-select form-control" asp-for="CountryId" id="idCountryList" onchange="fnGetState(this)">
-                            <option selected value=""> Select Country</option>
+                            <option  value=""> Select Country</option>
                         </select>
                         <span asp-validation-for="CountryId" class="text-danger"></span>
                     </div>
@@ -135,7 +135,7 @@
                     <div class="form-group">
                         <label>State : </label>
                         <select class="form-select form-control" asp-for="StatesId" id="idStateList" onchange="fnGetCity(this)">
-                            <option selected value=""> Select State</option>
+                            <option  value=""> Select State</option>
                         </select>
                         <span asp-validation-for="StatesId" class="text-danger"></span>
                     </div>
@@ -144,7 +144,7 @@
                     <div class="form-group">
                         <label>City : </label>
                         <select class="form-select form-control" asp-for="CityId" id="idCityList">
-                            <option selected value=""> Select City </option>
+                            <option  value=""> Select City </option>
                         </select>
                         <span asp-validation-for="CityId" class="text-danger"></span>
                     </div>

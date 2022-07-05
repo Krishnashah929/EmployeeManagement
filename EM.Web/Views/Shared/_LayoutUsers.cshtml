@@ -28,6 +28,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0/main.min.css,npm/fullcalendar@5.11.0/main.min.css">
     <!--Date and time picker-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .active {
+            background: #007bff;
+        }
+    </style>
     <!---------------------------------------------------Script section------------------------------------------------------------>
     <!-- jQuery -->
     <script src="~/plugins/jquery/jquery.min.js"></script>
@@ -53,6 +58,13 @@
     <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0,npm/fullcalendar@5.11.0/main.min.js,npm/fullcalendar@5.11.0/locales-all.min.js,npm/fullcalendar@5.11.0/locales-all.min.js"></script>
     <!--Date and time picker-->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".nav-link").click(function () {
+                $(this).addClass("active").siblings().removeClass("active");
+            });
+        });
+    </script>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -126,8 +138,8 @@
                 </div>
 
                 <!-- Sidebar Menu -->
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column navbar-nav" data-widget="treeview" role="menu" data-accordion="false">
+                <nav class="mt-2" >
+                    <ul class="nav nav-pills nav-sidebar flex-column navbar-nav" data-accordion="false">
                         @if (User.IsInRole("Admin") || User.IsInRole("Users"))
                         {
                             <li class="nav-item">
@@ -137,13 +149,13 @@
                                 </a>
                             </li>
                             <li class="nav-item" id="idDoctors">
-                                <a asp-action="GetDoctors" asp-controller="Doctor" class="nav-link" aria-selected="true">
+                                <a asp-action="GetDoctors" asp-controller="Doctor" id="idDoctors" class="nav-link " aria-selected="true" onclick="fnDoctorsLink();">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Doctors</p>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a asp-action="TimeSheets" asp-controller="Doctor" class="nav-link" aria-selected="true">
+                            <li class="nav-item" id="idTimesheets">
+                                <a asp-action="TimeSheets" asp-controller="Doctor" class="nav-link" aria-selected="true" onclick="fnTimesheetLink();">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>TimeSheets</p>
                                 </a>

@@ -81,42 +81,46 @@ namespace EM.Entity.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Specialities",
-                columns: table => new
-                {
-                    SpecialityId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DoctorId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Specialities", x => x.SpecialityId);
-                });
+             name: "Specialities",
+             columns: table => new
+             {
+                 DoctorId = table.Column<int>(type: "int", nullable: false),
+                 SpecialityId = table.Column<int>(type: "int", nullable: false),
+             },
+             constraints: table =>
+             {
+                 table.ForeignKey(
+                       name: "FK_PK_Specialities_Doctors_DoctorId",
+                       column: x => x.DoctorId,
+                       principalTable: "Doctors",
+                       principalColumn: "DoctorId",
+                       onDelete: ReferentialAction.Cascade);
+             });
 
             migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Lastname = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmailAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
-                    IsBlocked = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedBy = table.Column<int>(type: "int", nullable: true),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ResetPasswordCode = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.UserId);
-                });
+                    name: "User",
+                    columns: table => new
+                    {
+                        UserId = table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
+                        FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                        Lastname = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                        EmailAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                        Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                        IsActive = table.Column<bool>(type: "bit", nullable: false),
+                        IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                        IsBlocked = table.Column<bool>(type: "bit", nullable: false),
+                        CreatedBy = table.Column<int>(type: "int", nullable: false),
+                        CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                        ModifiedBy = table.Column<int>(type: "int", nullable: true),
+                        ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                        ResetPasswordCode = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_User", x => x.UserId);
+                    });
 
             migrationBuilder.CreateTable(
                 name: "States",

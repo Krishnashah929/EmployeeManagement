@@ -124,5 +124,15 @@
         /// if there is time conflict from doctor's side...
         /// </summary>
         public const string DoctorUnavailableMsg = "Doctor is not available for that time, Please select different time.";
+
+        /// <summary>
+        /// if any other exception occurs...
+        /// </summary>
+        public const string InvalidMsg = "Something is invalid.";
+
+        /// <summary>
+        /// can't book appointment on past date...
+        /// </summary>
+        public const string NotDropEventMsg = "Don't Book an appointment of past date.";
     }
 }

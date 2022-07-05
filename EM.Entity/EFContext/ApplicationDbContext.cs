@@ -43,6 +43,12 @@ namespace EM.EFContext
                    IsActive = true
                }
                );
+
+            builder.Entity<Speciality>().HasKey(table => new
+            {
+                table.DoctorId,
+                table.SpecialityId
+            });
         }
 
         /// <summary>
@@ -62,6 +68,7 @@ namespace EM.EFContext
         /// Get all doctors details.
         /// </summary>
         public virtual DbSet<Doctor> Doctor { get; set; }
+
         /// <summary>
         /// Get doctor's speciality
         /// </summary>

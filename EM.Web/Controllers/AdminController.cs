@@ -65,7 +65,7 @@ namespace EM.Web.Controllers
         /// <returns>all list of users</returns>
         #region GetUserList
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Users")]
         public IActionResult GetUserList()
         {
             try
@@ -97,7 +97,6 @@ namespace EM.Web.Controllers
                     result = ApiRequest<User>(RequestTypes.Post, "AdminApi/GetUserList", null, objJqueryDatatableParam).Result;
 
                     var returnObj = new { draw = result.Draw, recordsTotal = result.RecordsTotal, recordsFiltered = result.RecordsFiltered, data = result.GenericList };
-                    
                     if (true)
                     {
                         return Json(returnObj);

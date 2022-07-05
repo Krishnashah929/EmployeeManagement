@@ -37,10 +37,14 @@
                         <table id="idUserTable" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>UserId</th>
                                     <th>First Name</th>
                                     <th>Last Name</th>
                                     <th>Email</th>
+                                    <th>Role</th>
+                                    <th>CreatedBy</th>
+                                    <th>CreateDate</th>
+                                    <th>ModifiedBy</th>
+                                    <th>ModifiedDate</th>
                                     <th>Edit</th>
                                     <th>Delete</th>
                                 </tr>
@@ -62,7 +66,7 @@
         $('#idUserTable').DataTable(
             {
                 ajax: {
-                    url:'@Url.Content("GetUserList")',
+                    url:'@Url.Content("~/Admin/GetUserList")',
                     type: "POST",
                 },
                 destroy: true,
@@ -75,26 +79,44 @@
                 "serverSide": true,
 
                 columns: [
-                    { data: "userId", name: "UserId" }, //index - 0
-                    { data: "firstName", name: "FirstName" }, //index - 1
-                    { data: "lastname", name: "Lastname" }, //index - 2
-                    { data: "emailAddress", name: "EmailAddress" }, //index - 3
+                    { data: "firstName", name: "FirstName" }, //index - 0
+                    { data: "lastname", name: "Lastname" }, //index - 1
+                    { data: "emailAddress", name: "EmailAddress" }, //index - 2
+                    { data: "roleName", name: "Role" }, //index - 3
+                    { data: "createByName", name: "CreatedBy"  }, //index - 4
+                    {                       
+                        /*data: createdDate,*/
+                        render: function (data) {
+                            return moment(data).format('DD-MM-YYYY HH:mm A')
+                        } //index - 5
+                    },
+                    { data: "modifiedByName", name: "ModifiedBy" }, //index - 6
+                    {
+                        data: null,
+                        render: function (data) {
+                            if (data != null && data.modifiedDate != null && data.modifiedDate != undefined && data.modifiedDate != "0") {
+                                return moment(data.modifiedDate).format('DD-MM-YYYY HH:mm A')
+                            } else {
+                                return "";
+                            }
+                        } //index- 7
+                    },
                     {
                         //adds td row for button
                         data: null,
                         render: function (data) {
                             return "<a href='#' class='btn btn-info m-auto' data-toggle='model' data-target=#AddEditUsers' onclick=editUser('" + data.userId + "'); >Edit</a>";
-                        } //index - 4
+                        } //index - 8
                     },
                     {
                         data: null,
                         render: function (row) {
                             return "<a href='#' class='btn btn-danger m-auto' onclick=deleteUser('" + row.userId + "'); >Delete</a>";
-                        } //index - 5
+                        } //index - 9
                     },
                 ],
                 'columnDefs': [{
-                    'targets': [4,5], // column index (start from 0)
+                    'targets': [8,9], // column index (start from 0)
                     'orderable': false, // set orderable false for selected columns
                 }]
             }

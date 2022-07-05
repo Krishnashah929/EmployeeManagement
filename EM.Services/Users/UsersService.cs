@@ -49,7 +49,40 @@ namespace EM.Services
             try
             {
                 var repoList = this._unitOfWork.GetRepository<User>();
-                List<User> lstUsers = repoList.GetAll().Where(x => x.IsDelete == false).AsNoTracking().ToList();
+                //List<User> lstUsers = repoList.GetAll().Where(x => x.IsDelete == false).AsNoTracking().ToList();
+
+                List<User> lstUsers = (from user in repoList.GetAll()
+                                       //For getting proper string format values of roles , created by and modify by
+                                       let role = Convert.ToInt32(user.Role)
+                                       let createdBy = Convert.ToInt32(user.CreatedBy)
+                                       let modifiedBy = Convert.ToInt32(user.ModifiedBy)
+                                       where user.IsDelete == false
+                                       select new User
+                                       {
+                                           FirstName = user.FirstName,
+                                           Lastname = user.Lastname,
+                                           EmailAddress = user.EmailAddress,
+                                           Role = user.Role,
+                                           RoleName = role == Convert.ToInt32(UserRoles.Admin) ? "Admin" :
+                                                  role == Convert.ToInt32(UserRoles.Doctors) ? "Doctor" :
+                                                  role == Convert.ToInt32(UserRoles.Receptionist) ? "Receptionist" :
+                                                  role == Convert.ToInt32(UserRoles.Users) ? "User" : "",
+                                           CreateByName = createdBy == Convert.ToInt32(UserRoles.Admin) ? "Admin" :
+                                                        createdBy == Convert.ToInt32(UserRoles.Doctors) ? "Doctor" :
+                                                        createdBy == Convert.ToInt32(UserRoles.Receptionist) ? "Receptionist" :
+                                                        createdBy == Convert.ToInt32(UserRoles.Users) ? "User" : "",
+                                           CreatedDate = user.CreatedDate,
+                                           ModifiedByName = modifiedBy == Convert.ToInt32(UserRoles.Admin) ? "Admin" :
+                                                        modifiedBy == Convert.ToInt32(UserRoles.Doctors) ? "Doctor" :
+                                                        modifiedBy == Convert.ToInt32(UserRoles.Receptionist) ? "Receptionist" :
+                                                        modifiedBy == Convert.ToInt32(UserRoles.Users) ? "User" : "",
+                                           ModifiedDate = user.ModifiedDate,
+                                           Password = user.Password,
+                                           IsActive = user.IsActive,
+                                           UserId = user.UserId,
+                                       }).AsNoTracking().ToList();
+
+
                 if (lstUsers != null)
                 {
                     return lstUsers;
@@ -69,7 +102,7 @@ namespace EM.Services
         /// <summary>
         /// Method for get all doctors
         /// </summary>
-        /// <returns>All users who is not deleted</returns>
+        /// <returns>All doctors who is not deleted</returns>
         #region GetAllDoctors
         public IEnumerable<Doctor> GetAllDoctors()
         {
@@ -80,6 +113,51 @@ namespace EM.Services
 
                 //Join operation for fetching user id from user table to doctor table.
                 var data = (from d in repoList.GetAll() //d = doctor
+                            join u in userList.GetAll() on d.UserId equals u.UserId //u = user
+                            select new Doctor()
+                            {
+                                FirstName = u.FirstName,
+                                Lastname = u.Lastname,
+                                EmailAddress = u.EmailAddress,
+                                DoctorId = d.DoctorId,
+                                PhoneNumber = d.PhoneNumber,
+                                Pincode = d.Pincode,
+                                Address = d.Address,
+                                Color = d.Color
+                            }).ToList();
+
+                List<Doctor> lstDoctors = data;
+
+                if (lstDoctors != null)
+                {
+                    return lstDoctors;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Method for get soryed doctors
+        /// </summary>
+        /// <returns>All doctors who is configured</returns>
+        #region GetSortedDoctors
+        public IEnumerable<Doctor> GetSortedDoctors()
+        {
+            try
+            {
+                var repoList = this._unitOfWork.GetRepository<Doctor>();
+                var userList = this._unitOfWork.GetRepository<User>();
+
+                //Join operation for fetching user id from user table to doctor table.
+                var data = (from d in repoList.GetAll().Where(x => x.PhoneNumber != 0) //d = doctor
                             join u in userList.GetAll() on d.UserId equals u.UserId //u = user
                             select new Doctor()
                             {
@@ -245,10 +323,6 @@ namespace EM.Services
                         verifyUsers.CreatedDate = DateTime.Now;
                         verifyUsers.IsActive = false;
                         //By default new register person will registered as user
-                        verifyUsers.Role = (UserRoles.Users).ToString();
-                        {
-                            verifyUsers.Role = "2";
-                        }
 
                         userRepository.Add(verifyUsers);
                         _unitOfWork.Commit();
@@ -311,7 +385,7 @@ namespace EM.Services
             {
                 User verifyLogin = new User();
                 var password = EncryptionDecryption.Encrypt(objLoginModel.Password.ToString());
-                //Verify Logged in user 
+                //Verify Logged in user                 
                 verifyLogin = this.GetAllUser().FirstOrDefault(x => x.Password == password && x.EmailAddress == objLoginModel.EmailAddress && x.IsActive == true && x.IsDelete == false);
                 if (verifyLogin != null)
                 {
@@ -352,6 +426,8 @@ namespace EM.Services
                         user.IsActive = false;
                         int roleId = Convert.ToInt32(user.Role);
                         string roleName = ((UserRoles)roleId).ToString();
+                        user.CreatedBy = Convert.ToInt32(UserRoles.Admin);
+                        user.CreatedDate = DateTime.Now;
                     }
                     userRepository.Add(user);
                     _unitOfWork.Commit();
@@ -399,6 +475,7 @@ namespace EM.Services
                 {
                     var userRepository = _unitOfWork.GetRepository<User>();
                     User updateDetails = new User();
+                    var modifiedBy = Convert.ToInt32(UserRoles.Admin);
                     updateDetails = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
                     {
                         if (userRepository != null)
@@ -412,6 +489,7 @@ namespace EM.Services
                             }
                             updateDetails.Role = user.Role;
                             updateDetails.ModifiedDate = DateTime.Now;
+                            updateDetails.ModifiedByName = modifiedBy == Convert.ToInt32(UserRoles.Admin) ? "Admin" :"";
                             _unitOfWork.GetRepository<User>().Update(updateDetails);
                             _unitOfWork.Commit();
                         }
@@ -468,8 +546,8 @@ namespace EM.Services
                 var objDoctor = this.GetAllDoctors().FirstOrDefault(x => x.DoctorId == doctor.DoctorId);
                 if (objDoctor != null && objDoctor.DoctorId > 0)
                 {
-                    doctor.ModifiedDate = DateTime.Now;
-                    doctor.ModifiedBy = 1;
+                    UpdateDetails.ModifiedDate = DateTime.Now;
+                    UpdateDetails.ModifiedBy = 1;
 
                     //1. GET ALL FROM DB BASED ON DOCTOR ID
                     var repoSpeciality = _unitOfWork.GetRepository<Speciality>();
@@ -615,7 +693,7 @@ namespace EM.Services
                             {
                                 DoctorId = d.DoctorId,
                                 Color = colorValue == Convert.ToInt32(doctorColors.Red) ? "red" :
-                                        colorValue == Convert.ToInt32(doctorColors.Blue) ? "blue":
+                                        colorValue == Convert.ToInt32(doctorColors.Blue) ? "blue" :
                                         colorValue == Convert.ToInt32(doctorColors.Green) ? "green" : "",//Get color value from enum
                                 AppointmentId = a.AppointmentId,
                                 FirstName = a.FirstName,
@@ -658,7 +736,7 @@ namespace EM.Services
                 Appointment userAppointment = new Appointment();
                 {
                     if (appoinmentRepository != null)
-                    { 
+                    {
                         //Checking appointment time respect to doctor id 
                         var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == appointment.DoctorId && x.StartDateTime <= appointment.StartDateTime && x.EndDateTime >= appointment.EndDateTime);
                         if (appointmentTime == null)
@@ -677,7 +755,7 @@ namespace EM.Services
                             _unitOfWork.Commit();
 
                             //For add records into email table
-                            if(userAppointment.AppointmentId > 0)
+                            if (userAppointment.AppointmentId > 0)
                             {
                                 Email emailList = new Email();
                                 var emailRepository = _unitOfWork.GetRepository<Email>();
@@ -740,8 +818,8 @@ namespace EM.Services
                                 updateAppointment.EmailAddress = objAppointment.EmailAddress;
                             }
                             //Checking appointment time with respect to doctor id
-                            var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == objAppointment.DoctorId &&  x.StartDateTime == objAppointment.StartDateTime && x.EndDateTime == objAppointment.EndDateTime);
-                            if (appointmentTime == null && objAppointment.StartDateTime >= updateAppointment.StartDateTime && objAppointment.EndDateTime <= updateAppointment.EndDateTime) 
+                            var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == objAppointment.DoctorId && x.StartDateTime == objAppointment.StartDateTime && x.EndDateTime == objAppointment.EndDateTime);
+                            if (appointmentTime == null && objAppointment.StartDateTime >= updateAppointment.StartDateTime && objAppointment.EndDateTime <= updateAppointment.EndDateTime)
                             {
                                 updateAppointment.StartDateTime = objAppointment.StartDateTime;
                                 updateAppointment.EndDateTime = objAppointment.EndDateTime;
@@ -802,25 +880,29 @@ namespace EM.Services
                     {
                         if (eventRepository != null)
                         {
-                            var userEvent = this.GetAppointments().FirstOrDefault(x => x.AppointmentId == objDragAndDrop.AppointmentId);
-                            //Checking appointment time with respect to doctor id
-                            var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == objDragAndDrop.DoctorId && x.StartDateTime == objDragAndDrop.StartDateTime && x.EndDateTime == objDragAndDrop.EndDateTime);
-                            if (appointmentTime == null)
+                            var userEvent = this.GetAppointments().FirstOrDefault(x => x.AppointmentId == objDragAndDrop.AppointmentId && x.StartDateTime < objDragAndDrop.CurrentDate);
+                            if (userEvent != null)
                             {
-                                updateEvent.AppointmentId = objDragAndDrop.AppointmentId;
-                                updateEvent.DoctorId = objDragAndDrop.DoctorId;
-                                updateEvent.StartDateTime = objDragAndDrop.StartDateTime;
-                                updateEvent.EndDateTime = objDragAndDrop.EndDateTime;
-                                updateEvent.FirstName = userEvent.FirstName;
-                                updateEvent.LastName = userEvent.LastName;
-                                updateEvent.EmailAddress = userEvent.EmailAddress;
-                                updateEvent.PhoneNumber = userEvent.PhoneNumber;
-                                updateEvent.Diagnosis = userEvent.Diagnosis;
-                                updateEvent.Remarks = userEvent.Remarks;
-                                updateEvent.ModifiedDate = DateTime.Now;
-                                _unitOfWork.GetRepository<Appointment>().Update(updateEvent);
-                                _unitOfWork.Commit();
+                                //Checking appointment time with respect to doctor id
+                                var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == objDragAndDrop.DoctorId && x.StartDateTime == objDragAndDrop.StartDateTime && x.EndDateTime == objDragAndDrop.EndDateTime && x.StartDateTime > DateTime.Now);
+                                if (appointmentTime == null)
+                                {
+                                    updateEvent.AppointmentId = objDragAndDrop.AppointmentId;
+                                    updateEvent.DoctorId = objDragAndDrop.DoctorId;
+                                    updateEvent.StartDateTime = objDragAndDrop.StartDateTime;
+                                    updateEvent.EndDateTime = objDragAndDrop.EndDateTime;
+                                    updateEvent.FirstName = userEvent.FirstName;
+                                    updateEvent.LastName = userEvent.LastName;
+                                    updateEvent.EmailAddress = userEvent.EmailAddress;
+                                    updateEvent.PhoneNumber = userEvent.PhoneNumber;
+                                    updateEvent.Diagnosis = userEvent.Diagnosis;
+                                    updateEvent.Remarks = userEvent.Remarks;
+                                    updateEvent.ModifiedDate = DateTime.Now;
+                                    _unitOfWork.GetRepository<Appointment>().Update(updateEvent);
+                                    _unitOfWork.Commit();
+                                }
                             }
+
                             else
                             {
                                 return null;

@@ -89,20 +89,20 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label> StartDateTime :  </label>
+                                <label> Start Date & Time :  </label>
                                 <div class="input-group">
-                                    <input type="text" value="" id="idStartDate" class="pickatime" placeholder="StartDateTime" asp-for="StartDateTime" />
+                                    <input type="text" value="" id="idStartDate" class="pickatime" placeholder="StartDateTime" asp-for="StartDateTime" onchange="fnDateChange(event.target.value)" />
                                 </div>
                                 <span asp-validation-for="StartDateTime" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <label> EndDateTime :  </label>
+                                <label> End Date & Time :  </label>
                                 <div class="input-group">
-                                    <input type="text" id="idEndDate" class="pickatime" placeholder="EndDateTime" asp-for="EndDateTime" />
+                                    <input type="text" id="idEndDate" class="pickatime" placeholder="EndDateTime" asp-for="EndDateTime" onchange="fnDateChange(event.target.value)" />
                                 </div>
-                                <span asp-validation-for="EndDateTime" class="text-danger"></span>
+                                <span asp-validation-for="EndDateTime" class="text-danger" id="error"></span>
                             </div>
                         </div>
                     </div>
@@ -164,18 +164,52 @@
     $(function () {
         fnGetDoctor();
         getAllAppointmentinCalander();
+        var current = new Date();   //Current date
         $("#idStartDate").flatpickr({
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: "today",  //For start and end time is not be less then current time.
+            dateFormat: "d-m-Y H:i",
+            minDate: "today",
+            minTime: current.getHours() + ":" + current.getMinutes(),//For start and end time is not be less then current time.
         });
         $("#idEndDate").flatpickr({
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
+            dateFormat: "d-m-Y H:i",
             minDate: "today",
+            minTime: current.getHours() + ":" + current.getMinutes(),
         });
     });
+    //On changing dates
+    function fnDateChange(selectDate){
+        debugger;
+        var minimumTime = undefined;//if current date and selected date is not matched then there is no min time
+        var dateIndex = selectDate.indexOf(' '); //spliting date and time from selectDate
+        var dateModified = selectDate.substring(0, dateIndex);
+        var current = new Date();   //Current date
+        var cd = moment(current).format('DD-MM-YYYY') //Changing the format of current date
 
+        if (dateModified == cd)//checking that selected date and current date is matched or not
+        {
+            minimumTime = current.getHours() + ":" + current.getMinutes();
+        }
+        $("#idStartDate").flatpickr({
+            enableTime: true,
+            dateFormat: "d-m-Y H:i",
+            minDate: "today",
+            minTime: minimumTime,//For start and end time is not be less then current time.
+        });
+        $("#idEndDate").flatpickr({
+            enableTime: true,
+            dateFormat: "d-m-Y H:i",
+            minDate: "today",
+            minTime: minimumTime,
+        });
+        var valueStartDate = $("#idStartDate").val();
+        var valueEndDate = $("#idEndDate").val();
+        var error = document.getElementById("error");
+        if (valueStartDate > valueEndDate) {
+            error.textContent = "Please select end date greater then start date"
+        }
+    };
     //Fetxh data into calender from database
     function FetchEventAndRenderCalendar() {
         $.ajax({
@@ -192,10 +226,10 @@
                             id: data[i].appointmentId+"_"+data[i].doctorId,
                             title: data[i].diagnosis,
                             description: data[i].remarks,
-                            start: data[i].startDateTime,
+                            start: data[i].startDateTime,/* moment(data[i].startDateTime, "MM-DD-YYYY").format("DD-MM-YYYY")*/
                             end: data[i].endDateTime,
                             color: data[i].color,
-                           
+
                         });
                     }
                 }
@@ -209,7 +243,6 @@
     function getAllAppointmentinCalander() {
         FetchEventAndRenderCalendar();
         var calendarEl = document.getElementById('calendar');
-        //var calendarEl = $("#calendar");
         calendarEl.innerHTML = "";
             var selectedEvent = null;
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -228,6 +261,7 @@
                 events: events,
                 eventLimit: true,
                 eventClick: function (event) {
+                    debugger;
                     if (event != null && parseInt(event.event.id) > 0)
                     {
                         const data = appointmentDetails.filter(v => v.appointmentId === parseInt(event.event.id));
@@ -271,29 +305,36 @@
                                         console.log(error);
                                     }
                                 });
-                        
+
                     }
                 },
                 eventDrop: function (event) {
                     debugger;
                     var appointmentId = 0;
                     var doctorId = 0;
+                   
                     if (event != null && event.event.id != null && event.event.id != undefined) {
                         appointmentId = parseInt(event.event.id.split("_")[0]);
                         doctorId = parseInt(event.event.id.split("_")[1]);
                         var startDate = moment(event.event.start, "MM-DD-YYYY").format("DD-MM-YYYY");
                         var startTime = moment(event.event.start).format('LT');
+
                         var endDate = moment(event.event.end, "MM-DD-YYYY").format("DD-MM-YYYY");
                         var endTime = moment(event.event.end).format('LT');
+
+                        var current = new Date();
+
                         startDateTime = (startDate + ' ' + startTime);
                         endDateTime = (endDate + ' ' + endTime);
-                        if (doctorId > 0) {
+
+                        currentDate = moment(current).format('DD-MM-YYYY');
+                        if (doctorId > 0 && startDate >= currentDate) {
                             debugger;
                             //controller call
                         $.ajax({
                             url: '@Url.Content("~/Doctor/DragAndDrop")',
                             type: "POST",
-                            data: { appointmentId: appointmentId, doctorId: doctorId, StartDateTime: startDateTime, EndDateTime: endDateTime },                              
+                            data: { appointmentId: appointmentId, doctorId: doctorId, StartDateTime: startDateTime, EndDateTime: endDateTime, CurrentDate: currentDate },
                             async: true,
                             success: function (result)
                             {
@@ -301,7 +342,7 @@
                                 {
                                     toastr.success(result.message);
                                     getAllAppointmentinCalander();
-                                } 
+                                }
                                 else
                                 {
                                     toastr.error(result.message);
@@ -333,7 +374,6 @@
         });
         var $form = $('#frmAppointment');
         $.validator.unobtrusive.parse($form);
-
         if ($("#frmAppointment").valid()) {
             debugger;
             event.preventDefault();
@@ -343,13 +383,16 @@
                 type: "POST",
                 async: true,
                 data: $("#frmAppointment").serialize(),
-                success: function (result) {
-                    if (result != null && result.statusCode != 200) {
+                success: function (result)
+                {
+                    if (result != null && result.statusCode != 200)
+                    {
                         toastr.error(result.message);
                         $('#idAddAppointments').modal("show");
                         getAllAppointmentinCalander();
                     }
-                    else {
+                    else
+                    {
                         toastr.success(result.message);
                         $('#idAddAppointments').modal("hide");
                         getAllAppointmentinCalander();

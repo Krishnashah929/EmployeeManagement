@@ -180,9 +180,14 @@ namespace EM.Web.Controllers
         {
             try
             {
-                this.ModelState.Remove("RoleId");
+                ModelState.Remove("RoleId");
                 if (ModelState.IsValid)
-                { 
+                {
+                    //Setting user role. (By default users)
+                    objRegisterModel.RoleId = (UserRoles.Users).ToString();
+                    {
+                        objRegisterModel.RoleId = "2";
+                    }
                     //Calling BaseController.
                     var result = new ApiGenericModel<User>();
                     result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Register", null, objRegisterModel).Result;
