@@ -162,7 +162,7 @@ namespace EM.API.Controllers
                 {
                     var editDoctor = _userService.UpdateDoctorDetails(objDoctor);
                     //getting value from common helper.
-                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateUserDetails, editDoctor);
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateDoctorsDetails, editDoctor);
                 }
                 else
                 {

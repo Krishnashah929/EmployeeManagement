@@ -134,5 +134,10 @@
         /// can't book appointment on past date...
         /// </summary>
         public const string NotDropEventMsg = "Don't Book an appointment of past date.";
+
+        /// <summary>
+        /// Doctor details updated successfully message...
+        /// </summary>
+        public const string UpdateDoctorsDetails = "Doctor details are updated successfully.";
     }
 }
