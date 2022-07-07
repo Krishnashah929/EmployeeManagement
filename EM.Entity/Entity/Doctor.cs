@@ -65,7 +65,7 @@ namespace EM.Entity
         /// <summary>
         /// For geeting PhoneNumber 
         /// </summary>
-        [DisplayName("PhoneNumber")]
+        [DisplayName("Phone Number")]
         [Required(ErrorMessage = CommonValidations.RequiredErrorMsg)]
         public decimal PhoneNumber { get; set; }
 
@@ -125,7 +125,7 @@ namespace EM.Entity
         /// <summary>
         /// For geeting SpecialityId
         /// </summary>
-        [DisplayName("SpecialityId")]
+        [DisplayName("Speciality")]
         [NotMapped]
         [Required(ErrorMessage = CommonValidations.SelectRequiredErrorMsg)]
         public List<int> SpecialityId { get; set; }

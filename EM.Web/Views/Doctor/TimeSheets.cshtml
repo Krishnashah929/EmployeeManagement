@@ -256,6 +256,16 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 dateClick: function () {
+                    $("#idAppointmentId").val("");
+                    $("#idDoctorList").val("");
+                    $("#idFirstName").val("");
+                    $("#idLastName").val("");
+                    $("#idEmail").val("");
+                    $("#idPhone").val("");
+                    $("#idDiagnosis").val("");
+                    $("#idRemarks").val("");
+                    $("#idStartDate").val("");
+                    $("#idEndDate").val("");
                     $('#idAddAppointments').modal("show");
                 },
                 events: events,
@@ -312,45 +322,57 @@
                     debugger;
                     var appointmentId = 0;
                     var doctorId = 0;
-                   
-                    if (event != null && event.event.id != null && event.event.id != undefined) {
+
+                    if (event != null && event.event.id != null && event.event.id != undefined)
+                    {
                         appointmentId = parseInt(event.event.id.split("_")[0]);
                         doctorId = parseInt(event.event.id.split("_")[1]);
+
                         var startDate = moment(event.event.start, "MM-DD-YYYY").format("DD-MM-YYYY");
                         var startTime = moment(event.event.start).format('LT');
-
                         var endDate = moment(event.event.end, "MM-DD-YYYY").format("DD-MM-YYYY");
                         var endTime = moment(event.event.end).format('LT');
-
-                        var current = new Date();
-
                         startDateTime = (startDate + ' ' + startTime);
                         endDateTime = (endDate + ' ' + endTime);
 
+                        var startDay = moment(event.event.start).format('DD');
+                        var startMonth = moment(event.event.start).format('MM');
+                        var startYear = moment(event.event.start).format('YYYY');
+
+                        var current = new Date();
                         currentDate = moment(current).format('DD-MM-YYYY');
-                        if (doctorId > 0 && startDate >= currentDate) {
+                        var currentDay = moment(current).format('DD');
+                        var currentMonth = moment(current).format('MM');
+                        var currentYear = moment(current).format('YYYY');
+                        var currentTime = moment(current).format('LT');
+
+                        //For check that user can not book appointment of past dates
+                        if (doctorId > 0 && startDay >= currentDay && startMonth >= currentMonth && startYear >= currentYear)
+                        {
                             debugger;
                             //controller call
-                        $.ajax({
-                            url: '@Url.Content("~/Doctor/DragAndDrop")',
-                            type: "POST",
-                            data: { appointmentId: appointmentId, doctorId: doctorId, StartDateTime: startDateTime, EndDateTime: endDateTime, CurrentDate: currentDate },
-                            async: true,
-                            success: function (result)
-                            {
-                                if (result.statusCode == 200)
-                                {
-                                    toastr.success(result.message);
-                                    getAllAppointmentinCalander();
+                            $.ajax({
+                                url: '@Url.Content("~/Doctor/DragAndDrop")',
+                                type: "POST",
+                                data: { appointmentId: appointmentId, doctorId: doctorId, StartDateTime: startDateTime, EndDateTime: endDateTime, CurrentDate: currentDate },
+                                async: true,
+                                success: function (result) {
+                                    if (result.statusCode == 200) {
+                                        toastr.success(result.message);
+                                        getAllAppointmentinCalander();
+                                    }
+                                    else {
+                                        toastr.error(result.message);
+                                        getAllAppointmentinCalander();
+                                    }
                                 }
-                                else
-                                {
-                                    toastr.error(result.message);
-                                    getAllAppointmentinCalander();
-                                }
-                            }
-                        });
-                         }
+                            });
+                        }
+                        else
+                        {
+                            toastr.error("You can not book appoontment of past dates.");
+                            getAllAppointmentinCalander();
+                        }
                         }
                     }
             });

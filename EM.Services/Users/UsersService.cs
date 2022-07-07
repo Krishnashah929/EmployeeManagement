@@ -474,10 +474,10 @@ namespace EM.Services
                 if (user != null)
                 {
                     var userRepository = _unitOfWork.GetRepository<User>();
-                    User updateDetails = new User();
+                    //User updateDetails = new User();
                     var modifiedBy = Convert.ToInt32(UserRoles.Admin);
-                    updateDetails = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
-                    {
+                    var updateDetails = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
+                    
                         if (userRepository != null)
                         {
                             updateDetails.FirstName = user.FirstName;
@@ -490,9 +490,10 @@ namespace EM.Services
                             updateDetails.Role = user.Role;
                             updateDetails.ModifiedDate = DateTime.Now;
                             updateDetails.ModifiedByName = modifiedBy == Convert.ToInt32(UserRoles.Admin) ? "Admin" :"";
+                            updateDetails.ModifiedBy = Convert.ToInt32(UserRoles.Admin);
                             _unitOfWork.GetRepository<User>().Update(updateDetails);
                             _unitOfWork.Commit();
-                        }
+                        
                         return user;
                     }
                 }
@@ -880,11 +881,11 @@ namespace EM.Services
                     {
                         if (eventRepository != null)
                         {
-                            var userEvent = this.GetAppointments().FirstOrDefault(x => x.AppointmentId == objDragAndDrop.AppointmentId && x.StartDateTime < objDragAndDrop.CurrentDate);
+                            var userEvent = this.GetAppointments().FirstOrDefault(x => x.AppointmentId == objDragAndDrop.AppointmentId);
                             if (userEvent != null)
                             {
                                 //Checking appointment time with respect to doctor id
-                                var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == objDragAndDrop.DoctorId && x.StartDateTime == objDragAndDrop.StartDateTime && x.EndDateTime == objDragAndDrop.EndDateTime && x.StartDateTime > DateTime.Now);
+                                var appointmentTime = this.GetAppointments().FirstOrDefault(x => x.DoctorId == objDragAndDrop.DoctorId && x.StartDateTime == objDragAndDrop.StartDateTime && x.EndDateTime == objDragAndDrop.EndDateTime);
                                 if (appointmentTime == null)
                                 {
                                     updateEvent.AppointmentId = objDragAndDrop.AppointmentId;

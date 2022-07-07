@@ -1,5 +1,7 @@
 ﻿@model EM.Entity.Doctor
-
+@{
+    var data = Model;
+}
 <div class="modal-content">
     <!-- Modal Header -->
     <div class="modal-header">
@@ -71,11 +73,11 @@
                         <div class="input-group">
                             @if (Model.Pincode == 0)
                             {
-                                <input type="number" value="" asp-for="Pincode" class="form-control" placeholder="Enter Pincode" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6">
+                                <input type="number" value="" asp-for="Pincode" class="form-control" placeholder="Enter Pincode" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="6">
                             }
                             else
                             {
-                                <input type="number" asp-for="Pincode" class="form-control" placeholder="Enter Pincode"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6">
+                                <input type="number" asp-for="Pincode" class="form-control" placeholder="Enter Pincode" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="6">
                             }
                         </div>
                         <span asp-validation-for="Pincode" class="text-danger"></span>
@@ -103,9 +105,9 @@
                                 <option value="4" id="idENT">ENT Specilaist</option>
                                 <option value="5" id="idEye">Eye Specialist</option>
                             </select>
-                            </div>
-                            <span asp-validation-for="SpecialityId" class="text-danger"></span>
                         </div>
+                        <span asp-validation-for="SpecialityId" class="text-danger"></span>
+                    </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
@@ -125,8 +127,8 @@
                 <div class="col-4">
                     <div class="form-group">
                         <label> Country : </label>
-                        <select class="form-select form-control" asp-for="CountryId" id="idCountryList" onchange="fnGetState(this)">
-                            <option  value=""> Select Country</option>
+                        <select class="form-select form-control" asp-for="CountryId" id="idCountryList" onchange="fnGetState(this.value)">
+                            <option value=""> Select Country</option>
                         </select>
                         <span asp-validation-for="CountryId" class="text-danger"></span>
                     </div>
@@ -134,8 +136,8 @@
                 <div class="col-4">
                     <div class="form-group">
                         <label>State : </label>
-                        <select class="form-select form-control" asp-for="StatesId" id="idStateList" onchange="fnGetCity(this)">
-                            <option  value=""> Select State</option>
+                        <select class="form-select form-control" asp-for="StatesId" id="idStateList" onchange="fnGetCity(this.value)">
+                            <option value=""> Select State</option>
                         </select>
                         <span asp-validation-for="StatesId" class="text-danger"></span>
                     </div>
@@ -144,7 +146,7 @@
                     <div class="form-group">
                         <label>City : </label>
                         <select class="form-select form-control" asp-for="CityId" id="idCityList">
-                            <option  value=""> Select City </option>
+                            <option value=""> Select City </option>
                         </select>
                         <span asp-validation-for="CityId" class="text-danger"></span>
                     </div>
@@ -161,39 +163,63 @@
 </div>
 
 <script type="text/javascript">
+    var countryID = '@Model.CountryId';
+    var stateID = '@Model.StatesId';
     //onload
     $(function () {
         fnGetCountry();
-    })
+        if (countryID != null && countryID != undefined && parseInt(countryID) > 0) {
+            fnGetState(countryID);
+            fnGetCity(stateID);
+        }        
+    });
+
     //Get list of countries from database
-    function fnGetCountry() {
-        debugger;
+    function fnGetCountry() {        
         $.ajax({
             url: '@Url.Content("~/Doctor/GetCountry")',
             success: function (result) {
                 $.each(result, function (i, data) {
-                    $('#idCountryList').append('<option value="' + data.countryId + '">' + data.countryName + '</option > ');
+                    //Option one
+                    if (data != null && data != undefined && data.countryId === parseInt(countryID))
+                    {
+                        $('#idCountryList').append('<option selected  value="' + data.countryId + '">' + data.countryName + '</option > ');
+                    }
+                    else
+                    {
+                        $('#idCountryList').append('<option value="' + data.countryId + '">' + data.countryName + '</option > ');
+                    }
                 });
+                // option Two
+                //$('#idCountryList').val('@Model.CountryId')
             }
-            });
+        });
     };
+
     //Get list of states from database
     function fnGetState(country) {
-            $("#idStateList").empty();
-        $("#idCityList").empty();
-        var countryId = country.value;
-        $.ajax({
+        
+        var countryId = country;        
+            $.ajax({
             type: 'GET',
             url: '@Url.Content("~/Doctor/GetState/")',
             datatype: 'json',
             data: { id: countryId },
-
-            success: function (states) {
-                $("#idStateList").append('<option value="' + -1 + '">' + "Select State" + '</option>');
-                $.each(states, function (i, state) {
-                    $("#idStateList").append('<option value="' + state.statesId + '">' + state.stateName + '</option > ');
-                }
-                )
+                success: function (states) {                    
+                    if (states != null && states != undefined) {
+                        $('#idStateList').html("");
+                        $.each(states, function (i, state)
+                        {
+                            if (state != null && state != undefined && state.statesId === parseInt(stateID)) {
+                                $('#idStateList').append('<option selected  value="' + state.statesId + '">' + state.stateName + '</option > ');
+                            }
+                            else
+                            {
+                                $("#idStateList").append('<option  value="' + state.statesId + '">' + state.stateName + '</option > ');
+                            }
+                        }
+                        )
+                    }                   
             },
             error: function (ex) {
                 debugger;
@@ -202,10 +228,13 @@
             },
         });
     }
+
+
     //Get list of cities from database
     function fnGetCity(states) {
-        $("#idCityList").empty();
-        var statesId = states.value;
+         
+        var statesId = states;
+        var cityID = '@Model.CityId';
         $.ajax({
             type: 'GET',
             url: '@Url.Content("~/Doctor/GetCity/")',
@@ -213,11 +242,20 @@
             data: { id: statesId },
 
             success: function (city) {
-                $("#idCityList").append('<option value="' + 1 + '">' + "Select City" + '</option>');
-                $.each(city, function (i, city) {
-                    $("#idCityList").append('<option value="' + city.cityId + '">' + city.cityName + '</option > ');
+                if (city != null && city != undefined) {
+                    $('#idCityList').html("");
+                    $.each(city, function (i, city) {
+                        if (city != null && city != undefined && city.cityId === parseInt(cityID))
+                        {
+                            $('#idCityList').append('<option selected  value="' + city.cityId + '">' + city.cityName + '</option > ');
+                        }
+                        else
+                        {
+                            $("#idCityList").append('<option value="' + city.cityId + '">' + city.cityName + '</option > ');
+                        }
+                    }
+                    )
                 }
-                )
             },
             error: function (ex) {
                 debugger;
@@ -226,6 +264,7 @@
             },
         });
     }
+
     //Initialize multiple Select2 Elements
     $(function () {
          $('.select2').select2()
@@ -276,5 +315,6 @@
             event.preventDefault();
             event.stopImmediatePropagation();
         }
+    });
     });
 </script>

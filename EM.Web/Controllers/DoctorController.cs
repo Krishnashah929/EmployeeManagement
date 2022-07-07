@@ -12,6 +12,10 @@ using System.Linq;
 
 namespace EM.Web.Controllers
 {
+    /// <summary>
+    /// Calling cache from startup.cs
+    /// </summary>
+    [ResponseCache(CacheProfileName = "Default0")]
     public class DoctorController : BaseController
     {
         /// <summary>
@@ -31,6 +35,7 @@ namespace EM.Web.Controllers
         /// <returns>full calender</returns>
         #region TimeSheets
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult TimeSheets()
         {
             return View();
@@ -43,6 +48,7 @@ namespace EM.Web.Controllers
         /// <returns>MAin doctor's index page</returns>
         #region GetDoctors
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetDoctors()
         {
             return View();

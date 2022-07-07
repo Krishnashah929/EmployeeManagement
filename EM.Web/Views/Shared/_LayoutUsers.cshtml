@@ -28,11 +28,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0/main.min.css,npm/fullcalendar@5.11.0/main.min.css">
     <!--Date and time picker-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <style>
-        .nav-link .active {
-            background: #007bff;
-        }
-    </style>
     <!---------------------------------------------------Script section------------------------------------------------------------>
     <!-- jQuery -->
     <script src="~/plugins/jquery/jquery.min.js"></script>
@@ -58,13 +53,6 @@
     <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0,npm/fullcalendar@5.11.0/main.min.js,npm/fullcalendar@5.11.0/locales-all.min.js,npm/fullcalendar@5.11.0/locales-all.min.js"></script>
     <!--Date and time picker-->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $(".nav-link").click(function () {
-                $(this).addClass("active").siblings().removeClass("active");
-            });
-        });
-    </script>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -142,34 +130,33 @@
                     <ul class="nav nav-pills nav-sidebar flex-column navbar-nav" data-accordion="false">
                         @if (User.IsInRole("Admin") || User.IsInRole("Users"))
                         {
-                            <li class="nav-item">
-                                <a asp-action="Index" asp-controller="Admin" class="nav-link active" aria-selected="true">
-                                    <i class="far fa-dot-circle nav-icon"></i>
-                                    <p>Users</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="idDoctors">
-                                <a asp-action="GetDoctors" asp-controller="Doctor" id="idDoctors" class="nav-link " aria-selected="true" onclick="fnDoctorsLink();">
+                        <li class="nav-item">
+                            <a href="/Admin/Index" class="nav-link  @Html.ActiveClass("Admin", "Index")">
+                                <i class="far fa-dot-circle nav-icon"></i>
+                                <p>Users</p>
+                            </a>
+                        </li>
+                            <li class="nav-item" >
+                                <a href="/Doctor/GetDoctors" class="nav-link @Html.ActiveClass("Doctor", "GetDoctors")">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Doctors</p>
                                 </a>
                             </li>
-                            <li class="nav-item" id="idTimesheets">
-                                <a asp-action="TimeSheets" asp-controller="Doctor" class="nav-link" aria-selected="true" onclick="fnTimesheetLink();">
+                            <li class="nav-item ">
+                                <a href="/Doctor/TimeSheets" class="nav-link @Html.ActiveClass("Doctor", "TimeSheets")">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>TimeSheets</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-action="LogOut" asp-controller="Auth" class="nav-link" aria-selected="true">
+                                <a href="/Auth/LogOut" class="nav-link  @Html.ActiveClass("Auth", "LogOut")">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>LogOut</p>
                                 </a>
                             </li>
-
-                        }
-                        else
-                        {
+                            }
+                            else
+                            {
                             <li class="nav-item">
                                 <a asp-action="Dashboard" asp-controller="Home" class="nav-link active" aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
@@ -188,8 +175,8 @@
                                     <p>LogOut</p>
                                 </a>
                             </li>
-                        }
-                    </ul>
+                            }
+                        </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
             </div>

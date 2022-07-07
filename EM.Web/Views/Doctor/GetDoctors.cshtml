@@ -68,14 +68,14 @@
                     { data: "firstName", name: "FirstName" }, //index-0
                     { data: "lastname", name: "lastname" },//index- 1
                     { data: "emailAddress", name: "EmailAddress" },//index- 2
-                    {            
+                    {
                         data: null,
                         render: function (data) {
                             if (data != null && data.phoneNumber != null && data.phoneNumber != undefined && data.phoneNumber != "0") {
                                 return data.phoneNumber;
                             } else {
                                 return "";
-                            }                            
+                            }
                         } //index- 3
                     },
                     {
@@ -104,7 +104,7 @@
             }
         );
     }
- 
+
     //For open edit doctor model
     function editDoctor(doctorId, userId) {
         debugger;

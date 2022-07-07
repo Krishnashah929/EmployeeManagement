@@ -77,7 +77,6 @@
                 "responsive": true,
                 "processing": true,
                 "serverSide": true,
-
                 columns: [
                     { data: "firstName", name: "FirstName" }, //index - 0
                     { data: "lastname", name: "Lastname" }, //index - 1
@@ -85,11 +84,13 @@
                     { data: "roleName", name: "Role" }, //index - 3
                     { data: "createByName", name: "CreatedBy"  }, //index - 4
                     {                       
-                        /*data: createdDate,*/
-                        render: function (data) {
+                    /*data: createdDate,*/
+                        data: null,
+                        render: function (data)
+                        {
                             return moment(data).format('DD-MM-YYYY HH:mm A')
-                        } //index - 5
-                    },
+                        } 
+                    }, //index - 5
                     { data: "modifiedByName", name: "ModifiedBy" }, //index - 6
                     {
                         data: null,
