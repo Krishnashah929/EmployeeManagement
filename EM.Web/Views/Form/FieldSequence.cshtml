@@ -1,0 +1,351 @@
+﻿@{
+    Layout = "_LayoutUsers";
+}
+@{
+    ViewData["Title"] = "Form Templates";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3 class="mt-3 ml-3 font-weight-bold">Fields</h3>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn " onclick="history.back();">List</button>
+                            @*history.back() is working for geeting previous url in jquery*@
+                            <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("FieldSequence","Form")'">Field Sequence</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-between">
+                    @*Form details card*@
+                    <div class="col-md-3">
+                        <div id="idCards"> </div>
+                    </div>
+
+                    @*Drag and drop fields card*@
+                    <div class="col-md-9">
+                        <div class="card card card-secondary shadow-sm mt-3 ml-3 mr-3 border">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card mr-5">
+                                            <div class="card-header bg-gradient-blue mt-3">
+                                                <h6 class="mt-2">Fields not available in form</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="box">
+                                                    <ul id="sortable1" class="connectedSortable">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 availableFields">
+                                        <div class="card ml-5">
+                                            <div class="card-header bg-gradient-blue mt-3">
+                                                <h6 class="mt-2">Fields available in form</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="box">
+                                                    <ul id="sortable2" class="connectedSortable">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*Model for preview form*@
+                    <div class="modal fade" id="idGenerateForm">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header  bg-gradient-blue">
+                                    <h4 class="modal-title">Preview Form</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="frmAddField" method="post">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"> <i class="fas fa-times"></i>  Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var sequenceArray = ""; /*To save value of field sequence in datatabse  */
+
+    $(document).ready(function () {
+        fnGetFieldList();
+        fnGetCardDetails();
+        fnGetSavedFieldList();
+    });
+
+   /*For drag and drop in lists*/
+    $("#sortable1, #sortable2").sortable({
+        connectWith: ".connectedSortable"
+    }).disableSelection();
+
+    /* Form details card */
+    function fnGetCardDetails() {
+    /*For geeting last page url*/
+        var url = document.referrer;
+        var Id = url.substring(url.lastIndexOf('/') + 1);   /*For getting form id from past page url*/
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Form/FieldSequenceFormCard")',
+            data: { "Id": Id },
+            success: function (response) {
+                if (response != null && response != undefined && response.length > 0) {
+                    var appendHtml = $("#idCards");
+                    appendHtml.html("");
+                    for (var i = 0; i < response.length; i++) {
+                        var htmlText = `<div id="idFormCard" class="card card-secondary shadow-sm mt-3 ml-3 mr-3 border">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                         <h4 class="text-center font-weight-bold" id="idFormName">${response[i].formName}</h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="text-center" id="idFormEmail">${response[i].destinationEmail}</p>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                   <div class="col-12 text-center">
+                                        <button type="button" class="btn btn-success" onClick="getPreviewFields()"><i class="fas fa-eye"></i> Preview Fields</button>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 text-center ">
+                                        <button type="button" class="btn btn-primary" onClick="savePreviewFields()"><i class="fas fa-save"></i> Save Form</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        appendHtml.append(htmlText);
+                    }
+                }
+            }
+        });
+    }
+
+    /* For save form*/
+    function savePreviewFields() {
+        debugger;
+        var url = document.referrer;
+        var Id = url.substring(url.lastIndexOf('/') + 1);
+        createDynamicForm();
+        alert(sequenceArray);
+        var data = {};
+        data.formId = Id;
+        data.FieldsSequence = sequenceArray;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Form/SaveForm")',
+            data: data,
+            success: function (response) {
+                toastr.success(response.message);
+            },
+            error: function() {
+                toastr.error(response.message);
+            }
+        })
+    };
+
+   /* For create dynamic form*/
+    function createDynamicForm() {
+        var formControllArray = "";
+        sequenceArray = "";
+        $('.availableFields .dynamicFields').each(function (i, obj) {
+            sequenceArray += this.getAttribute("field-details-id") + ",";
+            var controlType = this.getAttribute("type").toLowerCase();
+                 /*Make dynamic form with different fields*/
+            if (controlType != null && controlType != undefined) {
+                if (controlType == "textbox")
+                {
+                    formControllArray += `<div class="form-group">
+                    <label>${this.getAttribute("value")} : </label>
+                    <input type="text" class="form-control">
+                     </div>`;
+                }
+                else if (controlType == "textarea")
+                {
+                    formControllArray += `<div class="form-group">
+                    <label>${this.getAttribute("value")} : </label>
+                    <textarea class="form-control" cols="5" rows="5"></textarea>
+                     </div>`;
+                }
+                /*Logic when users add options*/
+                else if (controlType == "dropdown")
+                {
+                    var fieldDetailId = this.getAttribute("field-details-id");
+                    var fieldName = this.getAttribute("value");
+                    if (fieldDetailId != null && fieldDetailId != undefined) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Form/GetFieldOptions',
+                            data: { "Id": fieldDetailId },
+                            async: false,
+                            success: function (response) {
+                                var dynamicOption = "";
+                                for (var i = 0; i < response.length; i++) {
+                                    dynamicOption += `<option  value="${response[i].optionValue}" name="${fieldDetailId}"> ${response[i].optionValue} </option>`;
+                                }
+                                formControllArray += `<div class="form-group">
+                                    <label>${fieldName} : </label>
+                                    <br>
+                                    <select class="form-control">
+                                     ${dynamicOption}
+                                    </select>
+                                     </div>`;
+                            }
+                        });
+                    }
+                }
+                else if (controlType == "radiobutton")
+                {
+                    var fieldDetailId = this.getAttribute("field-details-id");
+                    var fieldName = this.getAttribute("value");
+                    if (fieldDetailId != null && fieldDetailId != undefined)
+                    {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Form/GetFieldOptions',
+                            data: { "Id": fieldDetailId },
+                            async:false,
+                           success: function (response) {
+                                var dynamicOption = "";
+                                for (var i = 0; i < response.length; i++)
+                                {
+                                    dynamicOption += `${response[i].optionValue}<input class="ml-3 mr-3" type="radio" value="${response[i].optionValue}" name="radio_${fieldDetailId}">`;
+                                }
+                               formControllArray += `<div class="form-group">
+                                <label>${fieldName} : </label>
+                                    <br>
+                                    ${dynamicOption}
+                                     </div>`;
+                            }
+                        });
+                    }
+                }
+
+                else if (controlType == "checkbox")
+                {
+                    var fieldDetailId = this.getAttribute("field-details-id");
+                    var fieldName = this.getAttribute("value");
+                    if (fieldDetailId != null && fieldDetailId != undefined) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '/Form/GetFieldOptions',
+                            data: { "Id": fieldDetailId },
+                            async: false,
+                            success: function (response) {
+                                var dynamicOption = "";
+                                for (var i = 0; i < response.length; i++) {
+                                    dynamicOption += `${response[i].optionValue} <input class="ml-3 mr-3" type="checkbox" id="idIsOptional" value="${response[i].optionValue}" name="${fieldDetailId}">`;
+                                }
+                                formControllArray += `<div class="form-group">
+                                    <label>${fieldName} : </label>
+                                    <br>
+                                    ${dynamicOption}
+                                     </div>`;
+                            }
+                        });
+                    }
+                }
+            }
+            $("#frmAddField").html("");
+            $("#frmAddField").append(formControllArray);
+        });
+
+        if (sequenceArray != "") {
+            var lastChar = sequenceArray.slice(-1);
+            if (lastChar == ',') {
+                sequenceArray = sequenceArray.slice(0, -1).trim();
+            }
+        }
+    }
+
+    /* For preview form*/
+    function getPreviewFields() {
+        createDynamicForm();
+        $("#idGenerateForm").modal("show");
+    }
+
+    /* Form field details */
+    function fnGetFieldList() {
+        debugger;
+        var url = document.referrer;
+        var Id = url.substring(url.lastIndexOf('/') + 1);
+        $.ajax({
+            type: 'GET',
+            url: '/Form/FieldSequenceFieldList',
+            data: { "Id": Id },
+            success: function (response) {
+                if (response != null && response != undefined && response.length > 0) {
+                    var appendHtml = $("#sortable1");
+                    appendHtml.html("");
+
+                    for (var i = 0; i < response.length; i++) {
+                        var htmlText = `<li class="list-unstyled">
+                                          <div class="input-group mb-3 ">
+                                              <div class="input-group-prepend">
+                                                <span class="input-group-text bg-white dynamicFields" style="width: 200px;" type="${response[i].fieldTypeName}" field-details-id="${response[i].fieldDetailsId}" value="${response[i].fieldHtmlName}"> <b> ${response[i].fieldHtmlName} </b> </span>
+                                                <span class="input-group-text bg-white" style="width: 200px; border-left:none; padding-left: 100px;"> ${response[i].fieldTypeName} </span>
+                                              </div>
+                                          </div>
+                                    </li>`;
+                        appendHtml.append(htmlText);
+                    }
+                }
+            }
+        });
+    }
+
+    ///* Form field details */
+    function fnGetSavedFieldList() {
+        debugger;
+        var url = document.referrer;
+        var Id = url.substring(url.lastIndexOf('/') + 1);
+        $.ajax({
+            type: 'GET',
+            url: '/Form/FieldSequenceSavedFieldList',
+            data: { "Id": Id },
+            success: function (response) {
+                if (response != null && response != undefined && response.length > 0) {
+                    var appendHtml = $("#sortable2");
+                    appendHtml.html("");
+                    for (var i = 0; i < response.length; i++) {
+                        var htmlText = `<li class="list-unstyled">
+                                          <div class="input-group mb-3 ">
+                                              <div class="input-group-prepend">
+                                                <span class="input-group-text bg-white dynamicFields" style="width: 200px;" type="${response[i].fieldTypeName}" field-details-id="${response[i].fieldDetailsId}" value="${response[i].fieldHtmlName}"> <b> ${response[i].fieldHtmlName} </b> </span>
+                                                <span class="input-group-text bg-white" style="width: 200px; border-left:none; padding-left: 100px;"> ${response[i].fieldTypeName} </span>
+                                              </div>
+                                          </div>
+                                    </li>`;
+                        appendHtml.append(htmlText);
+                    }
+                }
+            }
+        });
+    }
+</script>

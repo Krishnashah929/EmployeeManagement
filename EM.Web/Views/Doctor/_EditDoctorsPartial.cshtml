@@ -175,7 +175,8 @@
     });
 
     //Get list of countries from database
-    function fnGetCountry() {        
+    function fnGetCountry() {
+        debugger;
         $.ajax({
             url: '@Url.Content("~/Doctor/GetCountry")',
             success: function (result) {
@@ -315,6 +316,5 @@
             event.preventDefault();
             event.stopImmediatePropagation();
         }
-    });
     });
 </script>

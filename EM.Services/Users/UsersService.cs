@@ -81,8 +81,6 @@ namespace EM.Services
                                            IsActive = user.IsActive,
                                            UserId = user.UserId,
                                        }).AsNoTracking().ToList();
-
-
                 if (lstUsers != null)
                 {
                     return lstUsers;
@@ -477,23 +475,23 @@ namespace EM.Services
                     //User updateDetails = new User();
                     var modifiedBy = Convert.ToInt32(UserRoles.Admin);
                     var updateDetails = this.GetAllUser().FirstOrDefault(x => x.UserId == user.UserId);
-                    
-                        if (userRepository != null)
+
+                    if (userRepository != null)
+                    {
+                        updateDetails.FirstName = user.FirstName;
+                        updateDetails.Lastname = user.Lastname;
+                        var userEmail = this.GetAllUser().FirstOrDefault(x => x.EmailAddress == user.EmailAddress);
+                        if (userEmail == null)
                         {
-                            updateDetails.FirstName = user.FirstName;
-                            updateDetails.Lastname = user.Lastname;
-                            var userEmail = this.GetAllUser().FirstOrDefault(x => x.EmailAddress == user.EmailAddress);
-                            if (userEmail == null)
-                            {
-                                updateDetails.EmailAddress = user.EmailAddress;
-                            }
-                            updateDetails.Role = user.Role;
-                            updateDetails.ModifiedDate = DateTime.Now;
-                            updateDetails.ModifiedByName = modifiedBy == Convert.ToInt32(UserRoles.Admin) ? "Admin" :"";
-                            updateDetails.ModifiedBy = Convert.ToInt32(UserRoles.Admin);
-                            _unitOfWork.GetRepository<User>().Update(updateDetails);
-                            _unitOfWork.Commit();
-                        
+                            updateDetails.EmailAddress = user.EmailAddress;
+                        }
+                        updateDetails.Role = user.Role;
+                        updateDetails.ModifiedDate = DateTime.Now;
+                        updateDetails.ModifiedByName = modifiedBy == Convert.ToInt32(UserRoles.Admin) ? "Admin" : "";
+                        updateDetails.ModifiedBy = Convert.ToInt32(UserRoles.Admin);
+                        _unitOfWork.GetRepository<User>().Update(updateDetails);
+                        _unitOfWork.Commit();
+
                         return user;
                     }
                 }
@@ -586,7 +584,7 @@ namespace EM.Services
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
 
             return doctor;

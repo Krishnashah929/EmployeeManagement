@@ -1,0 +1,136 @@
+﻿@model EM.Entity.FieldDetails
+<!-- /.modal-content -->
+<div class="modal-content">
+    <div class="modal-header  bg-info">
+        <h4 class="modal-title">Field</h4>
+    </div>
+    <div class="modal-body">
+        <form id="frmAddField" method="post">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <input asp-for="FieldDetailsId" hidden class="form-control" id="idFieldDetailId" />
+            <div class="form-group">
+                <label> Field Type : </label>
+                <select class="form-select form-control" asp-for="FieldType" id="idFieldType">
+                    <option selected value="">Please select field type</option>
+                    <option value="1"> Textbox </option>
+                    <option value="2"> Textarea </option>
+                    <option value="3"> Dropdown </option>
+                    <option value="4"> Radiobutton </option>
+                    <option value="5"> Checkbox </option>
+                    <option value="6"> Datatable </option>
+                </select>
+                <span asp-validation-for="FieldType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Field Name : </label>
+                <div class="input-group">
+                    <input type="text" asp-for="FieldHtmlName" class="form-control" id="idFieldHtmlName" placeholder="Field Name" onkeydown="return /[a-z]/i.test(event.key)">
+                </div>
+                <span asp-validation-for="FieldHtmlName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label" for="idIsOptional">
+                        <input type="checkbox" id="idIsOptional" name="">
+                        Optional
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label> FieldValidationType : </label>
+                <select class="form-select form-control" id="idFieldValidationType">
+                    <option selected value="0"> Please select validation type</option>
+                    <option value="1"> Numeric </option>
+                    <option value="2"> Email </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label> HelpText : </label>
+                <input type="text" asp-for="HelpText" class="form-control" id="idHelpText" placeholder="Help Text">
+            </div>
+            <div class="modal-footer">
+                @if (Model.FieldDetailsId == 0)
+                {
+                    <button type="submit" class="btn btn-primary">  <i class="fas fa-save"></i> Save</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-primary">  <i class="fas fa-save"></i> Update</button>
+                }
+
+                <button type="button" class="btn btn-default" data-dismiss="modal"> <i class="fas fa-times"></i> Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /.modal-content -->
+
+<script type="text/javascript">
+
+    $("#frmAddField").submit(function (event)
+    {
+        debugger;
+        var url = window.location.href;
+        var formID = url.substring(url.lastIndexOf('/') + 1).charAt(0);
+
+        $.validator.setDefaults({
+            ignore: ':hidden, [readonly=readonly]'
+        });
+
+        var data = {};
+        data.fieldDetailsId = document.getElementById("idFieldDetailId").value;
+        data.fieldType = document.getElementById("idFieldType").value;
+        data.fieldHtmlName = document.getElementById("idFieldHtmlName").value;
+        data.helpText = document.getElementById("idHelpText").value;
+        data.formId = formID;
+        var optional = document.getElementById("idIsOptional");
+        data.isOptional = false;
+        if (optional.checked)
+        {
+            data.isOptional = true;
+        }
+        data.fieldValidationType = document.getElementById("idFieldValidationType").value;
+
+        var $form = $('#frmAddField');
+        $.validator.unobtrusive.parse($form);
+
+        if ($("#frmAddField").valid())
+        {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            $.ajax({
+                url: '@Url.Content("~/Form/AddFields")',
+                type: "POST",
+                async: true,
+                data: data,
+                success: function (result)
+                {
+                    if (result != null && result.statusCode != 200)
+                    {
+                        toastr.error(result.message);
+                        window.location.reload();
+                        $('#idAddFeild').modal("show");
+                    }
+                    else
+                    {
+                        toastr.success(result.message);
+                        window.location.reload();
+                        $('#idAddFeild').modal("hide");
+                    }
+                    console.log(result);
+                },
+                error: function (ex)
+                {
+                    toastr.error('Invalid Data.');
+                    console.log('Failed ');
+                }
+            });
+        }
+        else
+        {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    });
+</script>

@@ -64,7 +64,7 @@ namespace EM.Entity
         public string RetypePassword { get; set; }
 
         /// <summary>
-        /// ISactive feild for users.
+        /// Isactive feild for users.
         /// </summary>
         [DisplayName("Active")]
         public bool IsActive { get; set; }

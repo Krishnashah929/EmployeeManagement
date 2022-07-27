@@ -1,0 +1,238 @@
+﻿@model EM.Entity.FieldOptions
+<!-- /.modal-content -->
+<div class="modal-content">
+    <div class="modal-header  bg-info">
+        <h4 class="modal-title">Field</h4>
+    </div>
+    <div class="modal-body">
+        <form id="frmAddField" method="post">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <input asp-for="FieldDetailsId" hidden class="form-control" id="idFieldDetailId" value="@ViewBag.fieldDetailsId" />
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center col-md-8">Options</th>
+                            <th class="text-center col-md-4"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col text-right">
+                    <button class="btn btn-info" id="addBtn" type="button"> <b>+ </b> Add </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"> <i class="fas fa-times"></i> Cancle</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /.modal-content -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        fnGetFieldOptions();
+    });
+
+    //For open edit field option model
+    function fnGetFieldOptions() {
+        debugger;
+         var id = document.getElementById("idFieldDetailId").value;
+        $.ajax({
+            url: '@Url.Content("~/Form/GetFieldOptions")',
+            type: 'GET',
+            data: {"id" : id},
+            success: function (response) {
+                debugger;
+                $('#tbody').html("");
+                var rowIdx = 0; // Denotes total number of rows
+                var tBody = $('#tbody');
+                if (response != null && response.length > 0) {
+                    for (var i = 0; i < response.length; i++) {
+                        var tr = '<tr id="row' + i + '">'
+                            + '<td class="row-index text-center">'
+                            + '<input type="text" asp-for= "OptionValue" class= "form-control" id=' + response[i].fieldOptionsId + ' value=' + response[i].optionValue + '>'
+                            + '<span asp-validation-for="OptionValue" class="text-danger"></span>'
+                            + '</td>'
+                            + '<td class="row-index text-center">'
+                            + '<button class="btn" type="button" onClick="fnEditOption(' + response[i].fieldOptionsId + ')"><i class="fas fa-pen"></i></button>' +
+                            '<button class="btn" type="button" onClick="fnRemoveOption(' + response[i].fieldOptionsId + ')"><i class="fas fa-trash"></i></button>'
+                            + '<span asp-validation-for="OptionValue" class="text-danger"></span>'
+                            + '</td>'
+                            + '</tr >';
+
+                        tBody.append(tr);
+                    }
+                }
+                // jQuery button click event to add a row
+                $('#addBtn').on('click', function ()
+                {
+                    // Adding a row inside the tbody.
+                    $('#tbody').append
+                        (`<tr id="R${++rowIdx}">
+                              <td class="row-index text-center">
+                                    <input type="text" asp-for="OptionValue" class="form-control" id="idOptionValue">
+                                    <span asp-validation-for="OptionValue" class="text-danger"></span>
+                              </td>
+                              <td class="text-center">
+                                    <button class="btn" type="submit"><i class="fas fa-check"></i></button>
+                                    <button class="btn remove" type="button"><i class="fas fa-times"></i></button>
+                              </td>
+                        </tr>`);
+
+                    /*$('#tbody tr:last-child').remove();*/
+                });
+
+                $('#tbody').on('click', '.remove', function () {   // jQuery button click event to remove a row.
+                    // Getting all the rows next to the row, containing the clicked button
+                    var child = $(this).closest('tr').nextAll();
+
+                    // Iterating across all the rows , obtained to change the index
+                    child.each(function () {
+                        var id = $(this).attr('id'); // Getting <tr> id.
+
+                        var idx = $(this).children('.row-index').children('p'); // Getting the <p> inside the .row-index class.
+
+                        var dig = parseInt(id.substring(1));  // Gets the row number from <tr> id.
+
+                        idx.html(`Row ${dig - 1}`);  // Modifying row index.
+
+                        $(this).attr('id', `R${dig - 1}`); // Modifying row id.
+                    });
+
+                    $(this).closest('tr').remove(); // Removing the current row.
+
+                    rowIdx--;// Decreasing total number of rows by 1.
+                });
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    $("#frmAddField").submit(function (event)
+     {
+            debugger;
+            $.validator.setDefaults({
+                ignore: ':hidden, [readonly=readonly]'
+            });
+
+            var data = {};
+            data.fieldDetailsId = document.getElementById("idFieldDetailId").value;
+            data.optionValue = document.getElementById("idOptionValue").value;
+
+            var $form = $('#frmAddField');
+            $.validator.unobtrusive.parse($form);
+
+            if ($("#frmAddField").valid())
+            {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                $.ajax({
+                    url: '@Url.Content("~/Form/AddOptionFields")',
+                    type: "POST",
+                    async: true,
+                    data: data,
+                    success: function (result)
+                    {
+                        if (result != null && result.statusCode != 200)
+                        {
+                            toastr.error(result.message);
+                            $('#idAddFeild').modal("show");
+                            window.location.reload();
+                        }
+                        else
+                        {
+                            toastr.success(result.message);
+                            $('#idAddFeild').modal("show");
+                            fnGetFieldOptions();
+                        }
+                        console.log(result);
+                    },
+                    error: function (ex)
+                    {
+                        toastr.error('Invalid Data.');
+                        console.log('Failed ');
+                    }
+                });
+            }
+            else
+            {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }
+    });
+
+    //For edit field options from database
+    function fnEditOption(fieldOptionsId) {
+        debugger;
+        var data = {};
+        data.fieldDetailsId = document.getElementById("idFieldDetailId").value;
+        data.optionValue = document.getElementById("fieldOptionsId").value;
+             $.ajax({
+                    url: '@Url.Content("~/Form/AddOptionFields")',
+                    type: "POST",
+                    async: true,
+                    data: data,
+                    success: function (result)
+                    {
+                        if (result != null && result.statusCode != 200)
+                        {
+                            toastr.error(result.message);
+                            $('#idAddFeild').modal("show");
+                            window.location.reload();
+                        }
+                        else
+                        {
+                            toastr.success(result.message);
+                            $('#idAddFeild').modal("show");
+                            fnGetFieldOptions();
+                        }
+                        console.log(result);
+                    },
+                    error: function (ex)
+                    {
+                        toastr.error('Invalid Data.');
+                        console.log('Failed ');
+                    }
+                });
+    }
+
+    //For remove field options from database
+    function fnRemoveOption(fieldOptionsId) {
+        debugger;
+        var id = fieldOptionsId;
+             $.ajax({
+                    url: '@Url.Content("~/Form/RemoveFieldOption")',
+                    type: "POST",
+                    async: true,
+                 data: { "id": id },
+                    success: function (result)
+                    {
+                        if (result != null && result.statusCode != 200)
+                        {
+                            toastr.error(result.message);
+                            $('#idAddFeild').modal("show");
+                            window.location.reload();
+                        }
+                        else
+                        {
+                            toastr.success(result.message);
+                            $('#idAddFeild').modal("show");
+                            fnGetFieldOptions();
+                        }
+                        console.log(result);
+                    },
+                    error: function (ex)
+                    {
+                        toastr.error('Invalid Data.');
+                        console.log('Failed ');
+                    }
+                });
+    }
+</script>

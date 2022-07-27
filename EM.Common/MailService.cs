@@ -1,6 +1,8 @@
-﻿using System;
-using System.Net;
+﻿#region Using
+using System;
 using System.Net.Mail;
+using System.Net;
+#endregion
 
 namespace EM.Common
 {
@@ -17,25 +19,29 @@ namespace EM.Common
         {
             try
             {
-                using (MailMessage mm = new MailMessage("krishnaa9121@gmail.com", email))
+                //For sending mails to multiple customers usinf for loop and split emails woth , sign.
+                foreach (var emailaddress in email.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mm.Subject = subject;
-                    mm.Body = body;
-                    mm.IsBodyHtml = true;
-
-                    using (SmtpClient smtp = new SmtpClient())
+                    using (MailMessage mm = new MailMessage("krishnaa9121@gmail.com", emailaddress))
                     {
-                        smtp.Host = "smtp.gmail.com";
-                        smtp.EnableSsl = true;
-                        NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "Kri$hn@@91");
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = NetworkCred;
-                        smtp.Port = 587;
-                        smtp.Send(mm);
+                        mm.Subject = subject;
+                        mm.Body = body;
+                        mm.IsBodyHtml = true;
+
+                        using (System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient())
+                        {
+                            smtp.Host = "smtp.gmail.com";
+                            smtp.EnableSsl = true;
+                            NetworkCredential NetworkCred = new NetworkCredential("krishnaa9121@gmail.com", "tswjwrvxzbmmphle");
+                            smtp.UseDefaultCredentials = false;
+                            smtp.Credentials = NetworkCred;
+                            smtp.Port = 587;
+                            smtp.Send(mm);
+                        }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

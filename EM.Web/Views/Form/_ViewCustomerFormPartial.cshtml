@@ -1,0 +1,95 @@
+﻿@model List<EM.Models.ClientSideFormDetails>
+ 
+<div class="modal-content">
+    <div class="modal-header  bg-info">
+        <h3 class="text-center"> @ViewBag.FormName </h3>
+    </div>
+    <div class="modal-body">
+        <form id="frmAddField">
+            @foreach (var item in Model)
+            {
+                <input hidden value="@item.FormId" id="idFormId" />
+                if (item.fieldTypeName == "TextBox")
+                {
+                    <div class="form-group">
+                        <label> @item.FieldHtmlName : </label>
+                        <input type="text" class="form-control clsTextBox" id="@item.FieldDetailsId" value="@item.FieldValue" disabled>
+                    </div>
+                }
+                else if (item.fieldTypeName == "Textarea")
+                {
+                    <div class="form-group">
+                        <label> @item.FieldHtmlName : </label>
+                        <textarea class="form-control clsTextArea" cols="5" rows="5" id="@item.FieldDetailsId" disabled> @item.FieldValue </textarea>
+                    </div>
+                }
+                else if (item.fieldTypeName == "Dropdown")
+                {
+                    <div class="form-group">
+                        <label> @item.FieldHtmlName : </label>
+                        <br>
+                        <select class="form-control clsDropdown" id="@item.FieldDetailsId" selected disabled>
+                            @{
+                                for (var i = 0; i <= item.FieldOptions.Count - 1; i++)
+                                {
+                                    @if (item.FieldOptions[i].OptionValue == item.FieldValue)
+                                    {
+                                        <option id="idDropDownValue_" +i selected> @item.FieldValue </option>
+                                    }
+                                    <option id="idDropDownValue_" +i> @item.FieldOptions[i].OptionValue </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                }
+                else if (item.fieldTypeName == "Radiobutton")
+                {
+                    <div class="form-group clsRadio" data-fieldId="@item.FieldDetailsId">
+                        <label data-filed="@item.FieldHtmlName">@item.FieldHtmlName : </label>
+                        @{
+                            for (var i = 0; i <= item.FieldOptions.Count - 1; i++)
+                            {
+                                @if (item.FieldOptions[i].OptionValue == item.FieldValue)
+                                {
+                                    <label> @item.FieldOptions[i].OptionValue </label>
+                                    <input class="ml-3 mr-3" checked disabled name="@item.FieldHtmlName" type="radio" value=@item.FieldOptions[i].OptionValue id="idRadioButtonValue_" + @item.FieldDetailsId>
+                                }
+                                else
+                                {
+                                    <label> @item.FieldOptions[i].OptionValue </label>
+                                    <input class="ml-3 mr-3" disabled name="@item.FieldHtmlName" type="radio" value=@item.FieldOptions[i].OptionValue id="idRadioButtonValue_" + @item.FieldDetailsId>
+                                }
+                            }
+                        }
+                        <br>
+                    </div>
+                }
+                else if (item.fieldTypeName == "Checkbox")
+                {
+                    <div class="form-group" data-fieldId="@item.FieldDetailsId">
+                        <label data-filed="@item.FieldHtmlName">@item.FieldHtmlName : </label>
+                        @{
+                            for (var i = 0; i <= item.FieldOptions.Count - 1; i++)
+                            {
+                                @if (item.FieldOptions[i].OptionValue == item.FieldValue)
+                                {
+                                    <label> @item.FieldOptions[i].OptionValue </label>
+                                    <input class="ml-3 mr-3" checked disabled type="checkbox" value=@item.FieldOptions[i].OptionValue id="idCheckBoxValue_" + @item.FieldDetailsId>
+                                }
+                                else
+                                {
+                                    <label> @item.FieldOptions[i].OptionValue </label>
+                                    <input class="ml-3 mr-3" type="checkbox" disabled value=@item.FieldOptions[i].OptionValue id="idCheckBoxValue_" + @item.FieldDetailsId>
+                                }
+                            }
+                        }
+                        <br>
+                    </div>
+                }
+            }
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"> <i class="fas fa-times"></i>  Close</button>
+    </div>
+</div>

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using static EM.Common.GlobalEnum;
+using ElmahCore;
 #endregion
 
 namespace EM.API.Controllers
@@ -64,6 +65,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin, Users")]
         public ApiResponseModel GetUserList(JqueryDatatableParam jqueryDatatableParam)
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetUserList"));
             try
             {
                 int totalRecord = 0;
@@ -117,6 +119,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel Register(User objUser)
         {
+            HttpContext.RaiseError(new InvalidOperationException("Register"));
             try
             {
                 if (objUser != null)
@@ -167,6 +170,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel EditDetailsModel(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditDetailsModel"));
             try
             {
                 var userDetails = _userService.GetById(id);
@@ -194,6 +198,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel EditUser(User user)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditUser"));
             try
             {
                 if (user != null)
@@ -224,6 +229,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel DeleteDetailsModel(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeleteDetailsModel"));
             try
             {
                 var userDetails = _userService.GetById(id);
@@ -251,6 +257,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel DeleteUser(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeleteUser"));
             try
             {
                 var deleteUser = _userService.DeleteDetails(id);

@@ -1,0 +1,109 @@
+﻿<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3 class="mt-3 ml-3 font-weight-bold">Create New Form</h3>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <table id="idNewCustomerFormList" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Form Name</th>
+                                <th>Destination Email</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Open send email form model -->
+<div class="modal fade" id="idSendEmailForm">
+    <div class="modal-dialog modal-dialog-centered">
+    </div>
+</div>
+
+@*Model for preview form*@
+<div class="modal fade" id="idGenerateForm">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header  bg-gradient-blue">
+                <h4 class="modal-title">Preview Form</h4>
+            </div>
+            <div class="modal-body">
+                <form id="frmAddField" method="post">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"> <i class="fas fa-times"></i>  Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        fnGetNewCustomerFormList();
+    });
+
+    //for getting New Customer Form List.
+    function fnGetNewCustomerFormList() {
+        debugger;
+       
+        $('#idNewCustomerFormList').DataTable(
+            {
+                ajax:
+                {
+                    url: '/Form/GetAllFormsData/',
+                    type: "POST"
+                },
+            
+                destroy: true,
+                "paging": true,
+                "searching": true,
+                "info": true,
+                "lengthChange": true,
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+
+                columns: [
+                    { data: "formName", name: "FormName" }, //index - 0
+                    { data: "destinationEmail", name: "DestinationEmail" }, //index - 1
+                    {//adds td row for button
+                        data: null,
+                        render: function (data) {
+                            return    "<button type='button' class='btn btn-info ml-3'  onClick='fnOpenSendEmailForm(" + data.formId +")'><i class='fas fa-envelope'></i>   Send to customer</button>";
+                        /*"<button type='button' class='btn btn-primary' id='" + data.formId +"' onClick='getPreviewFields()'><i class='fas fa-eye'></i>  Preview </button>" +*/
+
+                        },
+                    }//index - 2
+                ],
+                'columnDefs': [{
+                    'targets': [2], // column index (start from 0)
+                    'orderable': false, // set orderable false for selected columns
+                }]
+            }
+        );
+    }
+    //For open send email form model
+    function fnOpenSendEmailForm(formId) {
+        var id = formId;
+        $.ajax({
+            url: '@Url.Content("~/Form/OpenSendEmailForm")',
+            type: 'GET',
+            data: { "id": id },
+            success: function (response) {
+                $('#idSendEmailForm').find(".modal-dialog").html(response);
+                $('#idSendEmailForm').modal("show");
+            }
+        });
+    }
+</script>

@@ -1,0 +1,194 @@
+﻿@{
+    Layout = "_LayoutUsers";
+}
+@{
+    ViewData["Title"] = "Form Templates";
+}
+
+<!-- Open add field model -->
+<div class="modal fade" id="idAddFeild">
+    <div class="modal-dialog modal-dialog-centered">
+    </div>
+</div>
+<div class="modal fade" id="idOpenFieldOption">
+    <div class="modal-dialog modal-dialog-centered">
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3 class="mt-3 ml-3 font-weight-bold">Fields</h3>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" onclick="fnOpenList(this)">List</button>
+                            <button type="button" class="btn" onclick="location.href='@Url.Action("FieldSequence","Form")'">Field Sequence</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col text-right">
+                            <button type="button" class="btn btn-info mb-3" data-toggle="modal" data-target="#idAddFeild" onclick="fnOpenFieldForm(this)">
+                                <b> + </b> Add Field
+                            </button>
+                        </div>
+                    </div>
+                    <table id="idFieldsList" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Field Name</th>
+                                <th>Field Type</th>
+                                <th>Optional</th>
+                                <th>Field Validation Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        var url = window.location.href;
+        var formID = url.substring(url.lastIndexOf('/') + 1);
+        GetFieldList(formID);
+    });
+
+     //For get list of particular formid model
+    function fnOpenList() {
+        debugger;
+        var url = window.location.href;
+        var formID = url.substring(url.lastIndexOf('/') + 1);
+        GetFieldList(formID);
+        };
+
+    //for getting FieldList.
+    function GetFieldList(formID) {
+        debugger;
+        $('#idFieldsList').DataTable(
+            {
+                ajax:
+                {
+                    url:'/Form/GetFieldList/'+formID,
+                    type: "POST"
+
+                },
+                destroy: true,
+                "paging": true,
+                "searching": true,
+                "info": true,
+                "lengthChange": true,
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+
+                columns: [
+                    { data: "fieldHtmlName", name: "FieldHtmlName" }, //index - 0
+                    { data: "fieldTypeName", name: "FieldType" }, //index - 1
+                    {
+                        data: null, name: "IsOptional",
+                        render: function (data) {
+                            if (data.isOptional == true)
+                            {
+                                return "<input type='checkbox' id='idIsOptional' checked>";
+                            }
+                            else
+                            {
+                                return "<input type='checkbox' id='idIsOptional'>";
+                            }
+                        }
+                    },//index - 2
+                    { data: "fieldValidationName", name: "FieldValidationType" }, //index - 3
+                    {//adds td row for button
+                        data: null,
+                        render: function (data) {
+                            if (data.fieldTypeName == "TextBox" || data.fieldTypeName == "Textarea")
+                            {
+                                return "<a href='#' class='btn  m-auto' data-toggle='model' data-target=#idAddFeild' onclick=fnEditFieldForm('" + data.fieldDetailsId + "');><i class='fas fa-edit'></i></a>";
+                            }
+                            else
+                            {
+                                return "<a href='#' class='btn  m-auto' data-toggle='model' data-target=#idAddFeild' onclick=fnEditFieldForm('" + data.fieldDetailsId + "'); ><i class='fas fa-edit'></i></a>" +
+                                    "<a href='#' class='btn  m-auto' data-toggle='model' data-target=#idOpenFieldOption' onclick=fnOpenFiledsOption('" + data.fieldDetailsId + "'); ><i class='fas fa-ellipsis-v'></i></a>";
+                            }
+                        },
+                    }//index - 4
+                ],
+
+                'columnDefs': [{
+                    'targets': [4], // column index (start from 0)
+                    'orderable': false, // set orderable false for selected columns
+                }]
+            }
+        );
+
+    }
+
+    //For open add field model
+    function fnOpenFieldForm() {
+        debugger;
+        $.ajax({
+            url: '@Url.Content("~/Form/OpenFieldForm")',
+            data: { "id": 0 },
+            type: 'GET',
+            success: function (response) {
+                debugger;
+                $('#idAddFeild').find(".modal-dialog").html(response);
+                $('#idAddFeild').modal("show");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+     //For open edit field option model
+    function fnEditFieldForm(fieldDetailsId) {
+        debugger;
+        var id = fieldDetailsId;
+        $.ajax({
+            url: '@Url.Content("~/Form/OpenFieldForm")',
+            type: 'GET',
+            data: { "id": id},
+            success: function (response) {
+                $('#idAddFeild').find(".modal-dialog").html(response);
+                $('#idAddFeild').modal("show");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    //For open edit field option model
+    function fnOpenFiledsOption(fieldDetailsId) {
+        debugger;
+        var id = fieldDetailsId;
+        var optionId = 0;
+        $.ajax({
+            url: '@Url.Content("~/Form/OpenFieldOptions")',
+            data: { "id": id, "optionId": optionId},
+            type: 'GET',
+            success: function (response) {
+                $('#idOpenFieldOption').find(".modal-dialog").html(response);
+                $('#idOpenFieldOption').modal("show");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+</script>

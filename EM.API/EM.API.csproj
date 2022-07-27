@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="elmah" Version="1.2.2" />
+    <PackageReference Include="ElmahCore" Version="2.1.2" />
+    <PackageReference Include="ElmahCore.Sql" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.18.0" />
@@ -15,6 +16,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="6.0.5" />
     <PackageReference Include="Microsoft.SharePointOnline.CSOM" Version="16.1.22413.12000" />
+    <PackageReference Include="NReco.PdfGenerator" Version="1.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.8" />
   </ItemGroup>

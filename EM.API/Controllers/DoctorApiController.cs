@@ -10,6 +10,7 @@ using System.Linq.Dynamic.Core;
 using EM.Entity;
 using EM.Common;
 using Microsoft.AspNetCore.Authorization;
+using ElmahCore;
 #endregion
 
 namespace EM.API.Controllers
@@ -55,6 +56,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel GetDoctorList(JqueryDatatableParam jqueryDatatableParam)
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetDoctorList"));
             try
             {
                 int totalRecord = 0;
@@ -106,6 +108,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel GetDoctor()
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetDoctor"));
             try
             {
                 var getDoctors = _userService.GetSortedDoctors();
@@ -129,6 +132,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel EditDoctorModel(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditDoctorModel"));
             try
             {
                 var userDetails = _userService.GetByDoctorId(id);
@@ -156,6 +160,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel EditDoctor(Doctor objDoctor)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditDoctor"));
             try
             {
                 if (objDoctor != null)
@@ -185,6 +190,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel GetCountry()
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetCountry"));
             try
             {
                 var getCountry = _userService.GetCountry();
@@ -208,6 +214,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel GetState(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetState"));
             try
             {
                 var getState = _userService.GetState(id);
@@ -231,6 +238,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin")]
         public ApiResponseModel GetCity(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetCity"));
             try
             {
                 var getCity = _userService.GetCity(id);
@@ -255,6 +263,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel GetAppointments()
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetAppointments"));
             try
             {
                 var getAppointments = _userService.GetAppointments();
@@ -278,6 +287,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel PostAppointment(Appointment objAppointment)
         {
+            HttpContext.RaiseError(new InvalidOperationException("PostAppointment"));
             try
             {
                 if (objAppointment != null)
@@ -315,6 +325,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel EditAppointmentModel(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditAppointmentModel"));
             try
             {
                 var getAppointment = _userService.GetAppointmentById(id);
@@ -342,6 +353,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel EditAppointment(Appointment objAppointment)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditAppointment"));
             try
             {
                 if (objAppointment != null)
@@ -372,6 +384,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel DeleteAppointmentModel(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeleteAppointmentModel"));
             try
             {
                 var deleteAppointment = _userService.GetAppointmentById(id);
@@ -399,6 +412,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel DeleteAppointments(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeleteAppointments"));
             try
             {
                 var deleteAppointment = _userService.DeleteAppointment(id);
@@ -422,6 +436,7 @@ namespace EM.API.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public ApiResponseModel DragAndDrop(DragAndDrop objDragAndDrop)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DragAndDrop"));
             try
             {
                 var getAppointment = _userService.DragAndDrop(objDragAndDrop);

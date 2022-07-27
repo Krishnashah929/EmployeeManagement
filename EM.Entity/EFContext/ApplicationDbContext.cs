@@ -49,6 +49,7 @@ namespace EM.EFContext
                 table.DoctorId,
                 table.SpecialityId
             });
+             
         }
 
         /// <summary>
@@ -97,5 +98,34 @@ namespace EM.EFContext
         /// </summary>
         public virtual DbSet<Email> Email { get; set; }
 
+        /// <summary>
+        /// Get Forms
+        /// </summary>
+        public virtual DbSet<Forms> Forms { get; set; }
+
+        /// <summary>
+        /// Get FieldDetails
+        /// </summary>
+        public virtual DbSet<FieldDetails> FieldDetails { get; set; }
+
+        /// <summary>
+        /// Get FieldOptions
+        /// </summary>
+        public virtual DbSet<FieldOptions> FieldOptions { get; set; }
+
+        /// <summary>
+        /// Get CustomerForms
+        /// </summary>
+        public virtual DbSet<CustomerForms> CustomerForms { get; set; }
+
+        /// <summary>
+        /// Get FormFields
+        /// </summary>
+        public virtual DbSet<FormFields> FormFields { get; set; }
+
+        /// <summary>
+        /// Get CustomerFormData
+        /// </summary>
+        public virtual DbSet<CustomerFormData> CustomerFormData { get; set; }
     }
 }

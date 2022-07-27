@@ -1,0 +1,186 @@
+﻿@{ Layout = "_Layout"; }
+
+@model List<EM.Models.ClientSideFormDetails>
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow" id="idGenerateForm">
+                <div class="card-header">
+                    <h1 class="text-center"> Client Form </h1>
+                </div>
+                <div class="card-body">
+                    <form id="frmAddField">
+                        @foreach (var item in Model)
+                        {
+                            if (item.fieldTypeName == "TextBox")
+                            {
+                                <div class="form-group">
+                                    <label> @item.FieldHtmlName : </label>
+                                    <input type="text" class="form-control clsTextBox" id="@item.FieldDetailsId">
+                                    <span class="help-block">@item.HelpText</span>
+                                </div>
+                            }
+                            else if (item.fieldTypeName == "Textarea")
+                            {
+                                <div class="form-group">
+                                    <label> @item.FieldHtmlName : </label>
+                                    <textarea class="form-control clsTextArea" cols="5" rows="5" id="@item.FieldDetailsId"></textarea>
+                                    <span class="help-block">@item.HelpText</span>
+                                </div>
+                            }
+                            else if (item.fieldTypeName == "Dropdown")
+                            {
+                                <div class="form-group">
+                                    <label> @item.FieldHtmlName : </label>
+                                    <br>
+                                    <select class="form-control clsDropdown" id="@item.FieldDetailsId">
+                                        @{
+                                            for (var i = 0; i <= item.FieldOptions.Count - 1; i++)
+                                            {
+                                                <option id="idDropDownValue_" +i> @item.FieldOptions[i].OptionValue</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span class="help-block">@item.HelpText</span>
+                                </div>
+                            }
+                            else if (item.fieldTypeName == "Radiobutton")
+                            {
+                                <div class="form-group clsRadio" data-fieldId="@item.FieldDetailsId">
+                                    <label data-filed="@item.FieldHtmlName">@item.FieldHtmlName : </label>
+                                    @{
+                                        for (var i = 0; i <= item.FieldOptions.Count - 1; i++)
+                                        {
+                                            <label> @item.FieldOptions[i].OptionValue </label>
+                                            <input class="ml-3 mr-3" name="@item.FieldHtmlName" type="radio" value=@item.FieldOptions[i].OptionValue id="idRadioButtonValue_" + @item.FieldDetailsId>
+
+                                        }
+                                    }
+                                    <br>
+                                    <span class="help-block">@item.HelpText</span>
+                                </div>
+                            }
+                            else if (item.fieldTypeName == "Checkbox")
+                            {
+                                <div class="form-group clsCheckBox" data-fieldId="@item.FieldDetailsId">
+                                    <label data-filed="@item.FieldHtmlName">@item.FieldHtmlName : </label>
+                                    @{
+                                        for (var i = 0; i <= item.FieldOptions.Count - 1; i++)
+                                        {
+                                            <label for="idCheckBoxValue_" + @item.FieldDetailsId> @item.FieldOptions[i].OptionValue </label>
+                                            <input class="ml-3 mr-3" type="checkbox" value=@item.FieldOptions[i].OptionValue id="idCheckBoxValue_" + @item.FieldDetailsId>
+                                        }
+                                    }
+                                    <br>
+                                    <span class="help-block">@item.HelpText</span>
+                                </div>
+                            }
+                        }
+                    </form>
+                </div>
+                <div class="card-footer text-right">
+                    <button type="button" class="btn btn-primary mr-3" id="btnFrmAddField">  <i class="fas fa-save"></i> Submit </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"> <i class="fas fa-times"></i>  Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $("#btnFrmAddField").click(function (event)
+    {
+        debugger;
+        var url = window.location.href;
+        var Id = url.substring((url.lastIndexOf('?') + 8), (url.lastIndexOf('&') - 71), url.lastIndexOf('&'));
+        /*url.substring((url.lastIndexOf('?') + 8), url.lastIndexOf('&'));*/
+        var customerFormId = url.substring((url.lastIndexOf('&') + 30), (url.lastIndexOf('&') + 5));
+        $.ajax({
+            data: { "id": Id},
+            type: 'POST',
+            datatype: 'json',
+            url: '@Url.Content("~/Form/GetFormID")',
+                success: function (result)
+                {
+                    debugger;
+                    console.log(result);
+                    if (result != null && result != undefined) {
+                            var model = new Object();
+                            var objFormData = [];
+                            $('.clsTextBox').each(function (i, obj) {
+                                var formData = new Object();
+                                formData["CustomerFormDataId"] = null;
+                                formData["CustomerFormsId"] = parseInt(result);
+                                formData["FieldId"] = parseInt(this.id);
+                                formData["FieldValue"] = this.value;
+                                objFormData.push(formData);
+                            });
+
+        $('.clsTextArea').each(function (i, obj) {
+            var listFormData = new Object();
+            listFormData.customerFormsId = parseInt(result);
+            listFormData.customerFormDataId = null;
+            listFormData.fieldId = parseInt(this.id);
+            listFormData.fieldValue = this.value;
+            objFormData.push(listFormData);
+        });
+
+        $('.clsDropdown').each(function (i, obj) {
+            var listFormData = new Object();
+            listFormData.customerFormsId = parseInt(result);;
+            listFormData.customerFormDataId = null;
+            listFormData.fieldId = parseInt(this.id);
+            listFormData.fieldValue = this.value;
+            objFormData.push(listFormData);
+        });
+
+        $('.clsRadio').each(function (i, obj) {
+            var radioName = this.children[0].attributes[0].value;
+            var listFormData = new Object();
+            listFormData.customerFormDataId = null;
+            listFormData.customerFormsId = parseInt(result);
+            listFormData.fieldId = parseInt(this.attributes["data-fieldId"].value);
+            listFormData.fieldValue = $('input[name=' + radioName + ']:radio:checked').val();
+            objFormData.push(listFormData);
+        });
+        $('.clsCheckBox').each(function (i, obj) {
+            var checkBoxName = this.children[0].attributes[0].value;
+            var listFormData = new Object();
+            listFormData.customerFormDataId = null;
+            listFormData.customerFormsId = parseInt(result);
+            listFormData.fieldId = parseInt(this.attributes["data-fieldId"].value);
+            listFormData.fieldValue = $("input:checkbox:checked").val();
+            objFormData.push(listFormData);
+        });
+             $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+                 url: '@Url.Content("~/Form/SubmitClientForm?customerFormId=")' + customerFormId ,
+                 data: JSON.stringify(objFormData) ,
+                success: function (result)
+                {
+                    debugger;
+                    if (result.message != null && result.message != "")
+                    {
+                        window.location = "/Form/SuccessForm";
+                    }
+                },
+                error: function (ex)
+                {
+                    toastr.error('Invalid Data.');
+                    console.log('Failed ');
+                }
+            });
+                    }
+                },
+                error: function (ex)
+                {
+                    toastr.error('Invalid Data.');
+                    console.log('Failed ');
+                }
+                 });
+    });
+</script>

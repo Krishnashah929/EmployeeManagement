@@ -1,4 +1,5 @@
 ﻿#region using
+using ElmahCore;
 using EM.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin, Users,Receptionist")]
         public IActionResult Dashboard()
         {
+            HttpContext.RaiseError(new InvalidOperationException("Dashboard"));
             try
             {
                 if (User.Identity.IsAuthenticated)

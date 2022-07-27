@@ -1,0 +1,187 @@
+﻿<div class="container-fluid">
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <table id="idAllCustomerFormList" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Customer Email</th>
+                                <th>Form Name</th>
+                                <th>Link Deactivation Date</th> @*/*Expiry date*/*@
+                                <th>Is Active</th>
+                                <th>Submit Date</th> @*/*Form submission date date*/*@
+                                <th> Is Submitted</th>
+                                <th> View Form</th>
+                                @*<th> Download</th>*@
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div aria-hidden="true" aria-labelledby="idGenerateForm" role="dialog" tabindex="-1" id="idGenerateForm" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered">
+    </div>
+</div>
+
+@*Model for preview form*@
+<div class="modal fade" id="idGenerateForm">
+    <div class="modal-dialog modal-dialog-centered">
+        
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        fnGetAllCustomerFormList();
+    });
+
+    //for getting all Customer Form List.
+    function fnGetAllCustomerFormList() {
+        debugger;
+        $('#idAllCustomerFormList').DataTable(
+            {
+                ajax:
+                {
+                    url: '/Form/GetAllCustomerForms/',
+                    type: "POST"
+                },
+                destroy: true,
+                "paging": true,
+                "searching": true,
+                "info": true,
+                "lengthChange": true,
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+                columns: [
+                    { data: "customerEmail", name: "CustomerEmail" }, //index - 0
+                    { data: "formName", name: "FormName" }, //index - 1
+                    {
+                        data: "expiryDate",
+                        render: function (data) {
+                            return moment(data).format('DD-MM-YYYY HH:mm A')
+                        }
+                    }, //index - 2
+                    {
+                        data: null, name: "IsActive",
+                        render: function (data) {
+                            if (data.isActive == true) {
+                                return "<input type='checkbox' id='idIsActive' checked>";
+                            }
+                            else {
+                                return "<input type='checkbox' id='idIsActive'>";
+                            }
+                        }
+                    },  //index - 3
+                    {
+                        data: null, name: "SubmitDate" ,
+                        render: function (data) {
+                            if (data.isSubmitted == true) {
+                                return moment(data.submitDate).format('DD-MM-YYYY HH:mm A')
+                            } else {
+                                return "";
+                            }
+                        } //index - 4
+                    },
+                    {
+                        data: null, name: "IsSubmitted",
+                        render: function (data) {
+                            if (data.isSubmitted == true) {
+                                return "<input type='checkbox' id='idIsSubmitted' checked>";
+                            }
+                            else {
+                                return "<input type='checkbox' id='idIsSubmitted'>";
+                            }
+                        }
+                    },  //index - 5
+                    {//adds td row for button
+                        data: null,
+                        render: function (data) {
+                            if (data.isSubmitted == true) {
+                                return "<button type='button' class='btn btn-info'  onClick='fnOpenForm(" + data.customerFormsId + ")'><i class='fas fa-eye'></i> View</button>";
+                            }
+                            else {
+                                return "<button type='button' class='btn btn-default' disabled onClick='fnOpenForm(" + data.customerFormsId + ")'><i class='fas fa-eye'></i> View</button>";
+                            }
+                        },
+                    }, //index - 6
+                    //{//adds td row for button
+                    //    data: null,
+                    //    render: function (data) {
+                    //        return "<button type='button' class='btn clsDisableBtn'  onClick='fnDisableForm(" + data.formId + ")'><i class='fas fa-ban'></i></button>";
+                    //    },
+                    //}, //index - 6
+                    //{//adds td row for button
+                    //    data: null,
+                    //    render: function (data) {
+                    //        return "<button type='submit' class='btn'  onClick='fnDownloadPdf(" + data.formId + ")'><i class='fas fa-download'></i></button>";
+                    //    },
+                    //}, //index - 7
+                ],
+
+                'columnDefs': [{
+                    'targets': [6], // column index (start from 0)
+                    'orderable': false, // set orderable false for selected columns
+                }],
+             
+            }
+        );
+    }
+
+    function fnDisableForm() {
+        $('.clsDisableBtn').click(function () {
+            debugger;
+            table.row('.selected').remove().draw(false);
+            /*  $("#idAllCustomerFormList tbody tr").removeAttr("onclick");*/
+        });
+    };
+
+    function fnOpenForm(customerFormsId) {
+        debugger;
+        $.ajax({
+            url: '@Url.Content("~/Form/ViewCustomerForm")',
+            type: 'GET',
+            data: { "id": customerFormsId },
+            success: function (response) {
+                $('#idGenerateForm').find(".modal-dialog").html(response);
+                $('#idGenerateForm').modal("show");
+            }
+        });
+    }
+
+    //in this case we are exporting a post based on id
+    function fnDownloadPdf(formId) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/Form/DownloadPdf")',
+            data: {"id": formId },
+            success: function (response) {
+                if (response.d == '')
+                    alert('There is a problem exporting the file');
+                else {
+                    var sampleArr = base64ToArrayBuffer(response.d);
+                    saveByteArray("File-" + id, sampleArr);
+                }
+            },
+            failure: function (response) {
+                alert("Cannot export thefile: Error in calling Ajax");
+            }
+        });
+    }
+
+    @*function fnDownloadPdf(formId) {
+        debugger;
+        $.ajax({
+            url: '@Url.Content("~/Form/DownloadPdf")',
+            type: 'POST',
+            /*data: { "id": formId },*/
+            success: function (response) {
+            }
+        });
+    }*@
+</script>

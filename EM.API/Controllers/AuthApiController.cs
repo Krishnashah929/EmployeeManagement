@@ -1,4 +1,5 @@
 ﻿#region using
+using ElmahCore;
 using EM.API.Helpers;
 using EM.Common;
 using EM.Entity;
@@ -64,6 +65,7 @@ namespace EM.API.Controllers
         [HttpPost("Login")]
         public ApiResponseModel Login(LoginModel objloginModel)
         {
+            HttpContext.RaiseError(new InvalidOperationException("Login"));
             try
             {
                 if (objloginModel != null)
@@ -116,6 +118,7 @@ namespace EM.API.Controllers
         [Obsolete]
         public ApiResponseModel Register(RegisterModel objRegisterModel)
         {
+            HttpContext.RaiseError(new InvalidOperationException("Register"));
             try
             {
                 if (objRegisterModel != null )
@@ -165,6 +168,7 @@ namespace EM.API.Controllers
         [HttpPost("Sendlink")]
         public ApiResponseModel Sendlink(User objUser)
         {
+            HttpContext.RaiseError(new InvalidOperationException("Sendlink"));
             try
             {
                 var loggedinUser = _userService.GetByEmail(objUser.EmailAddress);
@@ -180,7 +184,7 @@ namespace EM.API.Controllers
                                "Click the link below to reset ." + "<br/> <br/>" +
                                " <button type=' button ' class=' btn-info'> <a href='" + linkPath + "'> </a> Forgot Password </button> <br/> <br/>" +
                                "If you did not request for reset password please ignore this mail.";
-                    //MailService.SendEmail(objUser.EmailAddress, body, subject);
+                    MailService.SendEmail(objUser.EmailAddress, body, subject);
 
                     //getting value from common helper.
                     return CommonHelper.GetResponse(HttpStatusCode.OK, "", loggedinUser);
@@ -190,7 +194,7 @@ namespace EM.API.Controllers
                     return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 return CommonHelper.GetResponse(HttpStatusCode.InternalServerError, "", "");
             }
@@ -206,6 +210,7 @@ namespace EM.API.Controllers
         [HttpGet("SetPassword/{id}")]
         public ApiResponseModel SetPassword(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("SetPassword"));
             try
             {
                 var userDetails = _userService.GetById(id);

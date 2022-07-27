@@ -1,4 +1,5 @@
 ﻿#region using
+using ElmahCore;
 using EM.Common;
 using EM.Entity;
 using EM.Models;
@@ -52,6 +53,7 @@ namespace EM.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            HttpContext.RaiseError(new InvalidOperationException("Login"));
             try
             {
                 //if user is already logged in then they can't go back to login page
@@ -78,6 +80,7 @@ namespace EM.Web.Controllers
         [HttpPost]
         public IActionResult Login(LoginModel objloginModel)
         {
+            HttpContext.RaiseError(new InvalidOperationException("Login"));
             try
             {
                 if (ModelState.IsValid)
@@ -149,6 +152,7 @@ namespace EM.Web.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            HttpContext.RaiseError(new InvalidOperationException("Register"));
             try
             {
                 //if user is already logged in then they can't go back to register page
@@ -178,6 +182,7 @@ namespace EM.Web.Controllers
         [HttpPost]
         public IActionResult Register(RegisterModel objRegisterModel)
         {
+            HttpContext.RaiseError(new InvalidOperationException("Register"));
             try
             {
                 ModelState.Remove("RoleId");
@@ -225,6 +230,7 @@ namespace EM.Web.Controllers
         [HttpGet]
         public IActionResult SetPassword(string link, User user)
         {
+            HttpContext.RaiseError(new InvalidOperationException("SetPassword"));
             try
             {
                 link = EncryptionDecryption.Decrypt(link.ToString());
@@ -255,6 +261,7 @@ namespace EM.Web.Controllers
         [HttpPost]
         public IActionResult SetPassword(User user)
         {
+            HttpContext.RaiseError(new InvalidOperationException("SetPassword"));
             try
             {
                 ModelState.Remove("FirstName");
@@ -303,6 +310,7 @@ namespace EM.Web.Controllers
         [HttpGet]
         public IActionResult ForgotPasswordModel()
         {
+            HttpContext.RaiseError(new InvalidOperationException("ForgotPasswordModel"));
             try
             {
                 return View();
@@ -323,24 +331,31 @@ namespace EM.Web.Controllers
         [HttpPost]
         public IActionResult Sendlink(User objUser)
         {
-
-            //Calling BaseController.
-            var result = new ApiGenericModel<User>();
-            result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Sendlink", null, objUser).Result;
-            if (result != null)
+            HttpContext.RaiseError(new InvalidOperationException("Sendlink"));
+            try
             {
-                objUser = result.GenericModel;
-            }
-            if (true)
-            {
-                if (objUser != null)
+                //Calling BaseController.
+                var result = new ApiGenericModel<User>();
+                result = ApiRequest<User>(RequestTypes.Post, "AuthApi/Sendlink", null, objUser).Result;
+                if (result != null)
                 {
-                    _toastNotification.AddSuccessToastMessage(CommonValidations.LinkSendMsg);
-                    return RedirectToAction("ForgotPasswordModel", "Auth");
+                    objUser = result.GenericModel;
                 }
+                if (true)
+                {
+                    if (objUser != null)
+                    {
+                        _toastNotification.AddSuccessToastMessage(CommonValidations.LinkSendMsg);
+                        return RedirectToAction("ForgotPasswordModel", "Auth");
+                    }
+                }
+                _toastNotification.AddErrorToastMessage(CommonValidations.InvalidUserMsg);
+                return RedirectToAction("ForgotPasswordModel", "Auth");
             }
-            _toastNotification.AddErrorToastMessage(CommonValidations.InvalidUserMsg);
-            return RedirectToAction("ForgotPasswordModel", "Auth");
+            catch(Exception)
+            {
+                return View("Error");
+            }
         }
         #endregion
 
@@ -354,6 +369,7 @@ namespace EM.Web.Controllers
         [HttpGet]
         public IActionResult ForgotPassword(User user, string link)
         {
+            HttpContext.RaiseError(new InvalidOperationException("ForgotPassword"));
             try
             {
                 link = EncryptionDecryption.Decrypt(link.ToString());
@@ -384,6 +400,7 @@ namespace EM.Web.Controllers
         [HttpPost]
         public ActionResult ForgotPassword(User user)
         {
+            HttpContext.RaiseError(new InvalidOperationException("ForgotPassword"));
             try
             {
                 ModelState.Remove("FirstName");
@@ -443,6 +460,7 @@ namespace EM.Web.Controllers
         [Authorize]
         public async Task<IActionResult> LogOut()
         {
+            HttpContext.RaiseError(new InvalidOperationException("LogOut"));
             try
             {
                 HttpContext.Session.SetString("Userlogeddin", "false");

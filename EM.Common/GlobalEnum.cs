@@ -19,5 +19,21 @@
         {
             Red = 1, Blue = 2, Green = 3
         }
+       
+        /// <summary>
+        /// For global field type in form
+        /// </summary>
+        public enum fieldTypes
+        {
+            Textbox = 1, Textarea = 2, Dropdown = 3, Radiobutton = 4, Checkbox = 5, Datatable = 6
+        }
+
+        /// <summary>
+        /// For global field validation type in form
+        /// </summary>
+        public enum fieldValidationTypes
+        {
+           NA = 0, Numeric = 1, Email = 2 
+        }
     }
 }

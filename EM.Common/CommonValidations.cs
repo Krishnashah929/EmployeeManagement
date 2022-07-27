@@ -139,5 +139,35 @@
         /// Doctor details updated successfully message...
         /// </summary>
         public const string UpdateDoctorsDetails = "Doctor details are updated successfully.";
+
+        /// <summary>
+        /// New form created successfully message...
+        /// </summary>
+        public const string NewFormCreated = "New form is created successfully.";
+
+        /// <summary>
+        /// Form details updated successfully message...
+        /// </summary>
+        public const string UpdateFormDetails = "Form details are updated successfully.";
+
+        /// <summary>
+        /// New field created successfully message...
+        /// </summary>
+        public const string NewFieldCreated = "New field is created successfully.";
+
+        /// <summary>
+        /// Fields details updated successfully message...
+        /// </summary>
+        public const string UpdateFieldDetails = "Field details are updated successfully.";
+
+        /// <summary>
+        /// Your form is saved successfully message...
+        /// </summary>
+        public const string FormSavedSuccessfully = "Your form is saved successfully.";
+        
+        /// <summary>
+        /// Your form is saved successfully message...
+        /// </summary>
+        public const string EmailSentSuccessfully = "Email is sent successfully.";
     }
 }

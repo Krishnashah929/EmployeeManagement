@@ -28,6 +28,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0/main.min.css,npm/fullcalendar@5.11.0/main.min.css">
     <!--Date and time picker-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="~/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
     <!---------------------------------------------------Script section------------------------------------------------------------>
     <!-- jQuery -->
     <script src="~/plugins/jquery/jquery.min.js"></script>
@@ -53,6 +55,11 @@
     <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.11.0,npm/fullcalendar@5.11.0/main.min.js,npm/fullcalendar@5.11.0/locales-all.min.js,npm/fullcalendar@5.11.0/locales-all.min.js"></script>
     <!--Date and time picker-->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Bootstrap4 Duallistbox -->
+    <script src="../../plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+    <!--Jquery for two list box -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -106,7 +113,7 @@
                 <span class="brand-text font-weight-light"> Hospital Management</span>
             </a>
             <!-- Sidebar -->
-       
+
             <div class="sidebar">
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
@@ -126,17 +133,17 @@
                 </div>
 
                 <!-- Sidebar Menu -->
-                <nav class="mt-2" >
+                <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column navbar-nav" data-accordion="false">
                         @if (User.IsInRole("Admin") || User.IsInRole("Users"))
                         {
-                        <li class="nav-item">
-                            <a href="/Admin/Index" class="nav-link  @Html.ActiveClass("Admin", "Index")">
-                                <i class="far fa-dot-circle nav-icon"></i>
-                                <p>Users</p>
-                            </a>
-                        </li>
-                            <li class="nav-item" >
+                            <li class="nav-item">
+                                <a href="/Admin/Index" class="nav-link  @Html.ActiveClass("Admin", "Index")">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>Users</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="/Doctor/GetDoctors" class="nav-link @Html.ActiveClass("Doctor", "GetDoctors")">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>Doctors</p>
@@ -148,15 +155,33 @@
                                     <p>TimeSheets</p>
                                 </a>
                             </li>
+                            <li class="nav-item ">
+                                <a href="/Form/FormTemplates" class="nav-link @Html.ActiveClass("Form", "FormTemplates")">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>Forms</p>
+                                </a>
+                            </li>
+                            <li class="nav-item ">
+                                <a href="/Form/NewCustomerForms" class="nav-link @Html.ActiveClass("Form", "NewCustomerForms")">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>New Customer Forms</p>
+                                </a>
+                            </li>
+                            <li class="nav-item ">
+                                <a href="/Form/CustomerForms" class="nav-link @Html.ActiveClass("Form", "CustomerForms")">
+                                    <i class="far fa-dot-circle nav-icon"></i>
+                                    <p>Customer Forms</p>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a href="/Auth/LogOut" class="nav-link  @Html.ActiveClass("Auth", "LogOut")">
                                     <i class="far fa-dot-circle nav-icon"></i>
                                     <p>LogOut</p>
                                 </a>
                             </li>
-                            }
-                            else
-                            {
+                        }
+                        else
+                        {
                             <li class="nav-item">
                                 <a asp-action="Dashboard" asp-controller="Home" class="nav-link active" aria-selected="true">
                                     <i class="far fa-dot-circle nav-icon"></i>
@@ -175,8 +200,8 @@
                                     <p>LogOut</p>
                                 </a>
                             </li>
-                            }
-                        </ul>
+                        }
+                    </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
             </div>

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EM.Common\EM.Common.csproj" />
+    <ProjectReference Include="..\EM.Entity\EM.Entity.csproj" />
   </ItemGroup>
 
 </Project>

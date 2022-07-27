@@ -1,0 +1,87 @@
+﻿@model EM.Entity.CustomerForms
+ 
+<!-- /.modal-content -->
+<div class="modal-content">
+    <div class="modal-header  bg-info">
+        <h4 class="modal-title">Send form to customer</h4>
+    </div>
+    <div class="modal-body">
+        <form id="frmSendMailForm" method="post">
+            <input type="number" hidden asp-for="FormId"  value="@ViewBag.formID" id="idFormId"/> 
+            <div class="form-group">
+                <label>Customer Email :</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="idCustomerEmail" placeholder="Customer Email" asp-for="CustomerEmail">
+                </div>
+                    <span asp-validation-for="CustomerEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Expiry Date :</label>
+                <div class="input-group">
+                    <input type="date" class="form-control" id="idExpiryDate" placeholder="Expiry Date" asp-for="ExpiryDate">
+                </div>
+                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">  <i class="fas fa-envelope"></i> Send </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"> <i class="fas fa-times"></i>  Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /.modal-content -->
+
+<script type="text/javascript">
+    $("#frmSendMailForm").submit(function (event)
+    {
+        debugger;
+        $.validator.setDefaults({
+            ignore: ':hidden, [readonly=readonly]'
+        });
+        var data = {};
+        data.customerEmail = document.getElementById("idCustomerEmail").value ;
+        data.expiryDate = document.getElementById("idExpiryDate").value;
+        data.formId = document.getElementById("idFormId").value;
+
+        var $form = $('#frmSendMailForm');
+        $.validator.unobtrusive.parse($form);
+
+        if ($("#frmSendMailForm").valid())
+        {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            $.ajax({
+                url: '@Url.Content("~/Form/SendMail")',
+                type: "POST",
+                async: true,
+                data: data,
+                success: function (result)
+                {
+                    debugger;
+                    if (result != null && result.statusCode != 200)
+                    {
+                        toastr.error(result.message);
+                        window.location.reload();
+                        $('#idSendEmailForm').modal("show");
+                    }
+                    else
+                    {
+                        toastr.success(result.message);
+                        $('#idSendEmailForm').modal("hide");
+                    }
+                    console.log(result);
+                },
+                error: function (ex)
+                {
+                    toastr.error('Invalid Data.');
+                    console.log('Failed ');
+                }
+            });
+        }
+        else
+        {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    });
+</script>

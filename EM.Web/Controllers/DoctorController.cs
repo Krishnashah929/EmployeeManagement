@@ -1,4 +1,5 @@
 ﻿#region Using
+using ElmahCore;
 using EM.Common;
 using EM.Entity;
 using EM.Models;
@@ -38,7 +39,16 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult TimeSheets()
         {
-            return View();
+            HttpContext.RaiseError(new InvalidOperationException("TimeSheets"));
+            try
+            {
+                return View();
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+
         }
         #endregion
 
@@ -51,7 +61,15 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult GetDoctors()
         {
-            return View();
+            HttpContext.RaiseError(new InvalidOperationException("GetDoctors"));
+            try
+            {
+                return View();
+            }
+            catch(Exception)
+            {
+                return View("Error");
+            }
         }
         #endregion
 
@@ -64,6 +82,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult GetDoctorsList()
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetDoctorsList"));
             try
             {
                 if (HttpContext.Session.GetString("JWToken") == null)
@@ -116,10 +135,18 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public JsonResult GetDoctor()
         {
-            //Calling BaseController.
-            var result = new ApiGenericModel<Doctor>();
-            result = ApiRequest<Doctor>(RequestTypes.Get, "DoctorApi/GetDoctor").Result;
-            return new JsonResult(result.GenericList);
+            HttpContext.RaiseError(new InvalidOperationException("GetDoctor"));
+            try
+            {
+                //Calling BaseController.
+                var result = new ApiGenericModel<Doctor>();
+                result = ApiRequest<Doctor>(RequestTypes.Get, "DoctorApi/GetDoctor").Result;
+                return new JsonResult(result.GenericList);
+            }
+            catch(Exception)
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -133,6 +160,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult EditDoctorsModel(int? id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditDoctorsModel"));
             Doctor objDoctor = new Doctor();
             try
             {
@@ -176,6 +204,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult EditDoctor(Doctor objDoctor)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditDoctor"));
             try
             {
                 var result = new ApiGenericModel<Doctor>();
@@ -210,10 +239,18 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public JsonResult GetCountry()
         {
-            //Calling BaseController.
-            var result = new ApiGenericModel<Country>();
-            result = ApiRequest<Country>(RequestTypes.Get, "DoctorApi/GetCountry").Result;
-            return new JsonResult(result.GenericList);
+            HttpContext.RaiseError(new InvalidOperationException("GetCountry"));
+            try
+            {
+                //Calling BaseController.
+                var result = new ApiGenericModel<Country>();
+                result = ApiRequest<Country>(RequestTypes.Get, "DoctorApi/GetCountry").Result;
+                return new JsonResult(result.GenericList);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -227,10 +264,18 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public JsonResult GetState(int id)
         {
-            //Calling BaseController.
-            var result = new ApiGenericModel<State>();
-            result = ApiRequest<State>(RequestTypes.Get, "DoctorApi/GetState/" + id).Result;
-            return new JsonResult(result.GenericList);
+            HttpContext.RaiseError(new InvalidOperationException("GetState"));
+            try
+            {
+                //Calling BaseController.
+                var result = new ApiGenericModel<State>();
+                result = ApiRequest<State>(RequestTypes.Get, "DoctorApi/GetState/" + id).Result;
+                return new JsonResult(result.GenericList);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -244,10 +289,18 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public JsonResult GetCity(int id)
         {
-            //Calling BaseController.
-            var result = new ApiGenericModel<City>();
-            result = ApiRequest<City>(RequestTypes.Get, "DoctorApi/GetCity/" +id).Result;
-            return new JsonResult(result.GenericList);
+            HttpContext.RaiseError(new InvalidOperationException("GetCity"));
+            try
+            {
+                //Calling BaseController.
+                var result = new ApiGenericModel<City>();
+                result = ApiRequest<City>(RequestTypes.Get, "DoctorApi/GetCity/" + id).Result;
+                return new JsonResult(result.GenericList);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -260,6 +313,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public JsonResult GetAppointments()
         {
+            HttpContext.RaiseError(new InvalidOperationException("TimeSheets"));
             //Calling BaseController.
             var result = new ApiGenericModel<Appointment>();
             result = ApiRequest<Appointment>(RequestTypes.Get, "DoctorApi/GetAppointments").Result;
@@ -277,6 +331,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public IActionResult PostAppointment(Appointment objAppointment)
         {
+            HttpContext.RaiseError(new InvalidOperationException("PostAppointment"));
             try
             {
                 var result = new ApiGenericModel<Appointment>();
@@ -332,6 +387,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public IActionResult EditAppointmentModel(int? id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("EditAppointmentModel"));
             Appointment objAppointment = new Appointment();
             try
             {
@@ -371,6 +427,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public IActionResult DeleteAppointmentModel(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeleteAppointmentModel"));
             try
             {
                 //Calling BaseController.
@@ -399,6 +456,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public IActionResult DeleteAppointments(Appointment model)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeleteAppointments"));
             try
             {
                 ////Calling BaseController.
@@ -423,6 +481,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin , Receptionist")]
         public IActionResult DragAndDrop(DragAndDrop objDragAndDrop)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DragAndDrop"));
             try
             {
                 if (objDragAndDrop != null)

@@ -2,7 +2,6 @@
 using EM.EFContext;
 using EM.GenericUnitOfWork.Base;
 using EM.GenericUnitOfWork.Uow;
-using EM.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +14,10 @@ using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using ElmahCore.Mvc;
+using ElmahCore.Sql;
+using EM.Services;
+using EM.Services.WebForms;
 #endregion
 
 namespace EM.API
@@ -97,9 +100,17 @@ namespace EM.API
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));//Reference of Repository
             services.AddServices();//For services
             services.AddTransient<IUnitOfWork, UnitOfWork>();//Reference of UnitOfWork
+            services.AddTransient<IFormServices, FormServices>();//Reference of UnitOfWork
             services.AddSession();//For session
             services.AddControllers();
             services.AddControllersWithViews();
+
+            //For ELMAH
+            services.AddElmah<SqlErrorLog>(options =>
+            {
+                options.ConnectionString = "Data source=PCI162\\SQL2017;initial catalog=EmployeeManagements;User Id=sa;Password=tatva123;Trusted_Connection=False;MultipleActiveResultSets=true";
+               
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -133,6 +144,8 @@ namespace EM.API
             app.UseAuthorization();// are you allowed?  
 
             app.UseHttpsRedirection();//Use httpsRedirection
+
+            app.UseElmah(); //For ELMAH
 
             app.UseEndpoints(endpoints =>
             {

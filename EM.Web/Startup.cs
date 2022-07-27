@@ -1,5 +1,7 @@
-#region Using
+﻿#region Using
 using CustomHandlers.CustomHandler;
+using ElmahCore;
+using ElmahCore.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +39,20 @@ namespace EM.Web
         {
             //For run time compilation
             services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            //For ELMAH
+            services.AddElmah(options =>
+            {
+                options.Path = "/elmah";
+                //elmah will only open when authorized user will search it 
+                options.OnPermissionCheck = context => context.User.Identity.IsAuthenticated; //checking that user is authenticate or not
+            });
+
+            //Add logs of elmah in this file location
+            services.AddElmah<XmlFileErrorLog>(options =>
+            {
+                options.LogPath = "~/log"; // this log file will create in www root folder
+            });
 
             services.AddMvc(options =>
             {
@@ -115,6 +131,8 @@ namespace EM.Web
 
             app.UseAuthorization();// are you allowed?  
 
+            app.UseElmah(); //For ELMAH
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -124,5 +142,6 @@ namespace EM.Web
             AppDomain.CurrentDomain.SetData("ContentRootPath", env.ContentRootPath);
             AppDomain.CurrentDomain.SetData("WebRootPath", env.WebRootPath);
         }
-    }   
+
+    }
 }

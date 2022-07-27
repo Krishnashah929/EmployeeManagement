@@ -1,4 +1,5 @@
 ﻿#region using
+using ElmahCore;
 using EM.Common;
 using EM.Entity;
 using EM.Models;
@@ -41,6 +42,7 @@ namespace EM.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            HttpContext.RaiseError(new InvalidOperationException("Index"));
             try
             {
                 if (User.Identity.IsAuthenticated)
@@ -68,6 +70,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin, Users")]
         public IActionResult GetUserList()
         {
+            HttpContext.RaiseError(new InvalidOperationException("GetUserList"));
             try
             {
                 if(HttpContext.Session.GetString("JWToken") == null)
@@ -120,6 +123,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult AddEditUserModel(int? id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("AddEditUserModel"));
             RegisterModel objUser = new RegisterModel();
             try
             {
@@ -155,6 +159,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Register(RegisterModel objRegisterModel)
         {
+            HttpContext.RaiseError(new InvalidOperationException("Register"));
             try
             {
                 if (ModelState.IsValid)
@@ -221,6 +226,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUserModel(int id)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeleteUserModel"));
             try
             {
                 //Calling BaseController.
@@ -249,6 +255,7 @@ namespace EM.Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult DeletUserDetails(User model)
         {
+            HttpContext.RaiseError(new InvalidOperationException("DeletUserDetails"));
             try
             {
                 ////Calling BaseController.
