@@ -157,13 +157,17 @@ namespace EM.API.Controllers
                 if (objForms != null)
                 {
                     var editForms = _formServices.EditForms(objForms);
-                    //getting value from common helper.
-                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateFormDetails, editForms);
+                    if(editForms!= null)
+                    {
+                        //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateFormDetails, editForms);
+                    }
+                    else
+                    {
+                        return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg, "");
+                    }
                 }
-                else
-                {
-                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg);
-                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg);
             }
             catch
             {
@@ -456,6 +460,41 @@ namespace EM.API.Controllers
         #endregion
 
         /// <summary>
+        ///  Edit field option
+        /// </summary>
+        /// <param name="objForms"></param>
+        /// <returns>edit  field option </returns>
+        #region EditOptionFields(POST)
+        [HttpPut("EditOptionFields")]
+        [Authorize(Roles = "Admin")]
+        public ApiResponseModel EditOptionFields(FieldOptions objFieldOptions)
+        {
+            HttpContext.RaiseError(new InvalidOperationException("EditOptionFields"));
+            try
+            {
+                if (objFieldOptions != null)
+                {
+                    var editField = _formServices.EditFieldOptions(objFieldOptions);
+                    if (editField != null)
+                    {
+                        //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.UpdateFieldOptionMssg, editField);
+                    }
+                    else
+                    {
+                        return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg, "");
+                    }
+                }
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.RecordExistsMsg);
+            }
+            catch
+            {
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.InvalidMsg);
+            }
+        }
+        #endregion
+
+        /// <summary>
         ///  Remove field option for form 
         /// </summary>
         /// <param name="id"></param>
@@ -469,8 +508,14 @@ namespace EM.API.Controllers
             try
             {
                 var deleteUser = _formServices.RemoveFieldOption(id);
-                //getting value from common helper.
-                return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.DeleteUserDetails, deleteUser);
+                if (deleteUser != null)
+                {
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.DeleteFieldOptionMsg, deleteUser);
+                }
+               else
+                {
+                    return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.InvalidMsg, deleteUser);
+                }
             }
             catch
             {
@@ -522,12 +567,16 @@ namespace EM.API.Controllers
             {
                 //var fieldDetails = _formServices.GetAllFieldsList(Id);
                 var fieldDetails = _formServices.GetAllFilteredFieldsList(Id);
-                if (fieldDetails != null)
+                if (fieldDetails.Count() == 0)
                 {
                     //getting value from common helper.
+                    return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.NoFieldMsg, null, fieldDetails);
+                }
+               else if(fieldDetails.Count() > 0)
+                {
                     return CommonHelper.GetResponse(HttpStatusCode.OK, "", null, fieldDetails);
                 }
-                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.NoFieldMsg , "");
             }
             catch
             {
@@ -554,7 +603,7 @@ namespace EM.API.Controllers
                     //getting value from common helper.
                     return CommonHelper.GetResponse(HttpStatusCode.OK, "", null, fieldDetails);
                 }
-                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, "", "");
+                return CommonHelper.GetResponse(HttpStatusCode.BadRequest, CommonValidations.NoFieldMsg , "");
             }
             catch
             {
@@ -579,9 +628,13 @@ namespace EM.API.Controllers
                 if (objFormFields != null)
                 {
                     var createdForms = _formServices.SaveForm(objFormFields);
-                    if (createdForms != null)
+                    if (createdForms == null)
                     {
                         //getting value from common helper.
+                        return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.CanNotSaveEmptyMsg, createdForms);
+                    }
+                    else
+                    {
                         return CommonHelper.GetResponse(HttpStatusCode.OK, CommonValidations.FormSavedSuccessfully, createdForms);
                     }
                 }
@@ -717,7 +770,7 @@ namespace EM.API.Controllers
                     Model.HelpText = item.HelpText;
                     Model.FormName = item.FormName;
 
-                    var getFieldOptions = _formServices.GetFilteredFieldOptions(Model.FieldDetailsId);
+                    var getFieldOptions = _formServices.GetAllFieldOptionsForViewForm(Model.FieldDetailsId);
                     Model.FieldOptions = getFieldOptions.ToList();
                     clientSideFormDetails1.Add(Model);
                 }

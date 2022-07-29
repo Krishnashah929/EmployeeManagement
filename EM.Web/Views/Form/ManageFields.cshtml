@@ -103,11 +103,11 @@
                         render: function (data) {
                             if (data.isOptional == true)
                             {
-                                return "<input type='checkbox' id='idIsOptional' checked>";
+                                return "<input type='checkbox' id='idIsOptional' checked disabled style:'background-color: ;'>";
                             }
                             else
                             {
-                                return "<input type='checkbox' id='idIsOptional'>";
+                                return "<input type='checkbox' id='idIsOptional' disabled>";
                             }
                         }
                     },//index - 2
@@ -117,12 +117,12 @@
                         render: function (data) {
                             if (data.fieldTypeName == "TextBox" || data.fieldTypeName == "Textarea")
                             {
-                                return "<a href='#' class='btn  m-auto' data-toggle='model' data-target=#idAddFeild' onclick=fnEditFieldForm('" + data.fieldDetailsId + "');><i class='fas fa-edit'></i></a>";
+                                return "<a  class='btn  m-auto' data-toggle='model' data-target=#idAddFeild' onclick=fnEditFieldForm('" + data.fieldDetailsId + "');><i class='fas fa-edit'></i></a>";
                             }
                             else
                             {
-                                return "<a href='#' class='btn  m-auto' data-toggle='model' data-target=#idAddFeild' onclick=fnEditFieldForm('" + data.fieldDetailsId + "'); ><i class='fas fa-edit'></i></a>" +
-                                    "<a href='#' class='btn  m-auto' data-toggle='model' data-target=#idOpenFieldOption' onclick=fnOpenFiledsOption('" + data.fieldDetailsId + "'); ><i class='fas fa-ellipsis-v'></i></a>";
+                                return "<a  class='btn  m-auto' data-toggle='model' data-target=#idAddFeild' onclick=fnEditFieldForm('" + data.fieldDetailsId + "'); ><i class='fas fa-edit'></i></a>" +
+                                    "<a  class='btn  m-auto' data-toggle='model' data-target=#idOpenFieldOption' onclick=fnOpenFiledsOption('" + data.fieldDetailsId + "'); ><i class='fas fa-ellipsis-v'></i></a>";
                             }
                         },
                     }//index - 4
@@ -162,8 +162,10 @@
         $.ajax({
             url: '@Url.Content("~/Form/OpenFieldForm")',
             type: 'GET',
-            data: { "id": id},
+            data: { "id": id },
+            async: false,
             success: function (response) {
+                debugger;
                 $('#idAddFeild').find(".modal-dialog").html(response);
                 $('#idAddFeild').modal("show");
             },

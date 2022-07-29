@@ -94,6 +94,7 @@ namespace EM.Entity
         /// <summary>
         /// Get FormName
         /// </summary>
+        [NotMapped]
         public string FormName { get; set; }
     }
 }

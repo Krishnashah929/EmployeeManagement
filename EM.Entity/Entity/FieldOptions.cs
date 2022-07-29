@@ -1,4 +1,5 @@
 ﻿#region Using
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 #endregion
@@ -26,5 +27,10 @@ namespace EM.Entity
         /// Get OptionValue
         /// </summary>
         public string OptionValue { get; set; }
+
+        /// <summary>
+        /// Get isdelete.
+        /// </summary>
+        public bool IsDelete { get; set; }
     }
 }

@@ -85,6 +85,7 @@ namespace EM.Web.Controllers
                     objForms.FormId = result.GenericModel.FormId;
                     objForms.FormName = result.GenericModel.FormName;
                     objForms.DestinationEmail = result.GenericModel.DestinationEmail;
+                    objForms.IsActive = result.GenericModel.IsActive;
                 }
             }
             catch (Exception)
@@ -362,9 +363,9 @@ namespace EM.Web.Controllers
                 result = ApiRequest<FieldOptions>(RequestTypes.Get, "FormApi/GetFieldOptions/" + id).Result;
                 return new JsonResult(result.GenericList);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
@@ -481,7 +482,14 @@ namespace EM.Web.Controllers
                 //Calling BaseController.
                 var result = new ApiGenericModel<FieldOptions>();
                 result = ApiRequest<FieldOptions>(RequestTypes.Delete, "FormApi/RemoveFieldOption/" + id).Result;
-                return new JsonResult(result.GenericList);
+                if (result.GenericList != null)
+                {
+                    return Json(result.GenericList);
+                }
+                else
+                {
+                    return Json(result);
+                }
             }
             catch (Exception)
             {
@@ -552,7 +560,14 @@ namespace EM.Web.Controllers
                 //Calling BaseController.
                 var result = new ApiGenericModel<FieldDetails>();
                 result = ApiRequest<FieldDetails>(RequestTypes.Get, "FormApi/FieldSequenceFieldList/" + Id).Result;
-                return Json(result.GenericList);
+                if (result.GenericList != null)
+                {
+                    return Json(result.GenericList);
+                }
+                else
+                {
+                    return Json(result);
+                }
             }
             catch (Exception)
             {
@@ -576,7 +591,14 @@ namespace EM.Web.Controllers
                 //Calling BaseController.
                 var result = new ApiGenericModel<FieldDetails>();
                 result = ApiRequest<FieldDetails>(RequestTypes.Get, "FormApi/FieldSequenceSavedFieldList/" + Id).Result;
-                return Json(result.GenericList);
+                if (result.GenericList != null)
+                {
+                    return Json(result.GenericList);
+                }
+                else
+                {
+                    return Json(result);
+                }
             }
             catch (Exception)
             {
@@ -609,7 +631,7 @@ namespace EM.Web.Controllers
                 {
                     if (objFormFields == null)
                     {
-                        return Json(result);
+                        return Json(result.GenericModel);
                     }
                     return Json(result);
                 }
@@ -833,7 +855,7 @@ namespace EM.Web.Controllers
                     item.CustomerFormsId = Convert.ToInt32(CustomerFormID);
                 }
                 var test = model;
-                
+
                 var result = new ApiGenericModel<bool>();
                 result = ApiRequest<bool>(RequestTypes.Post, "FormApi/SubmitClientForm", null, model).Result;
                 if (result.GenericModel == true)
@@ -974,7 +996,7 @@ namespace EM.Web.Controllers
                     item.FieldValue = result1.GenericList.Where(x => x.FieldId == item.FieldDetailsId).Select(x => x.FieldValue).FirstOrDefault().ToString();
                     ViewBag.FormName = item.FormName;
                 }
-                
+
                 return PartialView("_ViewCustomerFormPartial", result.GenericList);
             }
             catch (Exception ex)

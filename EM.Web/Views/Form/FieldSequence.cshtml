@@ -153,7 +153,6 @@
         var url = document.referrer;
         var Id = url.substring(url.lastIndexOf('/') + 1);
         createDynamicForm();
-        alert(sequenceArray);
         var data = {};
         data.formId = Id;
         data.FieldsSequence = sequenceArray;
@@ -162,7 +161,13 @@
             url: '@Url.Content("~/Form/SaveForm")',
             data: data,
             success: function (response) {
-                toastr.success(response.message);
+                if (response != null && response != undefined)
+                {
+                    toastr.success(response.message);
+                }
+                if (response == null) {
+                    toastr.error("You can not save empty form.");
+                }
             },
             error: function() {
                 toastr.error(response.message);
@@ -300,10 +305,11 @@
             url: '/Form/FieldSequenceFieldList',
             data: { "Id": Id },
             success: function (response) {
-                if (response != null && response != undefined && response.length > 0) {
+                debugger;
+                if (response != null && response != undefined && response.length > 0)
+                {
                     var appendHtml = $("#sortable1");
                     appendHtml.html("");
-
                     for (var i = 0; i < response.length; i++) {
                         var htmlText = `<li class="list-unstyled">
                                           <div class="input-group mb-3 ">
@@ -315,6 +321,9 @@
                                     </li>`;
                         appendHtml.append(htmlText);
                     }
+                }
+                else if (response.length == 0) {
+                    toastr.error("There is no field.");
                 }
             }
         });
@@ -330,6 +339,7 @@
             url: '/Form/FieldSequenceSavedFieldList',
             data: { "Id": Id },
             success: function (response) {
+                debugger;
                 if (response != null && response != undefined && response.length > 0) {
                     var appendHtml = $("#sortable2");
                     appendHtml.html("");

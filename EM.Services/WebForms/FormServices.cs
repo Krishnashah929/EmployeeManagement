@@ -100,8 +100,9 @@ namespace EM.Services.WebForms
                 var formRepository = _unitOfWork.GetRepository<Forms>();
                 Forms verifyForm = new Forms();
                 //check that new email is already registered or not 
-                verifyForm = this.GetAllForms().FirstOrDefault(x => x.DestinationEmail == forms.DestinationEmail);
-                if (verifyForm == null)
+                var verifyFormName = this.GetAllForms().FirstOrDefault(x => x.FormName == forms.FormName);
+                var verifyFormEmail = this.GetAllForms().FirstOrDefault(x => x.DestinationEmail == forms.DestinationEmail);
+                if (verifyFormName == null && verifyFormEmail == null)
                 {
                     if (formRepository != null)
                     {
@@ -137,21 +138,21 @@ namespace EM.Services.WebForms
                     //User updateDetails = new User();
                     var modifiedBy = Convert.ToInt32(UserRoles.Admin);
                     var editFormDetails = this.GetAllForms().FirstOrDefault(x => x.FormId == objForms.FormId);
-
+                    //check that new email is already registered or not 
+                    //var verifyFormName = this.GetAllForms().FirstOrDefault(x => x.FormName == objForms.FormName);
+                    //var verifyFormEmail = this.GetAllForms().FirstOrDefault(x => x.DestinationEmail == objForms.DestinationEmail);
+                    //if (verifyFormName == null && verifyFormEmail == null)
+                    //{
+                    //}
                     if (formRepository != null)
                     {
                         editFormDetails.FormName = objForms.FormName;
-                        var userEmail = this.GetAllForms().FirstOrDefault(x => x.DestinationEmail == objForms.DestinationEmail);
-                        if (userEmail == null)
-                        {
-                            editFormDetails.DestinationEmail = objForms.DestinationEmail;
-                        }
+                        editFormDetails.DestinationEmail = objForms.DestinationEmail;
                         editFormDetails.IsActive = objForms.IsActive;
                         editFormDetails.UpdatedDate = DateTime.Now;
                         editFormDetails.UpdatedBy = Convert.ToInt32(UserRoles.Admin);
                         _unitOfWork.GetRepository<Forms>().Update(editFormDetails);
                         _unitOfWork.Commit();
-
                         return objForms;
                     }
                 }
@@ -182,19 +183,12 @@ namespace EM.Services.WebForms
                 if (forms.IsActive || forms.IsActive == null)
                 {
                     lstForms = lstForms.Where(x => x.IsActive == true).ToList();
-                }
-                else
-                {
-                    lstForms = lstForms.Where(x => x.IsActive == false).ToList();
-                }
-
-                if (lstForms != null)
-                {
                     return lstForms;
                 }
                 else
                 {
-                    return null;
+                    lstForms = lstForms.ToList();
+                    return lstForms;
                 }
             }
             catch (Exception ex)
@@ -317,13 +311,21 @@ namespace EM.Services.WebForms
             try
             {
                 var fieldRepository = _unitOfWork.GetRepository<FieldDetails>();
+                var verifyFieldName = this.GetAllFieldsList(objFieldDetails.FormId).FirstOrDefault(x => x.FieldHtmlName == objFieldDetails.FieldHtmlName);
+                //var check = fieldRepository.GetAllFieldsList().FirstOrDefault(x => x.FieldHtmlName == objFieldDetails.FieldHtmlName);
                 FieldDetails fieldDetails = new FieldDetails();
-
-                if (fieldRepository != null)
+                if(verifyFieldName == null)
                 {
-                    objFieldDetails.NoOfDatatableColumn = 0;
-                    fieldRepository.Add(objFieldDetails);
-                    _unitOfWork.Commit();
+                    if (fieldRepository != null)
+                    {
+                        objFieldDetails.NoOfDatatableColumn = 0;
+                        fieldRepository.Add(objFieldDetails);
+                        _unitOfWork.Commit();
+                    }
+                }
+                else
+                {
+                    return null;
                 }
                 return objFieldDetails;
 
@@ -428,6 +430,34 @@ namespace EM.Services.WebForms
             }
         }
         #endregion
+ 
+        
+        /// <summary>
+        /// Get all FieldOptions
+        /// </summary>
+        /// <returns>list of fields</returns>
+        #region GetAllFieldOptions
+        public IEnumerable<FieldOptions> GetAllFieldOptionsForViewForm(int id )
+        {
+            try
+            {
+                var repoList = this._unitOfWork.GetRepository<FieldOptions>();
+                List<FieldOptions> lstFieldOptions = repoList.GetAll().Where(x => x.FieldDetailsId == id).AsNoTracking().ToList();
+                if (lstFieldOptions != null)
+                {
+                    return lstFieldOptions;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Get filtered all FieldOptions
@@ -439,7 +469,7 @@ namespace EM.Services.WebForms
             try
             {
                 var repoList = this._unitOfWork.GetRepository<FieldOptions>();
-                List<FieldOptions> lstFieldOptions = repoList.GetAll().Where(x => x.FieldDetailsId == id).AsNoTracking().ToList();
+                List<FieldOptions> lstFieldOptions = repoList.GetAll().Where(x => x.FieldDetailsId == id && x.IsDelete == false).AsNoTracking().ToList();
                 if (lstFieldOptions != null)
                 {
                     return lstFieldOptions;
@@ -471,6 +501,7 @@ namespace EM.Services.WebForms
 
                 if (fieldOptionRepository != null)
                 {
+                    objFieldOptions.IsDelete = false;
                     fieldOptionRepository.Add(objFieldOptions);
                     _unitOfWork.Commit();
                 }
@@ -498,8 +529,8 @@ namespace EM.Services.WebForms
                 {
                     var fieldOptionRepository = _unitOfWork.GetRepository<FieldOptions>();
                     var editFieldOptions = this.GetAllFieldOptions().FirstOrDefault(x => x.FieldOptionsId == objFieldOptions.FieldOptionsId);
-
-                    if (fieldOptionRepository != null)
+                    var verifyOption = this.GetAllFieldOptions().FirstOrDefault(x => x.FieldDetailsId == objFieldOptions.FieldDetailsId && x.OptionValue == objFieldOptions.OptionValue);
+                    if (verifyOption == null)
                     {
                         editFieldOptions.FieldDetailsId = objFieldOptions.FieldDetailsId;
                         editFieldOptions.OptionValue = objFieldOptions.OptionValue;
@@ -530,9 +561,13 @@ namespace EM.Services.WebForms
             {
                 var userRepository = _unitOfWork.GetRepository<FieldOptions>();
                 var deleteAppointment = this.GetAllFieldOptions().FirstOrDefault(x => x.FieldOptionsId == id);
-                _unitOfWork.GetRepository<FieldOptions>().HardDelete(deleteAppointment);
-                _unitOfWork.Commit();
-
+                 if (deleteAppointment != null)
+                 {
+                    deleteAppointment.FieldOptionsId = id;
+                    deleteAppointment.IsDelete = true;
+                    userRepository.Update(deleteAppointment);
+                    _unitOfWork.Commit();
+                 }
                 return deleteAppointment;
             }
             catch (Exception ex)
@@ -616,8 +651,15 @@ namespace EM.Services.WebForms
 
                 if (fieldDetails == null)
                 {
-                    fieldRepository.Add(objFormFields);
-                    _unitOfWork.Commit();
+                    if(objFormFields.FieldsSequence == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        fieldRepository.Add(objFormFields);
+                        _unitOfWork.Commit();
+                    }
                 }
                 else if (fieldDetails != null)
                 {
@@ -627,6 +669,7 @@ namespace EM.Services.WebForms
                     fieldRepository.Update(fieldDetails);
                     _unitOfWork.Commit();
                 }
+
                 return objFormFields;
 
             }
@@ -650,11 +693,13 @@ namespace EM.Services.WebForms
 
                 var fieldDetailsList = this._unitOfWork.GetRepository<FieldDetails>();
 
-                var savedFieldList = repoList.GetAll().Where(x => x.FormId == id).Select(x => x.FieldsSequence).FirstOrDefault().Split(",");
+                var checkFieldSequence = repoList.GetAll().Where(x => x.FormId == id).Select(x => x.FieldsSequence).ToList();
 
-                var FinalFieldList = fieldDetailsList.GetAll().Where(x => !savedFieldList.Contains(x.FieldDetailsId.ToString()));
-
-                List<FieldDetails> lstForms =
+                if (checkFieldSequence.FirstOrDefault() != null)
+                {
+                    var savedFieldList = repoList.GetAll().Where(x => x.FormId == id).Select(x => x.FieldsSequence).FirstOrDefault().Split(",");
+                    var FinalFieldList = fieldDetailsList.GetAll().Where(x => !savedFieldList.Contains(x.FieldDetailsId.ToString()));
+                    List<FieldDetails> lstForms =
                     (from fields in FinalFieldList
                      let fieldType = Convert.ToInt32(fields.FieldType)
                      let fieldValidationType = Convert.ToInt32(fields.FieldValidationType)
@@ -680,15 +725,54 @@ namespace EM.Services.WebForms
                          HelpText = fields.HelpText
                      }
                      ).AsNoTracking().ToList();
-
-                if (lstForms != null)
-                {
-                    return lstForms;
+                    if (lstForms != null)
+                    {
+                        return lstForms;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
-                    return null;
+                    var FinalFieldList = fieldDetailsList.GetAll();
+                    List<FieldDetails> lstForms =
+                    (from fields in FinalFieldList
+                     let fieldType = Convert.ToInt32(fields.FieldType)
+                     let fieldValidationType = Convert.ToInt32(fields.FieldValidationType)
+                     where fields.FormId == id
+                     select new FieldDetails
+                     {
+                         FieldDetailsId = fields.FieldDetailsId,
+                         FormId = fields.FormId,
+                         FieldType = fields.FieldType,
+                         fieldTypeName = fieldType == Convert.ToInt32(fieldTypes.Textbox) ? "TextBox" :
+                                         fieldType == Convert.ToInt32(fieldTypes.Textarea) ? "Textarea" :
+                                         fieldType == Convert.ToInt32(fieldTypes.Checkbox) ? "Checkbox" :
+                                         fieldType == Convert.ToInt32(fieldTypes.Dropdown) ? "Dropdown" :
+                                         fieldType == Convert.ToInt32(fieldTypes.Radiobutton) ? "Radiobutton" :
+                                         fieldType == Convert.ToInt32(fieldTypes.Datatable) ? "Datatable" : "",
+                         FieldHtmlName = fields.FieldHtmlName,
+                         FieldValidationType = fields.FieldValidationType,
+                         fieldValidationName = fieldValidationType == Convert.ToInt32(fieldValidationTypes.NA) ? "NA" :
+                                               fieldValidationType == Convert.ToInt32(fieldValidationTypes.Numeric) ? "Numeric" :
+                                               fieldValidationType == Convert.ToInt32(fieldValidationTypes.Email) ? "Email" : "",
+                         IsOptional = fields.IsOptional,
+                         NoOfDatatableColumn = fields.NoOfDatatableColumn,
+                         HelpText = fields.HelpText
+                     }
+                     ).AsNoTracking().ToList();
+                    if (lstForms != null)
+                    {
+                        return lstForms;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
+              
             }
             catch (Exception ex)
             {
@@ -709,46 +793,50 @@ namespace EM.Services.WebForms
                 var repoList = this._unitOfWork.GetRepository<FormFields>();
 
                 var fieldDetailsList = this._unitOfWork.GetRepository<FieldDetails>();
-
-                var savedFieldList = repoList.GetAll().Where(x => x.FormId == id).Select(x => x.FieldsSequence).FirstOrDefault().Split(",");
-
-                var FinalFieldList = fieldDetailsList.GetAll().Where(x => savedFieldList.Contains(x.FieldDetailsId.ToString()));
-
-                List<FieldDetails> lstForms =
-                    (from fields in FinalFieldList
-                     let fieldType = Convert.ToInt32(fields.FieldType)
-                     let fieldValidationType = Convert.ToInt32(fields.FieldValidationType)
-                     where fields.FormId == id
-                     select new FieldDetails
-                     {
-                         FieldDetailsId = fields.FieldDetailsId,
-                         FormId = fields.FormId,
-                         FieldType = fields.FieldType,
-                         fieldTypeName = fieldType == Convert.ToInt32(fieldTypes.Textbox) ? "TextBox" :
-                                         fieldType == Convert.ToInt32(fieldTypes.Textarea) ? "Textarea" :
-                                         fieldType == Convert.ToInt32(fieldTypes.Checkbox) ? "Checkbox" :
-                                         fieldType == Convert.ToInt32(fieldTypes.Dropdown) ? "Dropdown" :
-                                         fieldType == Convert.ToInt32(fieldTypes.Radiobutton) ? "Radiobutton" :
-                                         fieldType == Convert.ToInt32(fieldTypes.Datatable) ? "Datatable" : "",
-                         FieldHtmlName = fields.FieldHtmlName,
-                         FieldValidationType = fields.FieldValidationType,
-                         fieldValidationName = fieldValidationType == Convert.ToInt32(fieldValidationTypes.NA) ? "NA" :
-                                               fieldValidationType == Convert.ToInt32(fieldValidationTypes.Numeric) ? "Numeric" :
-                                               fieldValidationType == Convert.ToInt32(fieldValidationTypes.Email) ? "Email" : "",
-                         IsOptional = fields.IsOptional,
-                         NoOfDatatableColumn = fields.NoOfDatatableColumn,
-                         HelpText = fields.HelpText
-                     }
-                     ).AsNoTracking().ToList();
-
-                if (lstForms != null)
+                var checkFieldSequence = repoList.GetAll().Where(x => x.FormId == id).Select(x => x.FieldsSequence).ToList();
+                if (checkFieldSequence.FirstOrDefault() != null)
                 {
-                    return lstForms;
+                    var savedFieldList = repoList.GetAll().Where(x => x.FormId == id).Select(x => x.FieldsSequence).FirstOrDefault().Split(",");
+
+                    var FinalFieldList = fieldDetailsList.GetAll().Where(x => savedFieldList.Contains(x.FieldDetailsId.ToString()));
+
+                    List<FieldDetails> lstForms =
+                        (from fields in FinalFieldList
+                         let fieldType = Convert.ToInt32(fields.FieldType)
+                         let fieldValidationType = Convert.ToInt32(fields.FieldValidationType)
+                         where fields.FormId == id
+                         select new FieldDetails
+                         {
+                             FieldDetailsId = fields.FieldDetailsId,
+                             FormId = fields.FormId,
+                             FieldType = fields.FieldType,
+                             fieldTypeName = fieldType == Convert.ToInt32(fieldTypes.Textbox) ? "TextBox" :
+                                             fieldType == Convert.ToInt32(fieldTypes.Textarea) ? "Textarea" :
+                                             fieldType == Convert.ToInt32(fieldTypes.Checkbox) ? "Checkbox" :
+                                             fieldType == Convert.ToInt32(fieldTypes.Dropdown) ? "Dropdown" :
+                                             fieldType == Convert.ToInt32(fieldTypes.Radiobutton) ? "Radiobutton" :
+                                             fieldType == Convert.ToInt32(fieldTypes.Datatable) ? "Datatable" : "",
+                             FieldHtmlName = fields.FieldHtmlName,
+                             FieldValidationType = fields.FieldValidationType,
+                             fieldValidationName = fieldValidationType == Convert.ToInt32(fieldValidationTypes.NA) ? "NA" :
+                                                   fieldValidationType == Convert.ToInt32(fieldValidationTypes.Numeric) ? "Numeric" :
+                                                   fieldValidationType == Convert.ToInt32(fieldValidationTypes.Email) ? "Email" : "",
+                             IsOptional = fields.IsOptional,
+                             NoOfDatatableColumn = fields.NoOfDatatableColumn,
+                             HelpText = fields.HelpText
+                         }
+                         ).AsNoTracking().ToList();
+
+                    if (lstForms != null)
+                    {
+                        return lstForms;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             catch (Exception ex)
             {
@@ -782,7 +870,7 @@ namespace EM.Services.WebForms
 
                 List<FieldDetails> lstForms =
                     (from fields in FinalFieldList
-                     //join fieldOptions in fieldDetailsList on fields.FieldDetailsId equals fieldDetailsList.
+                         //join fieldOptions in fieldDetailsList on fields.FieldDetailsId equals fieldDetailsList.
                      let fieldDetailId = fields.FieldDetailsId
                      let fieldType = Convert.ToInt32(fields.FieldType)
                      let fieldValidationType = Convert.ToInt32(fields.FieldValidationType)
@@ -809,16 +897,16 @@ namespace EM.Services.WebForms
                          FormName = getFormName.FormName
                      }
                      ).AsNoTracking().ToList();
-                 
-                        if (lstForms != null)
-                        {
-                             return lstForms;
-                        }
-                        else
-                        {
-                            return null;
-                        }
-           }
+
+                if (lstForms != null)
+                {
+                    return lstForms;
+                }
+                else
+                {
+                    return null;
+                }
+            }
             catch (Exception ex)
             {
                 throw ex;
@@ -868,7 +956,7 @@ namespace EM.Services.WebForms
             {
                 var fieldRepository = _unitOfWork.GetRepository<CustomerFormData>();
                 CustomerFormData fieldDetails = new CustomerFormData();
-                
+
                 List<CustomerFormData> newList = model.ToList();
                 foreach (var item in newList)
                 {
@@ -954,7 +1042,7 @@ namespace EM.Services.WebForms
         /// </summary>
         /// <returns>list of saved forms </returns>
         #region GetAllSavedForms(GET)
-        public IEnumerable<FormFields> ViewCustomerForm(int id )
+        public IEnumerable<FormFields> ViewCustomerForm(int id)
         {
             try
             {

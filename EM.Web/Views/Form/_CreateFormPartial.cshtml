@@ -84,13 +84,14 @@
                     if (result != null && result.statusCode != 200)
                     {
                         toastr.error(result.message);
-                        window.location.reload();
                         $('#idCreateForm').modal("show");
                     }
                     else
                     {
                         toastr.success(result.message);
+                        fnGetAllForms();
                         $('#idCreateForm').modal("hide");
+                      
                     }
                     console.log(result);
                 },
@@ -107,4 +108,53 @@
             event.stopImmediatePropagation();
         }
     });
+
+        //Get all forms in card format
+    function fnGetAllForms() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Form/GetAllForms")',
+            success: function (response) {
+                if (response != null && response != undefined && response.length > 0) {
+                    var appendHtml = $("#idCards");
+                    appendHtml.html("");
+                    for (var i = 0; i < response.length; i++) {
+                        var activeInactiveString = "";
+                        if (response[i].isActive)
+                        {
+                            activeInactiveString = `<h5 class="text-success text-center">Active</h5>`;
+                        }
+                        else
+                        {
+                            activeInactiveString = `<h5 class="text-danger text-center">In Active</h5>`;
+                        }
+                        var htmlText = `<div id="idCard" class="card card-secondary shadow-sm mt-3 mr-3 col-md-3 border" style= "margin-left:95px;"">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h3 class="text-center font-weight-bold dot" id="formShortName">${response[i].formName.substring(0,2).toUpperCase()}</h3>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <h3 class="text-center font-weight-bold" id="formName">${response[i].formName}</h3>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                <div class="col" id="activeInActive">
+                                                    ${ activeInactiveString }
+                                </div>
+                                </div>
+                                <div class="row justify-content-between">
+                                    <a class="text-black" href="ManageFields/${response[i].formId}"> <i class="fas fa-list"></i>  Manage Feilds </a>
+                                    <a class="text-black" href="#" onclick="fnEditForm(${response[i].formId});"> <i class="fas fa-pen"></i>  Edit Form</a>
+                                </div>
+                            </div>`;
+
+                        appendHtml.append(htmlText);
+                    }
+                }
+            }
+        });
+    }
 </script>

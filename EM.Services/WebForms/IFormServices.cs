@@ -102,6 +102,12 @@ namespace EM.Services.WebForms
         IEnumerable<FieldOptions> GetFilteredFieldOptions(int id);
 
         /// <summary>
+        /// Get all FieldOptions
+        /// </summary>
+        /// <returns>list of filtered FieldOptions </returns>
+        IEnumerable<FieldOptions> GetAllFieldOptionsForViewForm(int id);
+
+        /// <summary>
         /// Method for add new field
         /// </summary>
         /// <param name="objFieldOptions"></param>

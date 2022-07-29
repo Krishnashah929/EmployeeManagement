@@ -169,5 +169,26 @@
         /// Your form is saved successfully message...
         /// </summary>
         public const string EmailSentSuccessfully = "Email is sent successfully.";
+
+        /// <summary>
+        /// There is no field list. message...
+        /// </summary>
+        public const string NoFieldMsg = "There is no field list.";
+        
+        /// <summary>
+        /// There is no field list. message...
+        /// </summary>
+        public const string CanNotSaveEmptyMsg = "You can not save empty form.";
+
+
+        /// <summary>
+        /// Field option updated successfully message...
+        /// </summary>
+        public const string UpdateFieldOptionMssg = "Field option is updated successfully.";
+
+        /// <summary>
+        /// Field option deleted successfully message....
+        /// </summary>
+        public const string DeleteFieldOptionMsg = "Field option is deleted successfully.";
     }
 }
